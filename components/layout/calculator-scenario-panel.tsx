@@ -138,6 +138,11 @@ export function CalculatorScenarioPanel({
                 Related Workflow Touchpoints
               </div>
               <div className="mt-4 space-y-3">
+                {relatedTickets.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-line bg-panelSoft p-4 text-sm text-slate-500">
+                    No tickets matching the calculator scenario filter yet. Use the Project Brief to organize raw notes and generate workflow tickets.
+                  </div>
+                ) : null}
                 {relatedTickets.map((ticket) => (
                   <div key={ticket.id} className="rounded-xl border border-line bg-panelSoft p-4">
                     <div className="flex items-center justify-between gap-3">

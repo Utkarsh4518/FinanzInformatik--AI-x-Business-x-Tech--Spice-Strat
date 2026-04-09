@@ -21,7 +21,7 @@ export function TicketSourceBadge({
   showTimestamp = false
 }: TicketSourceBadgeProps) {
   const isJira = ticket.sourceType === "jira";
-  const label = isJira ? ticket.externalKey ?? "Jira" : "Local";
+  const label = isJira ? ticket.externalKey ?? "Jira" : "BridgeFlow";
 
   return (
     <span

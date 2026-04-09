@@ -266,7 +266,7 @@ export function AIInsightsPanel({
                 : "text-slate-500 hover:bg-white"
             }`}
           >
-            Insights
+            Role Analysis
           </button>
           <button
             type="button"
@@ -277,7 +277,7 @@ export function AIInsightsPanel({
                 : "text-slate-500 hover:bg-white"
             }`}
           >
-            Translate
+            Translate Content
           </button>
         </div>
 

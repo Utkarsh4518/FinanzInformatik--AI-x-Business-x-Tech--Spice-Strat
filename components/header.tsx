@@ -9,6 +9,12 @@ type HeaderProps = {
   isResetting: boolean;
 };
 
+const roleDescriptions: Record<AppRole, string> = {
+  manager: "Delivery health, blockers, team continuity, and Jira sync trust.",
+  analyst: "Business scope, open questions, and cross-role translation.",
+  developer: "Source-aware tickets, technical summaries, repo impact, and handover detail."
+};
+
 export function Header({
   project,
   currentRole,
@@ -30,8 +36,7 @@ export function Header({
           </div>
 
           <div className="mt-4">
-            <p className="text-sm font-medium text-slate-500">Hackathon Workspace</p>
-            <h1 className="mt-1 text-[28px] font-semibold tracking-[-0.02em] text-ink">
+            <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-ink">
               {project.name}
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
@@ -48,7 +53,7 @@ export function Header({
                   Working Perspective
                 </div>
                 <p className="mt-1 text-sm text-slate-500">
-                  Switch the same workspace between manager, analyst, and developer emphasis.
+                  {roleDescriptions[currentRole]}
                 </p>
               </div>
               <RoleSwitcher currentRole={currentRole} onRoleChange={onRoleChange} />

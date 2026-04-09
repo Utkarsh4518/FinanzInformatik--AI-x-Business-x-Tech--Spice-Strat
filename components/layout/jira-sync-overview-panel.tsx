@@ -145,7 +145,15 @@ export function JiraSyncOverviewPanel({
                         <p className="text-sm font-semibold text-slate-800">
                           {item.externalKey}
                         </p>
-                        <span className="rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                            item.actionTaken === "imported"
+                              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : item.actionTaken === "updated"
+                                ? "border border-blue-200 bg-blue-50 text-blue-700"
+                                : "border border-line bg-white text-slate-500"
+                          }`}
+                        >
                           {item.actionTaken}
                         </span>
                       </div>
@@ -163,8 +171,13 @@ export function JiraSyncOverviewPanel({
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-line bg-panelSoft p-5 text-sm text-slate-500">
-            No Jira sync has been recorded yet. Import Jira issues from the Project Brief card to populate this view.
+          <div className="rounded-2xl border border-dashed border-line bg-panelSoft p-6">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+              No Sync Recorded Yet
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Click <span className="font-medium text-slate-700">Import / Sync Jira</span> above to pull Jira issues into BridgeFlow. Each run creates a sync record shown here with per-ticket action detail.
+            </p>
           </div>
         )}
 
@@ -193,7 +206,15 @@ export function JiraSyncOverviewPanel({
                 <span className="capitalize">{ticket.status.replaceAll("_", " ")}</span>
                 <span className="capitalize">{ticket.priority}</span>
                 <span>{memberById.get(ticket.assigneeId) ?? "Unassigned"}</span>
-                <span className="uppercase">{ticket.sourceType}</span>
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
+                    ticket.sourceType === "jira"
+                      ? "border border-accent/15 bg-accentSoft text-accent"
+                      : "border border-line bg-panelSoft text-slate-500"
+                  }`}
+                >
+                  {ticket.sourceType === "jira" ? "Jira" : "BridgeFlow"}
+                </span>
                 <span>{formatTimestamp(ticket.lastSyncedAt)}</span>
               </button>
             ))

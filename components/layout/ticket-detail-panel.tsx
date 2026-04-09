@@ -166,8 +166,13 @@ export function TicketDetailPanel({
         <div className="border-b border-line bg-white px-6 py-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accentMuted">
-                Ticket Workspace
+              <div className="flex items-center gap-2">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accentMuted">
+                  Ticket Workspace
+                </div>
+                <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                  {currentRole === "manager" ? "Manager View" : currentRole === "analyst" ? "Analyst View" : "Developer View"}
+                </span>
               </div>
               <h3 className="mt-2 truncate text-xl font-semibold text-ink">
                 {currentTicket.title}
@@ -289,7 +294,7 @@ export function TicketDetailPanel({
                       rel="noreferrer"
                       className="mt-2 inline-flex text-xs font-medium text-accent hover:underline"
                     >
-                      Open external issue
+                      Open in Jira
                     </a>
                   ) : null}
                 </div>
