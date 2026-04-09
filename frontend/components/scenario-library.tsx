@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
 import { scenarios } from "@/lib/mock-data";
+import BorderGlow from "@/components/BorderGlow";
 import { Button } from "@/components/ui/button";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -42,6 +43,9 @@ const item = {
 
 export function ScenarioLibrary({ onTryScenario }: ScenarioLibraryProps) {
   const { mode, isBusiness } = useMode();
+  const glowColors = isBusiness
+    ? ["#D20717", "#B0206B", "#8F2A86"]
+    : ["#ffffff", "#a0a0a0", "#666666"];
 
   return (
     <div className="h-full overflow-y-auto p-6">
@@ -67,8 +71,16 @@ export function ScenarioLibrary({ onTryScenario }: ScenarioLibraryProps) {
             <motion.div
               key={sc.id}
               variants={item}
-              className="glass-elevated flex flex-col rounded-2xl p-5"
             >
+            <BorderGlow
+              colors={glowColors}
+              glowColor={isBusiness ? "350 80 50" : "0 0 80"}
+              backgroundColor="transparent"
+              borderRadius={16}
+              glowIntensity={0.5}
+              fillOpacity={0}
+            >
+            <div className="flex flex-col p-5">
               <div className="mb-3 flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl accent-bg">
                   <Icon className="h-5 w-5 accent-text" />
@@ -98,6 +110,8 @@ export function ScenarioLibrary({ onTryScenario }: ScenarioLibraryProps) {
                 <span>Try it in chat</span>
                 <ArrowRight className="h-3 w-3" />
               </Button>
+            </div>
+            </BorderGlow>
             </motion.div>
           );
         })}

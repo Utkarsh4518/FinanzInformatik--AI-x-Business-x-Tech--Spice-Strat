@@ -24,7 +24,6 @@ import {
 import { motion } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchRepos, fetchJiraProjects, fetchJiraIssues } from "@/lib/api";
 import { websites, scenarios as scenarioData } from "@/lib/mock-data";
@@ -141,34 +140,36 @@ export function Sidebar({
   return (
     <aside className="flex h-full w-full flex-col border-r border-white/[0.08]" style={{ background: isBusiness ? "linear-gradient(180deg, rgba(47,23,58,0.6), rgba(26,14,34,0.8))" : "rgba(10,10,10,0.9)" }}>
       {/* Tab switcher */}
-      <div className="flex border-b border-white/[0.08]">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                onTabChange(tab.id);
-                if (tab.id === "scenarios") onViewChange("scenarios");
-                else if (tab.id === "jira") onViewChange("jira");
-                else if (tab.id === "projects") onViewChange("dashboard");
-              }}
-              className={`flex flex-1 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[11px] font-medium transition-colors ${
-                isActive
-                  ? "accent-text border-current"
-                  : "border-transparent text-fi-text/40 hover:text-fi-text/70"
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {tab.label}
-            </button>
-          );
-        })}
+      <div className="overflow-x-auto border-b border-white/[0.08]">
+        <div className="flex w-max min-w-full">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  onTabChange(tab.id);
+                  if (tab.id === "scenarios") onViewChange("scenarios");
+                  else if (tab.id === "jira") onViewChange("jira");
+                  else if (tab.id === "projects") onViewChange("dashboard");
+                }}
+                className={`flex shrink-0 items-center justify-center gap-1.5 border-b-2 px-3.5 py-3 text-[11px] font-medium whitespace-nowrap transition-colors ${
+                  isActive
+                    ? "accent-text border-current"
+                    : "border-transparent text-fi-text/40 hover:text-fi-text/70"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Content */}
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         {activeTab === "projects" && (
           <div className="flex flex-col">
             <div className="p-3">
@@ -225,8 +226,8 @@ export function Sidebar({
                         <Code2 className="h-3 w-3 text-fi-text/50" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <p className="truncate text-xs font-medium text-fi-text">{repo.name}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="text-xs font-medium text-fi-text leading-snug break-words" title={repo.name}>{repo.name}</p>
                           {repo.fork && (
                             <span className="flex shrink-0 items-center gap-0.5 rounded border border-fi-magenta/20 bg-fi-magenta/10 px-1 py-0.5 text-[9px] font-medium text-fi-magenta">
                               <GitFork className="h-2 w-2" />
@@ -434,7 +435,7 @@ export function Sidebar({
             })}
           </motion.div>
         )}
-      </ScrollArea>
+      </div>
     </aside>
   );
 }

@@ -34,6 +34,7 @@ import {
 import { useVoiceInput } from "@/lib/use-voice-input";
 import { useTextToSpeech } from "@/lib/use-tts";
 import type { JiraCreateResponse, JiraIssue, JiraProject } from "@/lib/types";
+import BorderGlow from "@/components/BorderGlow";
 import { Button } from "@/components/ui/button";
 
 type JiraBoardProps = {
@@ -49,6 +50,9 @@ const statusIcon: Record<string, React.ComponentType<{ className?: string }>> = 
 
 export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
   const { mode, isBusiness } = useMode();
+  const glowColors = isBusiness
+    ? ["#D20717", "#B0206B", "#8F2A86"]
+    : ["#ffffff", "#a0a0a0", "#666666"];
   const voice = useVoiceInput();
   const tts = useTextToSpeech();
 
@@ -495,8 +499,16 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
                   key={col}
                   variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="rounded-xl border border-white/[0.08] bg-white/[0.03]"
                 >
+                <BorderGlow
+                  colors={glowColors}
+                  glowColor={isBusiness ? "350 80 50" : "0 0 80"}
+                  backgroundColor="transparent"
+                  borderRadius={12}
+                  glowIntensity={0.4}
+                  fillOpacity={0}
+                >
+                <div className="rounded-xl bg-white/[0.03]">
                   <div className="flex items-center gap-2 border-b border-white/[0.08] px-3 py-2.5">
                     <ColIcon className={`h-3.5 w-3.5 ${colConfig.color}`} />
                     <span className="text-xs font-medium text-fi-text">{colConfig.label}</span>
@@ -536,6 +548,8 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
                       ))
                     )}
                   </motion.div>
+                </div>
+                </BorderGlow>
                 </motion.div>
               );
             })}

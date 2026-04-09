@@ -19,6 +19,7 @@ import { useMode } from "@/lib/mode-context";
 import { fetchRepoDetail, translateLanguage, translateText } from "@/lib/api";
 import { useTextToSpeech } from "@/lib/use-tts";
 import type { RepoDetail, RepoSummary } from "@/lib/types";
+import BorderGlow from "@/components/BorderGlow";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -95,19 +96,32 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
     }
   }
 
+  const glowColors = isBusiness
+    ? ["#D20717", "#B0206B", "#8F2A86"]
+    : ["#ffffff", "#a0a0a0", "#666666"];
+
   if (!selectedRepo) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl accent-bg">
-            <ArrowLeftRight className="h-7 w-7 accent-text" />
+        <BorderGlow
+          colors={glowColors}
+          glowColor={isBusiness ? "350 80 50" : "0 0 80"}
+          backgroundColor="transparent"
+          borderRadius={20}
+          fillOpacity={0}
+          animated
+        >
+          <div className="p-10 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl accent-bg">
+              <ArrowLeftRight className="h-7 w-7 accent-text" />
+            </div>
+            <h2 className="text-lg font-semibold text-fi-text">Select a project</h2>
+            <p className="mt-1 max-w-xs text-sm text-fi-text/40">
+              Choose a repository from the sidebar to see its details through a{" "}
+              {isBusiness ? "business" : "developer"} lens.
+            </p>
           </div>
-          <h2 className="text-lg font-semibold text-fi-text">Select a project</h2>
-          <p className="mt-1 max-w-xs text-sm text-fi-text/40">
-            Choose a repository from the sidebar to see its details through a{" "}
-            {isBusiness ? "business" : "developer"} lens.
-          </p>
-        </div>
+        </BorderGlow>
       </div>
     );
   }
@@ -178,7 +192,16 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
 
       {/* Language Translation EN <-> DE */}
       {(detail.readme || translatedReadme) && (
-        <div className="mb-6 glass-elevated rounded-2xl p-5">
+        <BorderGlow
+          className="mb-6"
+          colors={glowColors}
+          glowColor={isBusiness ? "350 80 50" : "0 0 80"}
+          backgroundColor="transparent"
+          borderRadius={16}
+          glowIntensity={0.6}
+          fillOpacity={0}
+        >
+        <div className="glass-elevated rounded-2xl p-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-fi-text flex items-center gap-2">
               <ArrowLeftRight className="h-4 w-4 accent-text" />
@@ -234,6 +257,7 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
             </div>
           )}
         </div>
+        </BorderGlow>
       )}
 
       <div className="grid gap-5 lg:grid-cols-2">

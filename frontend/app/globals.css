@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../components/BorderGlow.css";
+
 :root {
   color-scheme: dark;
 

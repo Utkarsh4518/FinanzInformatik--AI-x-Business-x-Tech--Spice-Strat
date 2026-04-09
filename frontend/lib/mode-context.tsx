@@ -7,6 +7,7 @@ import type { Mode } from "@/lib/types";
 type ModeContextValue = {
   mode: Mode;
   toggle: () => void;
+  setMode: (mode: Mode) => void;
   isBusiness: boolean;
   isDeveloper: boolean;
 };
@@ -14,6 +15,7 @@ type ModeContextValue = {
 const ModeContext = createContext<ModeContextValue>({
   mode: "business",
   toggle: () => {},
+  setMode: () => {},
   isBusiness: true,
   isDeveloper: false,
 });
@@ -34,6 +36,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
       value={{
         mode,
         toggle,
+        setMode,
         isBusiness: mode === "business",
         isDeveloper: mode === "developer",
       }}
