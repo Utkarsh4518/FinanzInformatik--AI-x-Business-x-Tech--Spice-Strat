@@ -19,6 +19,8 @@ import {
   VolumeX,
 } from "lucide-react";
 
+import { motion } from "framer-motion";
+
 import { useMode } from "@/lib/mode-context";
 import {
   aiGenerateTicket,
@@ -473,7 +475,12 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
             <Loader2 className="h-6 w-6 animate-spin text-fi-text/40" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <motion.div
+            className="grid grid-cols-1 gap-4 md:grid-cols-3"
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+          >
             {(["todo", "inProgress", "done"] as const).map((col) => {
               const colConfig = {
                 todo: { label: "To Do", icon: Circle, color: "text-fi-text/50", count: grouped.todo.length },
@@ -484,7 +491,12 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
               const colIssues = grouped[col];
 
               return (
-                <div key={col} className="rounded-xl border border-white/[0.08] bg-white/[0.03]">
+                <motion.div
+                  key={col}
+                  variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="rounded-xl border border-white/[0.08] bg-white/[0.03]"
+                >
                   <div className="flex items-center gap-2 border-b border-white/[0.08] px-3 py-2.5">
                     <ColIcon className={`h-3.5 w-3.5 ${colConfig.color}`} />
                     <span className="text-xs font-medium text-fi-text">{colConfig.label}</span>
@@ -492,13 +504,21 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
                       {colConfig.count}
                     </span>
                   </div>
-                  <div className="space-y-1 p-2">
+                  <motion.div
+                    className="space-y-1 p-2"
+                    initial="hidden"
+                    animate="show"
+                    variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.15 } } }}
+                  >
                     {colIssues.length === 0 ? (
                       <p className="py-4 text-center text-[11px] text-fi-text/30">No issues</p>
                     ) : (
                       colIssues.map((issue) => (
-                        <div
+                        <motion.div
                           key={issue.key}
+                          variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+                          transition={{ duration: 0.25 }}
+                          whileHover={{ scale: 1.015 }}
                           className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-2.5 transition-colors hover:bg-fi-magenta/10 cursor-default"
                         >
                           <div className="flex items-center gap-1.5 mb-1">
@@ -512,14 +532,14 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
                             <span>{issue.priority || "—"}</span>
                             <span>{issue.assignee || "Unassigned"}</span>
                           </div>
-                        </div>
+                        </motion.div>
                       ))
                     )}
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

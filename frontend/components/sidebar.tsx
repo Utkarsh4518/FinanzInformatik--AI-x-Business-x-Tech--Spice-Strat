@@ -21,7 +21,11 @@ import {
   UserPlus,
 } from "lucide-react";
 
+import { motion } from "framer-motion";
+
 import { useMode } from "@/lib/mode-context";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fetchRepos, fetchJiraProjects, fetchJiraIssues } from "@/lib/api";
 import { websites, scenarios as scenarioData } from "@/lib/mock-data";
 import type { JiraIssue, JiraProject, MainView, RepoSummary, SidebarTab } from "@/lib/types";
@@ -164,7 +168,7 @@ export function Sidebar({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <ScrollArea className="flex-1">
         {activeTab === "projects" && (
           <div className="flex flex-col">
             <div className="p-3">
@@ -181,16 +185,31 @@ export function Sidebar({
             </div>
 
             {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-5 w-5 animate-spin text-fi-text/40" />
+              <div className="space-y-2 px-3 py-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <Skeleton className="h-6 w-6 shrink-0 rounded-md" />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton className="h-3 w-3/4" />
+                      <Skeleton className="h-2.5 w-1/2" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : filtered.length === 0 ? (
               <p className="px-3 py-8 text-center text-xs text-fi-text/40">No repositories found</p>
             ) : (
-              <div className="space-y-0.5 px-2 pb-3">
+              <motion.div
+                className="space-y-0.5 px-2 pb-3"
+                initial="hidden"
+                animate="show"
+                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}
+              >
                 {filtered.map((repo) => (
-                  <button
+                  <motion.button
                     key={repo.full_name}
+                    variants={{ hidden: { opacity: 0, x: -12 }, show: { opacity: 1, x: 0 } }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
                     onClick={() => {
                       onSelectRepo(repo);
                       onViewChange("project-detail");
@@ -239,18 +258,25 @@ export function Sidebar({
                         )}
                       </div>
                     </div>
-                  </button>
+                  </motion.button>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         )}
 
         {activeTab === "websites" && (
-          <div className="space-y-1 p-3">
+          <motion.div
+            className="space-y-1 p-3"
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
+          >
             {websites.map((site) => (
-              <a
+              <motion.a
                 key={site.url}
+                variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.25 }}
                 href={site.url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -269,9 +295,9 @@ export function Sidebar({
                 <span className="mt-0.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-fi-text/40">
                   {site.category}
                 </span>
-              </a>
+              </motion.a>
             ))}
-          </div>
+          </motion.div>
         )}
 
         {activeTab === "jira" && (
@@ -307,13 +333,27 @@ export function Sidebar({
             </div>
 
             {jiraLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-5 w-5 animate-spin text-fi-text/40" />
+              <div className="space-y-2 px-3 py-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <Skeleton className="h-3.5 w-3.5 shrink-0 rounded-full" />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton className="h-2.5 w-16" />
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-2 w-1/3" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : filteredJira.length === 0 ? (
               <p className="px-3 py-8 text-center text-xs text-fi-text/40">No issues found</p>
             ) : (
-              <div className="space-y-0.5 px-2 pb-3">
+              <motion.div
+                className="space-y-0.5 px-2 pb-3"
+                initial="hidden"
+                animate="show"
+                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}
+              >
                 {filteredJira.map((issue) => {
                   const StatusIcon = statusIcon[issue.status_category] ?? Circle;
                   const statusColor =
@@ -323,8 +363,10 @@ export function Sidebar({
                         ? "text-fi-purple"
                         : "text-fi-text/40";
                   return (
-                    <button
+                    <motion.button
                       key={issue.key}
+                      variants={{ hidden: { opacity: 0, x: -12 }, show: { opacity: 1, x: 0 } }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
                       onClick={() => {
                         onSelectJiraIssue(issue);
                         onViewChange("jira");
@@ -348,21 +390,28 @@ export function Sidebar({
                           )}
                         </div>
                       </div>
-                    </button>
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             )}
           </div>
         )}
 
         {activeTab === "scenarios" && (
-          <div className="space-y-1 p-3">
+          <motion.div
+            className="space-y-1 p-3"
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
+          >
             {scenarioData.map((sc) => {
               const Icon = iconMap[sc.icon] ?? BookOpen;
               return (
-                <button
+                <motion.button
                   key={sc.id}
+                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                  transition={{ duration: 0.25 }}
                   onClick={() => {
                     onSelectScenario(sc.id);
                     onViewChange("scenarios");
@@ -380,12 +429,12 @@ export function Sidebar({
                       </p>
                     </div>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </ScrollArea>
     </aside>
   );
 }

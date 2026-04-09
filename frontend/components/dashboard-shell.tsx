@@ -12,6 +12,8 @@ import { ProjectDashboard } from "@/components/project-dashboard";
 import { ScenarioLibrary } from "@/components/scenario-library";
 import { AiChatPanel } from "@/components/ai-chat-panel";
 import { JiraBoard } from "@/components/jira-board";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function DashboardShell() {
   const { mode, toggle, isBusiness } = useMode();
@@ -42,9 +44,16 @@ export function DashboardShell() {
   }, []);
 
   return (
+    <TooltipProvider delayDuration={300}>
     <div className="flex h-screen flex-col overflow-hidden">
       {/* Navbar */}
-      <header className="relative z-50 flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 backdrop-blur-2xl md:px-6" style={{ background: isBusiness ? "linear-gradient(90deg, rgba(47,23,58,0.85), rgba(38,25,77,0.85))" : "rgba(10,10,10,0.95)" }}>
+      <motion.header
+        initial={{ y: -56, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-50 flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 backdrop-blur-2xl md:px-6"
+        style={{ background: isBusiness ? "linear-gradient(90deg, rgba(47,23,58,0.85), rgba(38,25,77,0.85))" : "rgba(10,10,10,0.95)" }}
+      >
         {/* Left: Logo + mobile toggle */}
         <div className="flex items-center gap-3">
           <button
@@ -54,14 +63,19 @@ export function DashboardShell() {
             {mobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
 
-          <div className="flex items-center gap-2.5">
-            <div className={`flex h-8 w-8 items-center justify-center rounded-lg shadow-md ${isBusiness ? "bg-fi-gradient shadow-fi-red/20" : "bg-white shadow-white/10"}`}>
+          <motion.div
+            className="flex items-center gap-2.5"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.4, type: "spring", stiffness: 200 }}
+          >
+            <div className={`flex h-8 w-8 items-center justify-center rounded-lg shadow-md transition-all duration-500 ${isBusiness ? "bg-fi-gradient shadow-fi-red/20" : "bg-white shadow-white/10"}`}>
               <span className={`text-sm font-bold ${isBusiness ? "text-white" : "text-black"}`}>B</span>
             </div>
             <span className="font-display text-base font-semibold text-fi-text">
               Bridge
             </span>
-          </div>
+          </motion.div>
         </div>
 
         {/* Center: Mode toggle */}
@@ -92,26 +106,45 @@ export function DashboardShell() {
 
         {/* Right: Chat toggle + avatar */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setMainView(mainView === "chat" ? "dashboard" : "chat")}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-              mainView === "chat"
-                ? "accent-bg accent-text"
-                : "bg-white/[0.06] text-fi-text/50 hover:text-fi-text"
-            }`}
-          >
-            <MessageSquare className="h-4 w-4" />
-          </button>
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-fi-gradient text-[11px] font-bold text-white">
-            U
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setMainView(mainView === "chat" ? "dashboard" : "chat")}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                  mainView === "chat"
+                    ? "accent-bg accent-text"
+                    : "bg-white/[0.06] text-fi-text/50 hover:text-fi-text"
+                }`}
+              >
+                <MessageSquare className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {mainView === "chat" ? "Close chat" : "Open AI chat"}
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Avatar className="h-7 w-7 cursor-default">
+                <AvatarFallback className="bg-fi-gradient text-[11px] font-bold text-white">
+                  U
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Utkarsh</TooltipContent>
+          </Tooltip>
         </div>
-      </header>
+      </motion.header>
 
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar -- desktop */}
-        <div className="hidden w-64 shrink-0 md:block xl:w-72">
+        <motion.div
+          initial={{ x: -64, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.15, ease: "easeOut" }}
+          className="hidden w-64 shrink-0 md:block xl:w-72"
+        >
           <Sidebar
             activeTab={sidebarTab}
             onTabChange={setSidebarTab}
@@ -122,7 +155,7 @@ export function DashboardShell() {
             selectedRepo={selectedRepo}
             owner={defaultOwner}
           />
-        </div>
+        </motion.div>
 
         {/* Sidebar -- mobile overlay */}
         <AnimatePresence>
@@ -163,9 +196,10 @@ export function DashboardShell() {
             {mainView === "chat" ? (
               <motion.div
                 key="chat"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="h-full"
               >
                 <AiChatPanel
@@ -176,9 +210,10 @@ export function DashboardShell() {
             ) : mainView === "scenarios" ? (
               <motion.div
                 key="scenarios"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="h-full"
               >
                 <ScenarioLibrary onTryScenario={handleTryScenario} />
@@ -186,9 +221,10 @@ export function DashboardShell() {
             ) : mainView === "jira" ? (
               <motion.div
                 key="jira"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="h-full"
               >
                 <JiraBoard
@@ -199,9 +235,10 @@ export function DashboardShell() {
             ) : (
               <motion.div
                 key="dashboard"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="h-full"
               >
                 <ProjectDashboard
@@ -214,5 +251,6 @@ export function DashboardShell() {
         </main>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

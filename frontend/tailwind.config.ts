@@ -46,12 +46,22 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "subtle-float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-3px)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.6" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.4s ease-out forwards",
         "fade-in": "fade-in 0.3s ease-out forwards",
         "slide-in-left": "slide-in-left 0.3s ease-out forwards",
         shimmer: "shimmer 2s linear infinite",
+        "subtle-float": "subtle-float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
     },
   },

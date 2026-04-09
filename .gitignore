@@ -15,6 +15,8 @@ backend/backend.dev.log
 backend/backend.dev.err.log
 *.pyc
 
+node_modules/
+
 .DS_Store
 .cursor/
 backend/.env

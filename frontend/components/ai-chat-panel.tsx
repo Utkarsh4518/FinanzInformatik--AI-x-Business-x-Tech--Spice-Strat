@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeftRight, Bot, Loader2, Mic, MicOff, SendHorizonal, User2, Volume2, VolumeX } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
 import { chatWithAI, translateLanguage } from "@/lib/api";
+import { Separator } from "@/components/ui/separator";
 import { businessQuickPrompts, developerQuickPrompts, seedMessages } from "@/lib/mock-data";
 import { useVoiceInput } from "@/lib/use-voice-input";
 import { useTextToSpeech } from "@/lib/use-tts";
@@ -122,18 +124,29 @@ export function AiChatPanel({ prefillPrompt, clearPrefill }: AiChatPanelProps) {
         </button>
       </div>
 
+      <Separator className="mb-3 bg-white/[0.06]" />
+
       {/* Quick prompts */}
-      <div className="mb-3 flex flex-wrap gap-1.5">
+      <motion.div
+        className="mb-3 flex flex-wrap gap-1.5"
+        initial="hidden"
+        animate="show"
+        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.2 } } }}
+      >
         {quickPrompts.map((qp) => (
-          <button
+          <motion.button
             key={qp}
+            variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1 } }}
+            transition={{ duration: 0.2 }}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => send(qp)}
             className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-2.5 py-1.5 text-[11px] text-fi-text/50 transition-colors hover:bg-fi-magenta/10 hover:text-fi-text hover:border-fi-magenta/20"
           >
             {qp}
-          </button>
+          </motion.button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Messages */}
       <div
@@ -141,10 +154,17 @@ export function AiChatPanel({ prefillPrompt, clearPrefill }: AiChatPanelProps) {
         className="mask-fade mb-4 flex flex-1 flex-col gap-2.5 overflow-y-auto rounded-xl border border-white/[0.08] p-3"
         style={{ background: "rgba(26, 14, 34, 0.5)" }}
       >
+        <AnimatePresence initial={false}>
         {messages.map((m) => {
           const isAi = m.role === "assistant";
           return (
-            <div key={m.id} className={`group flex gap-2.5 ${isAi ? "" : "flex-row-reverse"}`}>
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, y: 16, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className={`group flex gap-2.5 ${isAi ? "" : "flex-row-reverse"}`}
+            >
               <div
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${
                   isAi ? "bg-fi-gradient text-white" : "bg-white/[0.06] text-fi-text/50"
@@ -192,9 +212,10 @@ export function AiChatPanel({ prefillPrompt, clearPrefill }: AiChatPanelProps) {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
+        </AnimatePresence>
 
         {busy && (
           <div className="flex gap-2.5">
