@@ -11,6 +11,7 @@ export type RepoSummary = {
   open_issues_count: number;
   updated_at: string | null;
   topics: string[];
+  fork?: boolean;
 };
 
 export type RepoDetail = RepoSummary & {

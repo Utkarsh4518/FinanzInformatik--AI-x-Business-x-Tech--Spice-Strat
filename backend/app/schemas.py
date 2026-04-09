@@ -12,6 +12,7 @@ class RepoSummary(BaseModel):
     open_issues_count: int = 0
     updated_at: str | None = None
     topics: list[str] = Field(default_factory=list)
+    fork: bool = False
 
 
 class RepoDetail(BaseModel):

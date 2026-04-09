@@ -206,7 +206,15 @@ export function Sidebar({
                         <Code2 className="h-3 w-3 text-fi-text/50" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-medium text-fi-text">{repo.name}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="truncate text-xs font-medium text-fi-text">{repo.name}</p>
+                          {repo.fork && (
+                            <span className="flex shrink-0 items-center gap-0.5 rounded border border-fi-magenta/20 bg-fi-magenta/10 px-1 py-0.5 text-[9px] font-medium text-fi-magenta">
+                              <GitFork className="h-2 w-2" />
+                              Fork
+                            </span>
+                          )}
+                        </div>
                         {isBusiness ? (
                           <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-fi-text/40">
                             {repo.description || "Software project"}

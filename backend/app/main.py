@@ -69,9 +69,9 @@ async def list_repos(owner: str = Query(..., min_length=1)):
             open_issues_count=r.get("open_issues_count", 0),
             updated_at=r.get("updated_at"),
             topics=r.get("topics", []),
+            fork=r.get("fork", False),
         )
         for r in raw
-        if not r.get("fork")
     ]
 
 
