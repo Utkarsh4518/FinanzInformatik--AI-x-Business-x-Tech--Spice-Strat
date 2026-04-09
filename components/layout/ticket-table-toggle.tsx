@@ -1,12 +1,24 @@
 import { ShellPanel } from "@/components/ui/shell-panel";
+import type { TeamMember, Ticket, TicketStatus } from "@/lib/domain/models";
 
-const sampleRows = [
-  ["BF-101", "Scope loan calculator extension", "In Progress"],
-  ["BF-102", "Translate requirements", "Backlog"],
-  ["BF-103", "Prepare manager summary", "Review"]
-];
+type TicketTableToggleProps = {
+  tickets: Ticket[];
+  teamMembers: TeamMember[];
+};
 
-export function TicketTableToggle() {
+const statusLabels: Record<TicketStatus, string> = {
+  backlog: "Backlog",
+  in_progress: "In Progress",
+  review: "Review",
+  done: "Done"
+};
+
+export function TicketTableToggle({
+  tickets,
+  teamMembers
+}: TicketTableToggleProps) {
+  const memberById = new Map(teamMembers.map((member) => [member.id, member]));
+
   return (
     <ShellPanel
       title="Ticket Table View"
@@ -29,19 +41,23 @@ export function TicketTableToggle() {
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-line">
-          <div className="grid grid-cols-[0.9fr_2fr_1fr] bg-slate-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] bg-slate-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <span>Ticket</span>
             <span>Summary</span>
+            <span>Owner</span>
+            <span>Priority</span>
             <span>Status</span>
           </div>
-          {sampleRows.map(([ticket, summary, status]) => (
+          {tickets.map((ticket) => (
             <div
-              key={ticket}
-              className="grid grid-cols-[0.9fr_2fr_1fr] border-t border-line bg-white px-4 py-3 text-sm text-slate-600"
+              key={ticket.id}
+              className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t border-line bg-white px-4 py-3 text-sm text-slate-600"
             >
-              <span className="font-medium text-slate-700">{ticket}</span>
-              <span>{summary}</span>
-              <span>{status}</span>
+              <span className="font-medium text-slate-700">{ticket.code}</span>
+              <span>{ticket.title}</span>
+              <span>{memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}</span>
+              <span className="capitalize">{ticket.priority}</span>
+              <span>{statusLabels[ticket.status]}</span>
             </div>
           ))}
         </div>

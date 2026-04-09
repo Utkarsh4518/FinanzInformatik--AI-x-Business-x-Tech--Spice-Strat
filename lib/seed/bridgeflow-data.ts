@@ -1,0 +1,244 @@
+import type {
+  Handover,
+  Project,
+  RepoFileSummary,
+  TeamMember,
+  Ticket,
+  TicketComment
+} from "@/lib/domain/models";
+
+export const bridgeFlowProject: Project = {
+  id: "project-loan-calc",
+  name: "BridgeFlow Loan Calculator Extension",
+  code: "BF-LOAN",
+  objective:
+    "Organize messy multilingual project notes into delivery-ready work for adding loan term calculation to the loan calculator.",
+  managerBrief:
+    "Please extend the loan calculator to support loan term calculation, keep the experience clear for business users, and align English and German notes before implementation starts.",
+  businessSummary:
+    "The manager needs one coordinated view of scope, progress, and risks while the team extends the loan calculator with loan term calculation.",
+  technicalSummary:
+    "Work will likely touch input validation, calculation rules, form copy, API handling, and regression coverage for both monthly payment and loan term scenarios.",
+  managerSummary:
+    "The current plan is split into business clarification, frontend updates, backend rule support, QA coverage, and a handover path for one unavailable teammate.",
+  languages: ["English", "German"],
+  primaryView: "kanban",
+  secondaryView: "table"
+};
+
+export const bridgeFlowTeamMembers: TeamMember[] = [
+  {
+    id: "member-ava",
+    name: "Ava Chen",
+    role: "manager",
+    availabilityStatus: "available",
+    focus: "Own demo narrative, scope decisions, and stakeholder alignment.",
+    languages: ["English"]
+  },
+  {
+    id: "member-lukas",
+    name: "Lukas Weber",
+    role: "business_analyst",
+    availabilityStatus: "available",
+    focus: "Translate mixed-language requirements into clean acceptance criteria.",
+    languages: ["German", "English"]
+  },
+  {
+    id: "member-maya",
+    name: "Maya Patel",
+    role: "frontend_engineer",
+    availabilityStatus: "busy",
+    focus: "Update calculator inputs, board views, and manager-facing status flows.",
+    languages: ["English"]
+  },
+  {
+    id: "member-noah",
+    name: "Noah Garcia",
+    role: "backend_engineer",
+    availabilityStatus: "unavailable",
+    focus: "Support calculation rules and local integration contracts when available.",
+    languages: ["English", "Spanish"]
+  },
+  {
+    id: "member-zoe",
+    name: "Zoe Schmidt",
+    role: "qa_engineer",
+    availabilityStatus: "available",
+    focus: "Cover calculator edge cases, translations, and demo reliability.",
+    languages: ["German", "English"]
+  }
+];
+
+export const bridgeFlowTickets: Ticket[] = [
+  {
+    id: "ticket-101",
+    projectId: bridgeFlowProject.id,
+    code: "BF-101",
+    title: "Normalize multilingual manager notes",
+    summary: "Convert rough English and German intake into a shared scope baseline.",
+    status: "done",
+    priority: "high",
+    type: "task",
+    assigneeId: "member-lukas"
+  },
+  {
+    id: "ticket-102",
+    projectId: bridgeFlowProject.id,
+    code: "BF-102",
+    title: "Define loan term calculation acceptance criteria",
+    summary: "Document business rules for calculating loan term from payment inputs.",
+    status: "review",
+    priority: "critical",
+    type: "feature",
+    assigneeId: "member-lukas"
+  },
+  {
+    id: "ticket-103",
+    projectId: bridgeFlowProject.id,
+    code: "BF-103",
+    title: "Add loan term fields to calculator UI",
+    summary: "Extend the calculator form so users can request loan term output.",
+    status: "in_progress",
+    priority: "high",
+    type: "feature",
+    assigneeId: "member-maya"
+  },
+  {
+    id: "ticket-104",
+    projectId: bridgeFlowProject.id,
+    code: "BF-104",
+    title: "Adjust validation and empty states",
+    summary: "Handle invalid values, missing fields, and dual-language validation copy.",
+    status: "backlog",
+    priority: "medium",
+    type: "task",
+    assigneeId: "member-maya"
+  },
+  {
+    id: "ticket-105",
+    projectId: bridgeFlowProject.id,
+    code: "BF-105",
+    title: "Support backend calculation contract",
+    summary: "Align payload shape and result handling for loan term calculation.",
+    status: "backlog",
+    priority: "high",
+    type: "feature",
+    assigneeId: "member-noah"
+  },
+  {
+    id: "ticket-106",
+    projectId: bridgeFlowProject.id,
+    code: "BF-106",
+    title: "Cover loan term regression paths",
+    summary: "Prepare QA cases for positive, negative, and boundary calculator flows.",
+    status: "in_progress",
+    priority: "high",
+    type: "task",
+    assigneeId: "member-zoe"
+  },
+  {
+    id: "ticket-107",
+    projectId: bridgeFlowProject.id,
+    code: "BF-107",
+    title: "Draft manager progress summary",
+    summary: "Explain implementation progress in business-friendly language for demo review.",
+    status: "review",
+    priority: "medium",
+    type: "task",
+    assigneeId: "member-ava"
+  },
+  {
+    id: "ticket-108",
+    projectId: bridgeFlowProject.id,
+    code: "BF-108",
+    title: "Prepare backend handover pack",
+    summary: "Capture open decisions and next steps while the backend owner is unavailable.",
+    status: "done",
+    priority: "medium",
+    type: "research",
+    assigneeId: "member-ava"
+  }
+];
+
+export const bridgeFlowTicketComments: TicketComment[] = [
+  {
+    id: "comment-201",
+    ticketId: "ticket-102",
+    authorId: "member-lukas",
+    message:
+      "German notes mention term calculation from monthly payment, so acceptance criteria now cover both direct and reverse calculation flows.",
+    createdAt: "2026-04-09 10:15"
+  },
+  {
+    id: "comment-202",
+    ticketId: "ticket-103",
+    authorId: "member-maya",
+    message:
+      "UI draft needs one more pass on labels so the new fields make sense for business demos without exposing too much technical detail.",
+    createdAt: "2026-04-09 11:05"
+  },
+  {
+    id: "comment-203",
+    ticketId: "ticket-106",
+    authorId: "member-zoe",
+    message:
+      "QA will focus on rounding, translation consistency, and edge values around minimum payment thresholds.",
+    createdAt: "2026-04-09 11:42"
+  }
+];
+
+export const bridgeFlowHandover: Handover = {
+  id: "handover-301",
+  projectId: bridgeFlowProject.id,
+  unavailableMemberId: "member-noah",
+  fallbackOwnerId: "member-ava",
+  summary:
+    "Backend rule support is partially scoped, but implementation is paused while Noah is unavailable. Ava owns demo continuity and will route urgent questions through the documented contract notes.",
+  openTicketIds: ["ticket-105", "ticket-108"],
+  blockers: [
+    "Need confirmation on whether loan term calculation lives in the existing endpoint or a new handler.",
+    "Validation edge cases for unsupported payment combinations are still open."
+  ]
+};
+
+export const bridgeFlowRepoFileSummaries: RepoFileSummary[] = [
+  {
+    id: "repo-401",
+    path: "app/page.tsx",
+    area: "App Shell",
+    summary: "Main composition entry for the demo workspace."
+  },
+  {
+    id: "repo-402",
+    path: "components/layout/manager-input-panel.tsx",
+    area: "Manager Intake",
+    summary: "Likely place for multilingual intake, notes cleanup, and scope confirmation."
+  },
+  {
+    id: "repo-403",
+    path: "components/layout/kanban-board-panel.tsx",
+    area: "Ticket Views",
+    summary: "Primary board shell where ticket grouping and status visibility will evolve."
+  },
+  {
+    id: "repo-404",
+    path: "components/layout/ai-insights-panel.tsx",
+    area: "AI Insights",
+    summary: "Natural placeholder for business summaries, technical translation, and handover output."
+  },
+  {
+    id: "repo-405",
+    path: "lib/seed/bridgeflow-data.ts",
+    area: "Shared Mock Data",
+    summary: "Central local source for project, ticket, comment, handover, and repo context."
+  }
+];
+
+export const bridgeFlowSeed = {
+  project: bridgeFlowProject,
+  teamMembers: bridgeFlowTeamMembers,
+  tickets: bridgeFlowTickets,
+  ticketComments: bridgeFlowTicketComments,
+  handover: bridgeFlowHandover,
+  repoFileSummaries: bridgeFlowRepoFileSummaries
+};
