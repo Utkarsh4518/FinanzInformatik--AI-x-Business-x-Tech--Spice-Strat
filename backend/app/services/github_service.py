@@ -129,3 +129,62 @@ async def fetch_repo_detail(owner: str, repo: str) -> dict:
         data["readme"] = readme_text
         data["languages"] = languages
         return data
+
+
+async def fetch_commits(owner: str, repo: str, count: int = 7) -> list[dict]:
+    async with httpx.AsyncClient(timeout=15) as client:
+        resp = await client.get(
+            f"{GITHUB_API}/repos/{owner}/{repo}/commits",
+            headers=_headers(),
+            params={"per_page": count},
+        )
+        resp.raise_for_status()
+        results = []
+        for c in resp.json():
+            commit = c.get("commit", {})
+            author = c.get("author") or {}
+            commit_author = commit.get("author", {})
+            results.append({
+                "sha": c.get("sha", ""),
+                "message": commit.get("message", ""),
+                "author_name": commit_author.get("name", "Unknown"),
+                "author_avatar_url": author.get("avatar_url", ""),
+                "date": commit_author.get("date", ""),
+                "url": c.get("html_url", ""),
+            })
+        return results
+
+
+async def fetch_commit_detail(owner: str, repo: str, sha: str) -> dict:
+    async with httpx.AsyncClient(timeout=20) as client:
+        resp = await client.get(
+            f"{GITHUB_API}/repos/{owner}/{repo}/commits/{sha}",
+            headers=_headers(),
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        commit = data.get("commit", {})
+        author = data.get("author") or {}
+        commit_author = commit.get("author", {})
+        stats = data.get("stats", {})
+        files = []
+        for f in data.get("files", []):
+            files.append({
+                "filename": f.get("filename", ""),
+                "status": f.get("status", "modified"),
+                "additions": f.get("additions", 0),
+                "deletions": f.get("deletions", 0),
+                "patch": f.get("patch", ""),
+            })
+        return {
+            "sha": data.get("sha", ""),
+            "message": commit.get("message", ""),
+            "author_name": commit_author.get("name", "Unknown"),
+            "author_avatar_url": author.get("avatar_url", ""),
+            "date": commit_author.get("date", ""),
+            "url": data.get("html_url", ""),
+            "additions": stats.get("additions", 0),
+            "deletions": stats.get("deletions", 0),
+            "file_count": len(files),
+            "files": files,
+        }

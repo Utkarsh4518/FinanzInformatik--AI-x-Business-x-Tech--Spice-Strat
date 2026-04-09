@@ -93,5 +93,34 @@ export type LanguageTranslateResponse = {
   target_language: string;
 };
 
-export type SidebarTab = "projects" | "websites" | "scenarios" | "jira";
-export type MainView = "dashboard" | "project-detail" | "scenarios" | "chat" | "jira";
+export type CommitFile = {
+  filename: string;
+  status: string;
+  additions: number;
+  deletions: number;
+  patch: string;
+};
+
+export type CommitSummary = {
+  sha: string;
+  message: string;
+  author_name: string;
+  author_avatar_url: string;
+  date: string;
+  url: string;
+};
+
+export type CommitDetail = CommitSummary & {
+  additions: number;
+  deletions: number;
+  file_count: number;
+  files: CommitFile[];
+};
+
+export type ExplainCommitResponse = {
+  explanation: string;
+  mode: string;
+};
+
+export type SidebarTab = "projects" | "websites" | "scenarios" | "jira" | "commits";
+export type MainView = "dashboard" | "project-detail" | "scenarios" | "chat" | "jira" | "commit-detail";

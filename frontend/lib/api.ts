@@ -2,6 +2,9 @@ import axios from "axios";
 
 import type {
   ChatResponse,
+  CommitDetail,
+  CommitSummary,
+  ExplainCommitResponse,
   JiraCreateResponse,
   JiraIssue,
   JiraProject,
@@ -52,6 +55,23 @@ export async function chatWithAI(
     context,
     history: history ?? [],
   });
+  return data;
+}
+
+// ── GitHub Commits ──────────────────────────────────────────────────
+
+export async function fetchCommits(owner: string, repo: string, count = 7): Promise<CommitSummary[]> {
+  const { data } = await api.get<CommitSummary[]>("/github/commits", { params: { owner, repo, count } });
+  return data;
+}
+
+export async function fetchCommitDetail(owner: string, repo: string, sha: string): Promise<CommitDetail> {
+  const { data } = await api.get<CommitDetail>(`/github/commits/${owner}/${repo}/${sha}`);
+  return data;
+}
+
+export async function explainCommit(owner: string, repo: string, sha: string, mode: Mode): Promise<ExplainCommitResponse> {
+  const { data } = await api.post<ExplainCommitResponse>("/ai/explain-commit", { owner, repo, sha, mode });
   return data;
 }
 

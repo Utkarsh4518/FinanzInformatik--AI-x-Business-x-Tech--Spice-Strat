@@ -6,12 +6,13 @@ import { Briefcase, Code2, Menu, MessageSquare, X } from "lucide-react";
 
 import { useMode } from "@/lib/mode-context";
 import { defaultOwner } from "@/lib/mock-data";
-import type { JiraIssue, MainView, RepoSummary, SidebarTab } from "@/lib/types";
+import type { CommitSummary, JiraIssue, MainView, RepoSummary, SidebarTab } from "@/lib/types";
 import { Sidebar } from "@/components/sidebar";
 import { ProjectDashboard } from "@/components/project-dashboard";
 import { ScenarioLibrary } from "@/components/scenario-library";
 import { AiChatPanel } from "@/components/ai-chat-panel";
 import { JiraBoard } from "@/components/jira-board";
+import { CommitDetail } from "@/components/commit-detail";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -22,6 +23,8 @@ export function DashboardShell() {
   const [mainView, setMainView] = useState<MainView>("dashboard");
   const [selectedRepo, setSelectedRepo] = useState<RepoSummary | null>(null);
   const [selectedJiraIssue, setSelectedJiraIssue] = useState<JiraIssue | null>(null);
+  const [selectedCommit, setSelectedCommit] = useState<CommitSummary | null>(null);
+  const [commitRepo, setCommitRepo] = useState<RepoSummary | null>(null);
   const [chatPrefill, setChatPrefill] = useState<string | undefined>();
   const [mobileMenu, setMobileMenu] = useState(false);
 
@@ -41,6 +44,18 @@ export function DashboardShell() {
 
   const handleJiraBack = useCallback(() => {
     setSelectedJiraIssue(null);
+  }, []);
+
+  const handleSelectCommit = useCallback((commit: CommitSummary, repo: RepoSummary) => {
+    setSelectedCommit(commit);
+    setCommitRepo(repo);
+    setMainView("commit-detail");
+  }, []);
+
+  const handleCommitBack = useCallback(() => {
+    setSelectedCommit(null);
+    setCommitRepo(null);
+    setMainView("dashboard");
   }, []);
 
   return (
@@ -151,6 +166,7 @@ export function DashboardShell() {
             onSelectRepo={setSelectedRepo}
             onSelectScenario={handleSelectScenario}
             onSelectJiraIssue={setSelectedJiraIssue}
+            onSelectCommit={handleSelectCommit}
             onViewChange={setMainView}
             selectedRepo={selectedRepo}
             owner={defaultOwner}
@@ -181,6 +197,7 @@ export function DashboardShell() {
                   onSelectRepo={(repo) => { setSelectedRepo(repo); setMobileMenu(false); }}
                   onSelectScenario={(id) => { handleSelectScenario(id); setMobileMenu(false); }}
                   onSelectJiraIssue={(issue) => { setSelectedJiraIssue(issue); setMobileMenu(false); }}
+                  onSelectCommit={(c, r) => { handleSelectCommit(c, r); setMobileMenu(false); }}
                   onViewChange={(view) => { setMainView(view); setMobileMenu(false); }}
                   selectedRepo={selectedRepo}
                   owner={defaultOwner}
@@ -217,6 +234,21 @@ export function DashboardShell() {
                 className="h-full"
               >
                 <ScenarioLibrary onTryScenario={handleTryScenario} />
+              </motion.div>
+            ) : mainView === "commit-detail" && selectedCommit && commitRepo ? (
+              <motion.div
+                key="commit-detail"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="h-full"
+              >
+                <CommitDetail
+                  commit={selectedCommit}
+                  repo={commitRepo}
+                  onBack={handleCommitBack}
+                />
               </motion.div>
             ) : mainView === "jira" ? (
               <motion.div

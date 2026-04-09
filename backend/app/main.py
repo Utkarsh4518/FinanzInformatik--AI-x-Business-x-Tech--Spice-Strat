@@ -14,6 +14,11 @@ from app.schemas import (
     AiGenerateTicketRequest,
     ChatRequest,
     ChatResponse,
+    CommitDetail,
+    CommitFile,
+    CommitSummary,
+    ExplainCommitRequest,
+    ExplainCommitResponse,
     JiraCreateRequest,
     JiraCreateResponse,
     JiraIssue,
@@ -25,8 +30,8 @@ from app.schemas import (
     TranslateRequest,
     TranslateResponse,
 )
-from app.services.ai_service import chat_response, generate_ticket_content, translate_language, translate_text
-from app.services.github_service import fetch_repo_detail, fetch_repos
+from app.services.ai_service import chat_response, explain_commit, generate_ticket_content, translate_language, translate_text
+from app.services.github_service import fetch_commit_detail, fetch_commits, fetch_repo_detail, fetch_repos
 from app.services.jira_service import (
     create_issue as jira_create_issue,
     fetch_issue_detail as jira_fetch_issue,
@@ -105,6 +110,55 @@ async def get_repo(owner: str, repo: str):
         languages=data.get("languages", {}),
         default_branch=data.get("default_branch", "main"),
     )
+
+
+# ── GitHub Commits ───────────────────────────────────────────────────
+
+@app.get("/github/commits", response_model=list[CommitSummary])
+async def list_commits(
+    owner: str = Query(..., min_length=1),
+    repo: str = Query(..., min_length=1),
+    count: int = Query(7, ge=1, le=30),
+):
+    try:
+        raw = await fetch_commits(owner, repo, count)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"GitHub API error: {exc}") from exc
+    return [CommitSummary(**c) for c in raw]
+
+
+@app.get("/github/commits/{owner}/{repo}/{sha}", response_model=CommitDetail)
+async def get_commit(owner: str, repo: str, sha: str):
+    try:
+        data = await fetch_commit_detail(owner, repo, sha)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"GitHub API error: {exc}") from exc
+    return CommitDetail(
+        sha=data["sha"],
+        message=data["message"],
+        author_name=data["author_name"],
+        author_avatar_url=data["author_avatar_url"],
+        date=data["date"],
+        url=data["url"],
+        additions=data["additions"],
+        deletions=data["deletions"],
+        file_count=data["file_count"],
+        files=[CommitFile(**f) for f in data["files"]],
+    )
+
+
+@app.post("/ai/explain-commit", response_model=ExplainCommitResponse)
+async def ai_explain_commit(payload: ExplainCommitRequest):
+    try:
+        data = await fetch_commit_detail(payload.owner, payload.repo, payload.sha)
+        explanation = await explain_commit(
+            data["message"],
+            data["files"],
+            payload.mode,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Error: {exc}") from exc
+    return ExplainCommitResponse(explanation=explanation, mode=payload.mode)
 
 
 @app.post("/ai/translate", response_model=TranslateResponse)

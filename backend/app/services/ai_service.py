@@ -457,3 +457,59 @@ async def generate_ticket_content(requirement: str, mode: str, context: str | No
         description = raw[desc_start + len("DESCRIPTION:"):].strip()
 
     return summary, description
+
+
+async def explain_commit(
+    commit_message: str,
+    files_changed: list[dict],
+    mode: str = "business",
+) -> str:
+    file_summaries = []
+    for f in files_changed[:20]:
+        patch = f.get("patch", "")[:800]
+        file_summaries.append(
+            f"- {f.get('filename', '?')} ({f.get('status', 'modified')}): "
+            f"+{f.get('additions', 0)} -{f.get('deletions', 0)}\n{patch}"
+        )
+    files_text = "\n".join(file_summaries) if file_summaries else "(no file details available)"
+
+    if mode == "business":
+        prompt = (
+            "You are a friendly business analyst explaining a software update to non-technical stakeholders.\n\n"
+            "Given this commit (code update), explain:\n"
+            "1. WHAT changed, in plain everyday language (no code jargon)\n"
+            "2. WHY it matters -- impact on the product, users, or business\n"
+            "3. Any risks or things to watch out for\n\n"
+            "Keep it concise (3-5 bullet points). Use analogies if helpful.\n\n"
+            f"Commit message: {commit_message}\n\n"
+            f"Files changed:\n{files_text}"
+        )
+    else:
+        prompt = (
+            "You are a senior software engineer doing a code review.\n\n"
+            "Analyze this commit and provide:\n"
+            "1. Technical summary of the changes\n"
+            "2. Architecture impact and design patterns used\n"
+            "3. Potential issues, edge cases, or tech debt introduced\n"
+            "4. Suggestions for improvement if any\n\n"
+            "Be precise and use proper technical terminology.\n\n"
+            f"Commit message: {commit_message}\n\n"
+            f"Diff:\n{files_text}"
+        )
+
+    try:
+        if _has_gemini():
+            result = (await _call_gemini(prompt)).strip()
+            if result:
+                return result
+        if _has_openai():
+            result = (await _call_openai(prompt)).strip()
+            if result:
+                return result
+    except Exception as exc:
+        logger.error("explain_commit LLM error: %s", str(exc)[:200])
+
+    return (
+        "AI explanation is currently unavailable. "
+        f"This commit modified {len(files_changed)} file(s) with message: {commit_message[:200]}"
+    )

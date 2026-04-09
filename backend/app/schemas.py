@@ -101,6 +101,42 @@ class AiGenerateTicketRequest(BaseModel):
     context: str | None = None
 
 
+class CommitFile(BaseModel):
+    filename: str
+    status: str = "modified"
+    additions: int = 0
+    deletions: int = 0
+    patch: str = ""
+
+
+class CommitSummary(BaseModel):
+    sha: str
+    message: str
+    author_name: str = "Unknown"
+    author_avatar_url: str = ""
+    date: str = ""
+    url: str = ""
+
+
+class CommitDetail(CommitSummary):
+    additions: int = 0
+    deletions: int = 0
+    file_count: int = 0
+    files: list[CommitFile] = Field(default_factory=list)
+
+
+class ExplainCommitRequest(BaseModel):
+    owner: str = Field(..., min_length=1)
+    repo: str = Field(..., min_length=1)
+    sha: str = Field(..., min_length=1)
+    mode: str = Field(..., pattern="^(business|developer)$")
+
+
+class ExplainCommitResponse(BaseModel):
+    explanation: str
+    mode: str
+
+
 class LanguageTranslateRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=5000)
     source_language: str = "en"
