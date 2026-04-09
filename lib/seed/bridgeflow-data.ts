@@ -80,88 +80,144 @@ export const bridgeFlowTickets: Ticket[] = [
     projectId: bridgeFlowProject.id,
     code: "BF-101",
     title: "Normalize multilingual manager notes",
+    description:
+      "Clean up the original English and German manager notes so the team works from a single consistent scope statement for the loan calculator extension.",
     summary: "Convert rough English and German intake into a shared scope baseline.",
+    businessSummary:
+      "Creates a stable project brief that managers and analysts can align on before execution.",
+    technicalSummary:
+      "Establishes terminology and scope boundaries that downstream UI, backend, and QA tickets can reference consistently.",
     status: "done",
     priority: "high",
     type: "task",
-    assigneeId: "member-lukas"
+    assigneeId: "member-lukas",
+    blockerReason: ""
   },
   {
     id: "ticket-102",
     projectId: bridgeFlowProject.id,
     code: "BF-102",
     title: "Define loan term calculation acceptance criteria",
+    description:
+      "Translate the manager request into explicit business rules for calculating loan term from payment, amount, and rate inputs.",
     summary: "Document business rules for calculating loan term from payment inputs.",
+    businessSummary:
+      "Clarifies what the manager expects the extended calculator to do and what outputs matter for review.",
+    technicalSummary:
+      "Specifies the input combinations, validation boundaries, and result expectations needed before implementation starts.",
     status: "review",
     priority: "critical",
     type: "feature",
-    assigneeId: "member-lukas"
+    assigneeId: "member-lukas",
+    blockerReason: "Waiting for final confirmation on unsupported payment combinations."
   },
   {
     id: "ticket-103",
     projectId: bridgeFlowProject.id,
     code: "BF-103",
     title: "Add loan term fields to calculator UI",
+    description:
+      "Update the frontend calculator flow so users can request loan term output alongside the existing payment scenarios.",
     summary: "Extend the calculator form so users can request loan term output.",
+    businessSummary:
+      "Adds the visible product change the manager needs for the demo scenario.",
+    technicalSummary:
+      "Requires new input states, view logic, and consistent labeling for the extended calculator flow.",
     status: "in_progress",
     priority: "high",
     type: "feature",
-    assigneeId: "member-maya"
+    assigneeId: "member-maya",
+    blockerReason: ""
   },
   {
     id: "ticket-104",
     projectId: bridgeFlowProject.id,
     code: "BF-104",
     title: "Adjust validation and empty states",
+    description:
+      "Refine validation copy and edge-state handling so the calculator remains understandable when inputs are incomplete or invalid.",
     summary: "Handle invalid values, missing fields, and dual-language validation copy.",
+    businessSummary:
+      "Protects demo quality by keeping the experience clear for business stakeholders.",
+    technicalSummary:
+      "Touches frontend validation rules, inline messaging, and error-state coverage for both languages.",
     status: "backlog",
     priority: "medium",
     type: "task",
-    assigneeId: "member-maya"
+    assigneeId: "member-maya",
+    blockerReason: ""
   },
   {
     id: "ticket-105",
     projectId: bridgeFlowProject.id,
     code: "BF-105",
     title: "Support backend calculation contract",
+    description:
+      "Define how the calculator should send and receive data for loan term calculation without breaking the current flow.",
     summary: "Align payload shape and result handling for loan term calculation.",
+    businessSummary:
+      "Keeps the demo story credible by showing that frontend and backend work are aligned.",
+    technicalSummary:
+      "Needs contract agreement for request shape, field validation, and response handling for calculated term results.",
     status: "backlog",
     priority: "high",
     type: "feature",
-    assigneeId: "member-noah"
+    assigneeId: "member-noah",
+    blockerReason: "Backend owner is unavailable and the endpoint shape is still undecided."
   },
   {
     id: "ticket-106",
     projectId: bridgeFlowProject.id,
     code: "BF-106",
     title: "Cover loan term regression paths",
+    description:
+      "Prepare QA coverage for the extended calculator so both happy paths and edge cases are represented in the demo.",
     summary: "Prepare QA cases for positive, negative, and boundary calculator flows.",
+    businessSummary:
+      "Reduces demo risk and gives the manager confidence that the change is being validated.",
+    technicalSummary:
+      "Includes test cases for rounding, thresholds, translations, and compatibility with current calculator behavior.",
     status: "in_progress",
     priority: "high",
     type: "task",
-    assigneeId: "member-zoe"
+    assigneeId: "member-zoe",
+    blockerReason: ""
   },
   {
     id: "ticket-107",
     projectId: bridgeFlowProject.id,
     code: "BF-107",
     title: "Draft manager progress summary",
+    description:
+      "Prepare a concise manager-facing summary that explains the current state of the work in business language.",
     summary: "Explain implementation progress in business-friendly language for demo review.",
+    businessSummary:
+      "Provides a leadership-friendly update on scope, status, and next decisions.",
+    technicalSummary:
+      "Synthesizes ticket progress into a concise summary without exposing low-level implementation noise.",
     status: "review",
     priority: "medium",
     type: "task",
-    assigneeId: "member-ava"
+    assigneeId: "member-ava",
+    blockerReason: ""
   },
   {
     id: "ticket-108",
     projectId: bridgeFlowProject.id,
     code: "BF-108",
     title: "Prepare backend handover pack",
+    description:
+      "Capture backend status, open questions, and next steps so work can continue while one teammate is unavailable.",
     summary: "Capture open decisions and next steps while the backend owner is unavailable.",
+    businessSummary:
+      "Maintains continuity for the manager when a key contributor is unavailable.",
+    technicalSummary:
+      "Packages current contract assumptions, blockers, and next actions so another owner can step in quickly.",
     status: "done",
     priority: "medium",
     type: "research",
-    assigneeId: "member-ava"
+    assigneeId: "member-ava",
+    blockerReason: ""
   }
 ];
 

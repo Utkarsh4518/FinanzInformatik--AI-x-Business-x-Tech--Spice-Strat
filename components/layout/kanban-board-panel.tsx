@@ -4,6 +4,8 @@ import type { TeamMember, Ticket, TicketStatus } from "@/lib/domain/models";
 type KanbanBoardPanelProps = {
   tickets: Ticket[];
   teamMembers: TeamMember[];
+  selectedTicketId: string | null;
+  onSelectTicket: (ticketId: string) => void;
 };
 
 const statusOrder: TicketStatus[] = ["backlog", "in_progress", "review", "done"];
@@ -24,7 +26,9 @@ const priorityStyles: Record<Ticket["priority"], string> = {
 
 export function KanbanBoardPanel({
   tickets,
-  teamMembers
+  teamMembers,
+  selectedTicketId,
+  onSelectTicket
 }: KanbanBoardPanelProps) {
   const memberById = new Map(teamMembers.map((member) => [member.id, member]));
 
@@ -38,49 +42,62 @@ export function KanbanBoardPanel({
           const columnTickets = tickets.filter((ticket) => ticket.status === status);
 
           return (
-          <div
-            key={status}
-            className="rounded-2xl border border-line bg-slate-50 p-3"
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-700">{statusLabels[status]}</h3>
-              <span className="rounded-full bg-white px-2 py-1 text-xs text-slate-500">
-                {columnTickets.length}
-              </span>
-            </div>
+            <div
+              key={status}
+              className="rounded-2xl border border-line bg-slate-50 p-3"
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-700">
+                  {statusLabels[status]}
+                </h3>
+                <span className="rounded-full bg-white px-2 py-1 text-xs text-slate-500">
+                  {columnTickets.length}
+                </span>
+              </div>
 
-            <div className="space-y-3">
-              {columnTickets.map((ticket) => {
-                const assignee = memberById.get(ticket.assigneeId);
+              <div className="space-y-3">
+                {columnTickets.map((ticket) => {
+                  const assignee = memberById.get(ticket.assigneeId);
 
-                return (
-                <div
-                  key={ticket.id}
-                  className="rounded-xl border border-line bg-white p-3 text-sm text-slate-600 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-slate-700">{ticket.title}</p>
-                      <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
-                        {ticket.code}
-                      </p>
-                    </div>
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${priorityStyles[ticket.priority]}`}
+                  return (
+                    <button
+                      key={ticket.id}
+                      type="button"
+                      onClick={() => onSelectTicket(ticket.id)}
+                      className={`w-full rounded-xl border bg-white p-3 text-left text-sm text-slate-600 shadow-sm transition ${
+                        selectedTicketId === ticket.id
+                          ? "border-teal-400 ring-2 ring-teal-100"
+                          : "border-line hover:border-teal-200"
+                      }`}
                     >
-                      {ticket.priority}
-                    </span>
-                  </div>
-                  <p className="mt-3 leading-6 text-slate-500">{ticket.summary}</p>
-                  <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                    <span className="capitalize">{ticket.type}</span>
-                    <span>{assignee?.name ?? "Unassigned"}</span>
-                  </div>
-                </div>
-              );
-              })}
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-slate-700">{ticket.title}</p>
+                          <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+                            {ticket.code}
+                          </p>
+                        </div>
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${priorityStyles[ticket.priority]}`}
+                        >
+                          {ticket.priority}
+                        </span>
+                      </div>
+                      <p className="mt-3 leading-6 text-slate-500">{ticket.summary}</p>
+                      {ticket.blockerReason ? (
+                        <div className="mt-3 rounded-lg bg-rose-50 px-2 py-2 text-xs text-rose-700">
+                          Blocked: {ticket.blockerReason}
+                        </div>
+                      ) : null}
+                      <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                        <span className="capitalize">{ticket.type}</span>
+                        <span>{assignee?.name ?? "Unassigned"}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
           );
         })}
       </div>

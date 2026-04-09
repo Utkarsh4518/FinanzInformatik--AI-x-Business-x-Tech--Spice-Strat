@@ -4,6 +4,8 @@ import type { TeamMember, Ticket, TicketStatus } from "@/lib/domain/models";
 type TicketTableToggleProps = {
   tickets: Ticket[];
   teamMembers: TeamMember[];
+  selectedTicketId: string | null;
+  onSelectTicket: (ticketId: string) => void;
 };
 
 const statusLabels: Record<TicketStatus, string> = {
@@ -15,7 +17,9 @@ const statusLabels: Record<TicketStatus, string> = {
 
 export function TicketTableToggle({
   tickets,
-  teamMembers
+  teamMembers,
+  selectedTicketId,
+  onSelectTicket
 }: TicketTableToggleProps) {
   const memberById = new Map(teamMembers.map((member) => [member.id, member]));
 
@@ -36,7 +40,7 @@ export function TicketTableToggle({
             type="button"
             className="rounded-full border border-line bg-white px-3 py-2 text-sm text-slate-600"
           >
-            Table Placeholder
+            Table Synced
           </button>
         </div>
 
@@ -49,16 +53,22 @@ export function TicketTableToggle({
             <span>Status</span>
           </div>
           {tickets.map((ticket) => (
-            <div
+            <button
               key={ticket.id}
-              className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t border-line bg-white px-4 py-3 text-sm text-slate-600"
+              type="button"
+              onClick={() => onSelectTicket(ticket.id)}
+              className={`grid w-full grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t px-4 py-3 text-left text-sm text-slate-600 transition ${
+                selectedTicketId === ticket.id
+                  ? "border-teal-200 bg-teal-50"
+                  : "border-line bg-white hover:bg-slate-50"
+              }`}
             >
               <span className="font-medium text-slate-700">{ticket.code}</span>
               <span>{ticket.title}</span>
               <span>{memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}</span>
               <span className="capitalize">{ticket.priority}</span>
               <span>{statusLabels[ticket.status]}</span>
-            </div>
+            </button>
           ))}
         </div>
       </div>

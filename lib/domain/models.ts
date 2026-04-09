@@ -44,11 +44,21 @@ export type Ticket = {
   projectId: string;
   code: string;
   title: string;
+  description: string;
   summary: string;
+  businessSummary: string;
+  technicalSummary: string;
   status: TicketStatus;
   priority: TicketPriority;
   type: TicketType;
   assigneeId: string;
+  blockerReason: string;
+};
+
+export type TicketUpdateInput = {
+  status: TicketStatus;
+  assigneeId: string;
+  blockerReason: string;
 };
 
 export type TicketComment = {
