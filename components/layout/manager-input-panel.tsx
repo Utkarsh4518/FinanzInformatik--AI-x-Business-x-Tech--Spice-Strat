@@ -1,94 +1,198 @@
+"use client";
+
+import { useState } from "react";
+
+import { IntakePayloadPreview } from "@/components/layout/manager-input/intake-payload-preview";
+import { TeamAvailabilityEditor } from "@/components/layout/manager-input/team-availability-editor";
 import { ShellPanel } from "@/components/ui/shell-panel";
-import type { Project, TeamMember, TicketComment } from "@/lib/domain/models";
+import type {
+  AvailabilityStatus,
+  ManagerIntakePayload,
+  Project,
+  TargetOutputLanguage,
+  TeamAvailabilityInput,
+  TeamMember
+} from "@/lib/domain/models";
 
 type ManagerInputPanelProps = {
   project: Project;
   teamMembers: TeamMember[];
-  ticketComments: TicketComment[];
 };
 
-const availabilityStyles: Record<TeamMember["availabilityStatus"], string> = {
-  available: "bg-emerald-50 text-emerald-700",
-  busy: "bg-amber-50 text-amber-700",
-  unavailable: "bg-rose-50 text-rose-700"
-};
+const targetOutputLanguages: TargetOutputLanguage[] = [
+  "English",
+  "German",
+  "Bilingual"
+];
 
-export function ManagerInputPanel({
-  project,
-  teamMembers,
-  ticketComments
-}: ManagerInputPanelProps) {
+function buildInitialTeamAvailability(teamMembers: TeamMember[]): TeamAvailabilityInput[] {
+  return teamMembers.map((member) => ({
+    memberId: member.id,
+    name: member.name,
+    role: member.role,
+    availabilityStatus: member.availabilityStatus,
+    capacityPercent: member.capacityPercent
+  }));
+}
+
+export function ManagerInputPanel({ project, teamMembers }: ManagerInputPanelProps) {
+  const [projectName, setProjectName] = useState(project.name);
+  const [rawProjectInput, setRawProjectInput] = useState(project.managerBrief);
+  const [targetOutputLanguage, setTargetOutputLanguage] =
+    useState<TargetOutputLanguage>("Bilingual");
+  const [includeRepoContext, setIncludeRepoContext] = useState(true);
+  const [editableTeam, setEditableTeam] = useState<TeamAvailabilityInput[]>(
+    buildInitialTeamAvailability(teamMembers)
+  );
+  const [payloadPreview, setPayloadPreview] = useState<ManagerIntakePayload | null>(
+    null
+  );
+
+  function handleAvailabilityChange(
+    memberId: string,
+    availabilityStatus: AvailabilityStatus
+  ) {
+    setEditableTeam((currentTeam) =>
+      currentTeam.map((member) =>
+        member.memberId === memberId ? { ...member, availabilityStatus } : member
+      )
+    );
+  }
+
+  function handleCapacityChange(memberId: string, capacityPercent: number) {
+    setEditableTeam((currentTeam) =>
+      currentTeam.map((member) =>
+        member.memberId === memberId ? { ...member, capacityPercent } : member
+      )
+    );
+  }
+
+  function handleBuildPayload() {
+    const payload: ManagerIntakePayload = {
+      projectName,
+      rawProjectInput,
+      targetOutputLanguage,
+      includeRepoContext,
+      teamAvailability: editableTeam
+    };
+
+    setPayloadPreview(payload);
+  }
+
   return (
     <ShellPanel
       title="Manager Input"
       description="Entry point for project notes, assumptions, and business context."
     >
       <div className="space-y-4">
-        <div className="rounded-2xl border border-dashed border-line bg-slate-50 p-4">
-          <p className="text-sm font-medium text-slate-700">Current Project Brief</p>
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            {project.managerBrief}
-          </p>
-        </div>
-
         <div className="rounded-2xl border border-line bg-white p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Project Setup
+            Intake Form
           </div>
-          <div className="mt-3 space-y-2 text-sm text-slate-600">
-            <p>Primary view: {project.primaryView}</p>
-            <p>Secondary view: {project.secondaryView}</p>
-            <p>Working languages: {project.languages.join(", ")}</p>
-          </div>
-        </div>
 
-        <div className="rounded-2xl border border-line bg-white p-4">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Team Availability
-          </div>
-          <div className="mt-3 space-y-2">
-            {teamMembers.map((member) => (
-              <div
-                key={member.id}
-                className="rounded-xl border border-line px-3 py-3 text-sm"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-medium text-slate-700">{member.name}</p>
-                    <p className="text-slate-500">{member.role.replaceAll("_", " ")}</p>
-                  </div>
-                  <span
-                    className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${availabilityStyles[member.availabilityStatus]}`}
-                  >
-                    {member.availabilityStatus}
+          <div className="mt-4 space-y-4">
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Project Name
+              </span>
+              <input
+                type="text"
+                value={projectName}
+                onChange={(event) => setProjectName(event.target.value)}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Raw Project Input
+              </span>
+              <textarea
+                value={rawProjectInput}
+                onChange={(event) => setRawProjectInput(event.target.value)}
+                rows={7}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
+              />
+            </label>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Target Output Language
+                </span>
+                <select
+                  value={targetOutputLanguage}
+                  onChange={(event) =>
+                    setTargetOutputLanguage(
+                      event.target.value as TargetOutputLanguage
+                    )
+                  }
+                  className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+                >
+                  {targetOutputLanguages.map((language) => (
+                    <option key={language} value={language}>
+                      {language}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex items-center justify-between rounded-xl border border-line bg-slate-50 px-4 py-3">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Include Repo Context
                   </span>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Add the local repo snapshot to the structured intake payload.
+                  </p>
                 </div>
-                <p className="mt-2 text-slate-500">{member.focus}</p>
-              </div>
-            ))}
+                <input
+                  type="checkbox"
+                  checked={includeRepoContext}
+                  onChange={(event) => setIncludeRepoContext(event.target.checked)}
+                  className="h-4 w-4 rounded border-line accent-teal-700"
+                />
+              </label>
+            </div>
           </div>
         </div>
 
         <div className="rounded-2xl border border-line bg-white p-4">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Recent Team Signals
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Team Availability
+              </div>
+              <p className="mt-1 text-sm text-slate-500">
+                Adjust status and capacity locally for the intake payload.
+              </p>
+            </div>
+            <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+              {editableTeam.length} members
+            </div>
           </div>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            {ticketComments.map((comment) => (
-              <li key={comment.id} className="rounded-xl border border-line bg-slate-50 p-3">
-                <p className="leading-6">{comment.message}</p>
-                <p className="mt-2 text-xs text-slate-400">{comment.createdAt}</p>
-              </li>
+
+          <div className="mt-4 space-y-3">
+            {editableTeam.map((member) => (
+              <TeamAvailabilityEditor
+                key={member.memberId}
+                member={member}
+                onAvailabilityChange={handleAvailabilityChange}
+                onCapacityChange={handleCapacityChange}
+              />
             ))}
-          </ul>
+          </div>
         </div>
 
         <button
           type="button"
+          onClick={handleBuildPayload}
           className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white"
         >
-          Generate Structured Intake
+          Build Structured Intake Payload
         </button>
+
+        <IntakePayloadPreview payload={payloadPreview} />
       </div>
     </ShellPanel>
   );

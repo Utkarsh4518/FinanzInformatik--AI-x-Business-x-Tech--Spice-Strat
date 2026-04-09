@@ -20,7 +20,6 @@ export function AppShell({ data }: AppShellProps) {
             <ManagerInputPanel
               project={data.project}
               teamMembers={data.teamMembers}
-              ticketComments={data.ticketComments}
             />
           </aside>
 

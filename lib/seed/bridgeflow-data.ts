@@ -32,6 +32,7 @@ export const bridgeFlowTeamMembers: TeamMember[] = [
     name: "Ava Chen",
     role: "manager",
     availabilityStatus: "available",
+    capacityPercent: 70,
     focus: "Own demo narrative, scope decisions, and stakeholder alignment.",
     languages: ["English"]
   },
@@ -40,6 +41,7 @@ export const bridgeFlowTeamMembers: TeamMember[] = [
     name: "Lukas Weber",
     role: "business_analyst",
     availabilityStatus: "available",
+    capacityPercent: 85,
     focus: "Translate mixed-language requirements into clean acceptance criteria.",
     languages: ["German", "English"]
   },
@@ -48,6 +50,7 @@ export const bridgeFlowTeamMembers: TeamMember[] = [
     name: "Maya Patel",
     role: "frontend_engineer",
     availabilityStatus: "busy",
+    capacityPercent: 65,
     focus: "Update calculator inputs, board views, and manager-facing status flows.",
     languages: ["English"]
   },
@@ -56,6 +59,7 @@ export const bridgeFlowTeamMembers: TeamMember[] = [
     name: "Noah Garcia",
     role: "backend_engineer",
     availabilityStatus: "unavailable",
+    capacityPercent: 0,
     focus: "Support calculation rules and local integration contracts when available.",
     languages: ["English", "Spanish"]
   },
@@ -64,6 +68,7 @@ export const bridgeFlowTeamMembers: TeamMember[] = [
     name: "Zoe Schmidt",
     role: "qa_engineer",
     availabilityStatus: "available",
+    capacityPercent: 75,
     focus: "Cover calculator edge cases, translations, and demo reliability.",
     languages: ["German", "English"]
   }

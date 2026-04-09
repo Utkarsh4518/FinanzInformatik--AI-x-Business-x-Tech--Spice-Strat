@@ -13,6 +13,8 @@ export type TeamRole =
   | "backend_engineer"
   | "qa_engineer";
 
+export type TargetOutputLanguage = "English" | "German" | "Bilingual";
+
 export type Project = {
   id: string;
   name: string;
@@ -32,6 +34,7 @@ export type TeamMember = {
   name: string;
   role: TeamRole;
   availabilityStatus: AvailabilityStatus;
+  capacityPercent: number;
   focus: string;
   languages: string[];
 };
@@ -71,4 +74,20 @@ export type RepoFileSummary = {
   path: string;
   area: string;
   summary: string;
+};
+
+export type TeamAvailabilityInput = {
+  memberId: string;
+  name: string;
+  role: TeamRole;
+  availabilityStatus: AvailabilityStatus;
+  capacityPercent: number;
+};
+
+export type ManagerIntakePayload = {
+  projectName: string;
+  rawProjectInput: string;
+  targetOutputLanguage: TargetOutputLanguage;
+  includeRepoContext: boolean;
+  teamAvailability: TeamAvailabilityInput[];
 };
