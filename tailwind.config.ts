@@ -8,15 +8,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#f4f7fb",
-        ink: "#0f172a",
-        panel: "#ffffff",
-        line: "#d7dee8",
-        accent: "#0f766e",
-        accentSoft: "#d9f3ef"
+        canvas: "#f3f6f8",
+        ink: "#132032",
+        panel: "#fcfdff",
+        line: "#d8e0e8",
+        accent: "#245f5b",
+        accentSoft: "#e8f1ef"
       },
       boxShadow: {
-        panel: "0 12px 32px rgba(15, 23, 42, 0.08)"
+        panel: "0 16px 40px rgba(15, 23, 42, 0.06)"
       },
       borderRadius: {
         xl2: "1.25rem"

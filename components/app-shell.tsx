@@ -39,6 +39,7 @@ async function fetchList<T>(url: string): Promise<T[]> {
 
 export function AppShell() {
   const [project, setProject] = useState<Project | null>(null);
+  const [managerRawInput, setManagerRawInput] = useState("");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [ticketComments, setTicketComments] = useState<TicketComment[]>([]);
@@ -81,6 +82,7 @@ export function AppShell() {
         }
 
         setProject(projects[0] ?? null);
+        setManagerRawInput(projects[0]?.managerBrief ?? "");
         setTeamMembers(nextTeamMembers);
         setTickets(nextTickets);
         setTicketComments(nextComments);
@@ -266,6 +268,7 @@ export function AppShell() {
               teamMembers={teamMembers}
               isOrganizing={isOrganizing}
               onOrganizeProject={handleOrganizeProject}
+              onRawInputChange={setManagerRawInput}
             />
           </aside>
 
@@ -308,6 +311,8 @@ export function AppShell() {
                 repoFileSummaries={repoFileSummaries}
                 teamMembers={teamMembers}
                 tickets={tickets}
+                selectedTicket={selectedTicket}
+                managerRawInput={managerRawInput}
                 organizeResult={organizeResult}
                 onCreateHandover={handleCreateHandover}
               />

@@ -39,6 +39,23 @@ export type CreateHandoverRequest = {
   blockers: string[];
 };
 
+export type TranslateMode =
+  | "business-to-technical"
+  | "technical-to-business"
+  | "normalize";
+
+export type TranslateRequest = {
+  text: string;
+  targetLanguage: "English" | "German";
+  mode: TranslateMode;
+};
+
+export type TranslateResponse = {
+  sourceLanguageDetected: string;
+  translatedText: string;
+  conciseExplanation: string;
+};
+
 export type OrganizeProjectRequest = {
   projectId: string;
   rawInput: string;
@@ -159,6 +176,38 @@ export function isOrganizeProjectRequest(
         typeof teamEntry.capacityPercent === "number"
       );
     })
+  );
+}
+
+export function isTranslateRequest(value: unknown): value is TranslateRequest {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.text === "string" &&
+    candidate.text.trim().length > 0 &&
+    (candidate.targetLanguage === "English" ||
+      candidate.targetLanguage === "German") &&
+    (candidate.mode === "business-to-technical" ||
+      candidate.mode === "technical-to-business" ||
+      candidate.mode === "normalize")
+  );
+}
+
+export function isTranslateResponse(value: unknown): value is TranslateResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.sourceLanguageDetected === "string" &&
+    typeof candidate.translatedText === "string" &&
+    typeof candidate.conciseExplanation === "string"
   );
 }
 

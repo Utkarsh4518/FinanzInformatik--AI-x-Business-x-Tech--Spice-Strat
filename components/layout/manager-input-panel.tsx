@@ -20,6 +20,7 @@ type ManagerInputPanelProps = {
   teamMembers: TeamMember[];
   isOrganizing: boolean;
   onOrganizeProject: (input: OrganizeProjectRequest) => Promise<void>;
+  onRawInputChange: (value: string) => void;
 };
 
 const targetOutputLanguages: TargetOutputLanguage[] = [
@@ -42,7 +43,8 @@ export function ManagerInputPanel({
   project,
   teamMembers,
   isOrganizing,
-  onOrganizeProject
+  onOrganizeProject,
+  onRawInputChange
 }: ManagerInputPanelProps) {
   const [projectName, setProjectName] = useState(project.name);
   const [rawProjectInput, setRawProjectInput] = useState(project.managerBrief);
@@ -125,9 +127,12 @@ export function ManagerInputPanel({
               </span>
               <textarea
                 value={rawProjectInput}
-                onChange={(event) => setRawProjectInput(event.target.value)}
+                onChange={(event) => {
+                  setRawProjectInput(event.target.value);
+                  onRawInputChange(event.target.value);
+                }}
                 rows={7}
-                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-slate-400"
               />
             </label>
 
@@ -143,7 +148,7 @@ export function ManagerInputPanel({
                       event.target.value as TargetOutputLanguage
                     )
                   }
-                  className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+                  className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                 >
                   {targetOutputLanguages.map((language) => (
                     <option key={language} value={language}>
@@ -153,7 +158,7 @@ export function ManagerInputPanel({
                 </select>
               </label>
 
-              <label className="flex items-center justify-between rounded-xl border border-line bg-slate-50 px-4 py-3">
+              <label className="flex items-center justify-between rounded-xl border border-line bg-slate-50/90 px-4 py-3">
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     Include Repo Context
@@ -203,7 +208,7 @@ export function ManagerInputPanel({
         <button
           type="button"
           onClick={() => void handleBuildPayload()}
-          className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white"
+          className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
         >
           {isOrganizing ? "Organizing..." : "Organize with AI"}
         </button>

@@ -32,7 +32,7 @@ export function TicketTableToggle({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="rounded-full bg-ink px-3 py-2 text-sm font-medium text-white"
+            className="rounded-full bg-slate-900 px-3 py-2 text-sm font-medium text-white"
           >
             Board Active
           </button>
@@ -45,7 +45,7 @@ export function TicketTableToggle({
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-line">
-          <div className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] bg-slate-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] bg-slate-100/90 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <span>Ticket</span>
             <span>Summary</span>
             <span>Owner</span>
@@ -59,7 +59,7 @@ export function TicketTableToggle({
               onClick={() => onSelectTicket(ticket.id)}
               className={`grid w-full grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t px-4 py-3 text-left text-sm text-slate-600 transition ${
                 selectedTicketId === ticket.id
-                  ? "border-teal-200 bg-teal-50"
+                  ? "border-slate-300 bg-slate-50"
                   : "border-line bg-white hover:bg-slate-50"
               }`}
             >

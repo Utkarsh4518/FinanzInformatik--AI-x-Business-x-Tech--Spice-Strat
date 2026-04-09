@@ -19,7 +19,7 @@ const statusLabels: Record<TicketStatus, string> = {
 
 const priorityStyles: Record<Ticket["priority"], string> = {
   low: "bg-slate-100 text-slate-600",
-  medium: "bg-sky-50 text-sky-700",
+  medium: "bg-blue-50 text-blue-700",
   high: "bg-amber-50 text-amber-700",
   critical: "bg-rose-50 text-rose-700"
 };
@@ -44,7 +44,7 @@ export function KanbanBoardPanel({
           return (
             <div
               key={status}
-              className="rounded-2xl border border-line bg-slate-50 p-3"
+              className="rounded-2xl border border-line bg-slate-50/85 p-3"
             >
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-slate-700">
@@ -64,10 +64,10 @@ export function KanbanBoardPanel({
                       key={ticket.id}
                       type="button"
                       onClick={() => onSelectTicket(ticket.id)}
-                      className={`w-full rounded-xl border bg-white p-3 text-left text-sm text-slate-600 shadow-sm transition ${
+                      className={`w-full rounded-xl border bg-white/95 p-4 text-left text-sm text-slate-600 shadow-sm transition ${
                         selectedTicketId === ticket.id
-                          ? "border-teal-400 ring-2 ring-teal-100"
-                          : "border-line hover:border-teal-200"
+                          ? "border-slate-400 ring-2 ring-slate-200"
+                          : "border-line hover:border-slate-300"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">

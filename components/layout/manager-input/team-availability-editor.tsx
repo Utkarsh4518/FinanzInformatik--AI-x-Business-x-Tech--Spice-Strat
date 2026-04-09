@@ -26,7 +26,7 @@ export function TeamAvailabilityEditor({
   onCapacityChange
 }: TeamAvailabilityEditorProps) {
   return (
-    <div className="rounded-xl border border-line bg-white p-4">
+    <div className="rounded-xl border border-line bg-slate-50/70 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-medium text-slate-700">{member.name}</p>
@@ -54,7 +54,7 @@ export function TeamAvailabilityEditor({
                 event.target.value as AvailabilityStatus
               )
             }
-            className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+            className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
           >
             {availabilityOptions.map((option) => (
               <option key={option} value={option}>
@@ -82,7 +82,7 @@ export function TeamAvailabilityEditor({
             onChange={(event) =>
               onCapacityChange(member.memberId, Number(event.target.value))
             }
-            className="mt-3 h-2 w-full cursor-pointer accent-teal-700"
+            className="mt-3 h-2 w-full cursor-pointer accent-slate-800"
           />
         </label>
       </div>

@@ -77,7 +77,7 @@ export function TicketDetailPanel({
 
   if (!ticket) {
     return (
-      <div className="rounded-xl2 border border-line bg-panel p-5 shadow-panel">
+      <div className="rounded-xl2 border border-line bg-panel/95 p-5 shadow-panel">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           Ticket Detail
         </div>
@@ -91,10 +91,10 @@ export function TicketDetailPanel({
   const authorNameById = new Map(teamMembers.map((member) => [member.id, member.name]));
 
   return (
-    <div className="rounded-xl2 border border-line bg-panel p-5 shadow-panel">
+    <div className="rounded-xl2 border border-line bg-panel/95 p-5 shadow-panel">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Ticket Detail
           </div>
           <h3 className="mt-2 text-lg font-semibold text-ink">{ticket.title}</h3>
@@ -106,21 +106,21 @@ export function TicketDetailPanel({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-line px-3 py-1 text-sm text-slate-500"
+            className="rounded-full border border-line px-3 py-1 text-sm text-slate-500 shadow-sm"
         >
           Close
         </button>
       </div>
 
       <div className="mt-5 space-y-4">
-        <div className="rounded-2xl border border-line bg-slate-50 p-4">
+        <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Description
           </div>
           <p className="mt-2 text-sm leading-6 text-slate-600">{ticket.description}</p>
         </div>
 
-        <div className="rounded-2xl border border-line bg-slate-50 p-4">
+        <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Business Summary
           </div>
@@ -129,7 +129,7 @@ export function TicketDetailPanel({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-line bg-slate-50 p-4">
+        <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Technical Summary
           </div>
@@ -161,7 +161,7 @@ export function TicketDetailPanel({
                   blockerReason: ticket.blockerReason
                 })
               }
-              className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+              className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -185,7 +185,7 @@ export function TicketDetailPanel({
                 blockerReason: ticket.blockerReason
               })
             }
-            className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+            className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
           >
             {teamMembers.map((member) => (
               <option key={member.id} value={member.id}>
@@ -205,7 +205,7 @@ export function TicketDetailPanel({
             onBlur={() => void handleBlockerCommit()}
             rows={4}
             placeholder="No blocker currently recorded."
-            className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
+            className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-slate-400"
           />
         </label>
 
@@ -217,7 +217,7 @@ export function TicketDetailPanel({
           <div className="mt-3 space-y-2">
             {comments.length ? (
               comments.map((comment) => (
-                <div key={comment.id} className="rounded-xl border border-line bg-slate-50 p-3">
+                <div key={comment.id} className="rounded-xl border border-line bg-slate-50/90 p-3">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-medium text-slate-700">
                       {authorNameById.get(comment.authorId) ?? "Unknown"}
@@ -242,7 +242,7 @@ export function TicketDetailPanel({
               <select
                 value={authorId}
                 onChange={(event) => setAuthorId(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
               >
                 {teamMembers.map((member) => (
                   <option key={member.id} value={member.id}>
@@ -260,14 +260,14 @@ export function TicketDetailPanel({
                 value={commentMessage}
                 onChange={(event) => setCommentMessage(event.target.value)}
                 rows={3}
-                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-slate-400"
               />
             </label>
 
             <button
               type="button"
               onClick={() => void handleCommentSubmit()}
-              className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white"
+              className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
               Add Comment
             </button>
