@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-brand: Inter;
+  --color-primary: #d2091e;
+  --color-primary-dark: #ad0d1c;
+  --color-background: #f3f5f7;
+  --color-surface: #ffffff;
+  --color-muted-surface: #eef1f4;
+  --color-border: #cfd6de;
+  --color-text: #18202a;
+  --color-text-muted: #55616e;
+  --color-success: #277549;
+  --color-warning: #ae6d00;
+  --color-danger: #b61f2b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #f8f9fb 0%, var(--color-background) 100%);
+  color: var(--color-text);
+  font-family: var(--font-brand), Inter, "Source Sans 3", system-ui, Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+.bank-grid {
+  background-image:
+    linear-gradient(to right, rgba(207, 214, 222, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(207, 214, 222, 0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.surface-panel {
+  @apply rounded-bank border border-border bg-surface shadow-card;
+}
+
+.muted-panel {
+  @apply rounded-bank border border-border bg-muted-surface;
+}
+
+.page-title {
+  @apply text-2xl font-semibold tracking-tight text-text;
+}
+
+.section-title {
+  @apply text-sm font-semibold uppercase tracking-[0.18em] text-text-muted;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(85, 97, 110, 0.25);
+  border-radius: 999px;
+}

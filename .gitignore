@@ -1,0 +1,11 @@
+.next
+node_modules
+.env
+.env.local
+coverage
+playwright-report
+test-results
+dist
+*.tsbuildinfo
+public/uploads
+.specbridge-*.log
