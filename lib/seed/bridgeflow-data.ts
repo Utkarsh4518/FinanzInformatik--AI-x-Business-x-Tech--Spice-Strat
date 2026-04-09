@@ -1,11 +1,11 @@
 import type {
   Handover,
   Project,
-  RepoFileSummary,
   TeamMember,
   Ticket,
   TicketComment
 } from "@/lib/domain/models";
+import { curatedRepoFileSummaries } from "@/lib/repo-context";
 
 export const bridgeFlowProject: Project = {
   id: "project-loan-calc",
@@ -273,38 +273,7 @@ export const bridgeFlowHandover: Handover = {
   ]
 };
 
-export const bridgeFlowRepoFileSummaries: RepoFileSummary[] = [
-  {
-    id: "repo-401",
-    path: "app/page.tsx",
-    area: "App Shell",
-    summary: "Main composition entry for the demo workspace."
-  },
-  {
-    id: "repo-402",
-    path: "components/layout/manager-input-panel.tsx",
-    area: "Manager Intake",
-    summary: "Likely place for multilingual intake, notes cleanup, and scope confirmation."
-  },
-  {
-    id: "repo-403",
-    path: "components/layout/kanban-board-panel.tsx",
-    area: "Ticket Views",
-    summary: "Primary board shell where ticket grouping and status visibility will evolve."
-  },
-  {
-    id: "repo-404",
-    path: "components/layout/ai-insights-panel.tsx",
-    area: "AI Insights",
-    summary: "Natural placeholder for business summaries, technical translation, and handover output."
-  },
-  {
-    id: "repo-405",
-    path: "lib/seed/bridgeflow-data.ts",
-    area: "Shared Mock Data",
-    summary: "Central local source for project, ticket, comment, handover, and repo context."
-  }
-];
+export const bridgeFlowRepoFileSummaries = curatedRepoFileSummaries;
 
 export const bridgeFlowSeed = {
   project: bridgeFlowProject,

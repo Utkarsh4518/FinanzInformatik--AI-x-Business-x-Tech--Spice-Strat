@@ -13,10 +13,10 @@ import type {
   TicketComment,
   TicketUpdateInput
 } from "@/lib/domain/models";
+import { curatedRepoFileSummaries } from "@/lib/repo-context";
 import {
   bridgeFlowHandover,
   bridgeFlowProject,
-  bridgeFlowRepoFileSummaries,
   bridgeFlowTeamMembers,
   bridgeFlowTicketComments,
   bridgeFlowTickets
@@ -56,10 +56,7 @@ export async function getHandovers() {
 }
 
 export async function getRepoFileSummaries() {
-  return readJsonFile<RepoFileSummary[]>(
-    fileNames.repoFileSummaries,
-    bridgeFlowRepoFileSummaries
-  );
+  return curatedRepoFileSummaries satisfies RepoFileSummary[];
 }
 
 export async function replaceTickets(tickets: Ticket[]) {

@@ -87,6 +87,9 @@ export type RepoFileSummary = {
   path: string;
   area: string;
   summary: string;
+  importanceScore: number;
+  excerpt?: string;
+  tags?: string[];
 };
 
 export type TeamAvailabilityInput = {

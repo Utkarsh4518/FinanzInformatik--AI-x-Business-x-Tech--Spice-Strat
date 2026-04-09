@@ -311,6 +311,7 @@ export function AppShell() {
                   (comment) => comment.ticketId === selectedTicketId
                 )}
                 handovers={handovers}
+                repoFileSummaries={repoFileSummaries}
                 onClose={handleCloseTicketDetail}
                 onUpdate={handleUpdateTicket}
                 onCreateComment={handleCreateComment}

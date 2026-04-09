@@ -8,7 +8,7 @@
     "summary": "Gives managers a single agreed scope before delivery work expands.",
     "businessSummary": "Gives managers a single agreed scope before delivery work expands.",
     "technicalSummary": "Provides a stable reference for acceptance criteria, labels, and ticket boundaries.",
-    "status": "review",
+    "status": "done",
     "priority": "high",
     "type": "task",
     "assigneeId": "member-lukas",
@@ -28,7 +28,9 @@
     "priority": "critical",
     "type": "feature",
     "assigneeId": "member-lukas",
-    "dependencies": ["Finalize multilingual scope baseline"],
+    "dependencies": [
+      "Finalize multilingual scope baseline"
+    ],
     "blockerReason": ""
   },
   {
@@ -44,7 +46,9 @@
     "priority": "high",
     "type": "feature",
     "assigneeId": "member-maya",
-    "dependencies": ["Define acceptance criteria for loan term calculation"],
+    "dependencies": [
+      "Define acceptance criteria for loan term calculation"
+    ],
     "blockerReason": ""
   },
   {
@@ -60,7 +64,9 @@
     "priority": "medium",
     "type": "task",
     "assigneeId": "member-maya",
-    "dependencies": ["Update calculator UI for loan term output"],
+    "dependencies": [
+      "Update calculator UI for loan term output"
+    ],
     "blockerReason": ""
   },
   {
@@ -76,7 +82,9 @@
     "priority": "high",
     "type": "feature",
     "assigneeId": "member-ava",
-    "dependencies": ["Define acceptance criteria for loan term calculation"],
+    "dependencies": [
+      "Define acceptance criteria for loan term calculation"
+    ],
     "blockerReason": "Noah Garcia is unavailable, so backend confirmation is routed through fallback ownership."
   },
   {
@@ -107,11 +115,13 @@
     "summary": "Keeps managers informed without forcing them into technical detail.",
     "businessSummary": "Keeps managers informed without forcing them into technical detail.",
     "technicalSummary": "Summarizes workstream progress and dependencies into a concise stakeholder update.",
-    "status": "in_progress",
+    "status": "review",
     "priority": "medium",
     "type": "task",
     "assigneeId": "member-ava",
-    "dependencies": ["Define acceptance criteria for loan term calculation"],
+    "dependencies": [
+      "Define acceptance criteria for loan term calculation"
+    ],
     "blockerReason": ""
   },
   {
@@ -127,7 +137,9 @@
     "priority": "medium",
     "type": "research",
     "assigneeId": "member-ava",
-    "dependencies": ["Align backend contract for loan term calculation"],
+    "dependencies": [
+      "Align backend contract for loan term calculation"
+    ],
     "blockerReason": "Noah Garcia is unavailable, so backend confirmation is routed through fallback ownership."
   }
 ]

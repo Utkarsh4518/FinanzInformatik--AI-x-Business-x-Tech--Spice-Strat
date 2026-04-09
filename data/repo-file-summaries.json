@@ -1,32 +1,92 @@
 [
   {
     "id": "repo-401",
-    "path": "app/page.tsx",
-    "area": "App Shell",
-    "summary": "Main composition entry for the demo workspace."
+    "path": "components/layout/manager-input-panel.tsx",
+    "area": "Manager Intake",
+    "summary": "Collects messy multilingual manager notes, repo-context preferences, and team availability before work is organized.",
+    "importanceScore": 94,
+    "excerpt": "Likely entry point when a ticket changes the intake shape, manager wording, or multilingual requirement capture.",
+    "tags": ["intake", "multilingual", "manager", "scope"]
   },
   {
     "id": "repo-402",
-    "path": "components/layout/manager-input-panel.tsx",
-    "area": "Manager Intake",
-    "summary": "Likely place for multilingual intake, notes cleanup, and scope confirmation."
+    "path": "components/layout/kanban-board-panel.tsx",
+    "area": "Kanban Board",
+    "summary": "Primary execution board where ticket grouping, status visibility, and progress emphasis are shown.",
+    "importanceScore": 82,
+    "excerpt": "Any ticket that changes workflow visibility, status behavior, or board presentation will likely touch this panel.",
+    "tags": ["kanban", "status", "workflow", "board"]
   },
   {
     "id": "repo-403",
-    "path": "components/layout/kanban-board-panel.tsx",
-    "area": "Ticket Views",
-    "summary": "Primary board shell where ticket grouping and status visibility will evolve."
+    "path": "components/layout/ticket-table-toggle.tsx",
+    "area": "Ticket Table",
+    "summary": "Secondary ticket view that exposes the same work in a denser, analyst-friendly table format.",
+    "importanceScore": 76,
+    "excerpt": "Useful when a requirement affects business-readable ticket context, column visibility, or alternate review flows.",
+    "tags": ["table", "analyst", "ticket-list", "review"]
   },
   {
     "id": "repo-404",
-    "path": "components/layout/ai-insights-panel.tsx",
-    "area": "AI Insights",
-    "summary": "Natural placeholder for business summaries, technical translation, and handover output."
+    "path": "components/layout/ticket-detail-panel.tsx",
+    "area": "Ticket Detail",
+    "summary": "Expanded ticket workspace where status, assignee, blocker detail, comments, and role-aware context are edited.",
+    "importanceScore": 91,
+    "excerpt": "A likely impact surface whenever a ticket changes delivery detail, blocker management, or role-specific presentation.",
+    "tags": ["ticket-detail", "blockers", "assignee", "comments"]
   },
   {
     "id": "repo-405",
-    "path": "lib/seed/bridgeflow-data.ts",
-    "area": "Shared Mock Data",
-    "summary": "Central local source for project, ticket, comment, handover, and repo context."
+    "path": "components/layout/ticket-detail/ticket-handover-section.tsx",
+    "area": "Handover",
+    "summary": "Owns the reassignment-ready handover flow, suggested next owner, and saved ticket handover records.",
+    "importanceScore": 72,
+    "excerpt": "Relevant when a ticket involves continuity risk, unavailable teammates, or ownership transitions.",
+    "tags": ["handover", "continuity", "ownership", "reassignment"]
+  },
+  {
+    "id": "repo-406",
+    "path": "components/layout/ai-insights-panel.tsx",
+    "area": "AI Insights",
+    "summary": "Role-based insights container for manager summaries, translation, handovers, and progress context.",
+    "importanceScore": 79,
+    "excerpt": "Tickets that change how work is summarized or explained across manager, analyst, and developer views likely affect this file.",
+    "tags": ["insights", "role-based", "summary", "visibility"]
+  },
+  {
+    "id": "repo-407",
+    "path": "components/layout/ai-insights/translate-tab.tsx",
+    "area": "Translation",
+    "summary": "Perspective-switching translation flow for manager notes and ticket summaries across business and technical language.",
+    "importanceScore": 66,
+    "excerpt": "Good match when the ticket references multilingual notes, business-to-technical wording, or normalization.",
+    "tags": ["translation", "multilingual", "business", "technical"]
+  },
+  {
+    "id": "repo-408",
+    "path": "components/layout/ai-insights/progress-summary-section.tsx",
+    "area": "Progress Summary",
+    "summary": "Generates and renders role-aware progress summaries using live project, ticket, team, and comment state.",
+    "importanceScore": 68,
+    "excerpt": "Likely impacted when delivery status, manager reporting, or summary logic changes.",
+    "tags": ["progress", "summary", "manager", "delivery"]
+  },
+  {
+    "id": "repo-409",
+    "path": "lib/server/bridgeflow-repository.ts",
+    "area": "Local Persistence",
+    "summary": "Local JSON-backed repository for projects, team members, tickets, comments, handovers, and repo summaries.",
+    "importanceScore": 88,
+    "excerpt": "Core persistence layer whenever a feature changes ticket data shape, local records, or backend CRUD behavior.",
+    "tags": ["storage", "json", "backend", "crud"]
+  },
+  {
+    "id": "repo-410",
+    "path": "lib/domain/api.ts",
+    "area": "API Contracts",
+    "summary": "Shared request and response typing for organize, translate, progress summary, handover, and future AI flows.",
+    "importanceScore": 74,
+    "excerpt": "Useful when a ticket changes AI payload shape, validation, or shared frontend-backend contracts.",
+    "tags": ["types", "validation", "api", "contracts"]
   }
 ]

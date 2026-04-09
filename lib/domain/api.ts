@@ -78,6 +78,24 @@ export type GenerateHandoverResponse = {
   suggestedNextOwner: string;
 };
 
+export type RepoImpactRequest = {
+  selectedTicket?: Ticket;
+  requirement?: string;
+  repoFileSummaries: RepoFileSummary[];
+  currentRoleView?: AppRole;
+};
+
+export type RepoImpactRelevantFile = {
+  path: string;
+  reason: string;
+  confidenceScore: number;
+};
+
+export type RepoImpactResponse = {
+  relevantFiles: RepoImpactRelevantFile[];
+  overallImpactSummary: string;
+};
+
 export type SummarizeProgressRequest = {
   project: Project;
   tickets: Ticket[];
@@ -352,6 +370,49 @@ export function isGenerateHandoverRequest(
   );
 }
 
+export function isRepoImpactRequest(value: unknown): value is RepoImpactRequest {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const hasSelectedTicket =
+    !!candidate.selectedTicket &&
+    typeof candidate.selectedTicket === "object" &&
+    typeof (candidate.selectedTicket as Ticket).id === "string" &&
+    typeof (candidate.selectedTicket as Ticket).title === "string";
+  const hasRequirement =
+    typeof candidate.requirement === "string" && candidate.requirement.trim().length > 0;
+
+  return (
+    (hasSelectedTicket || hasRequirement) &&
+    Array.isArray(candidate.repoFileSummaries) &&
+    candidate.repoFileSummaries.every((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return false;
+      }
+
+      const candidateFile = entry as Record<string, unknown>;
+
+      return (
+        typeof candidateFile.path === "string" &&
+        typeof candidateFile.summary === "string" &&
+        typeof candidateFile.area === "string" &&
+        typeof candidateFile.importanceScore === "number" &&
+        (candidateFile.excerpt === undefined ||
+          typeof candidateFile.excerpt === "string") &&
+        (candidateFile.tags === undefined ||
+          (Array.isArray(candidateFile.tags) &&
+            candidateFile.tags.every((tag) => typeof tag === "string")))
+      );
+    }) &&
+    (candidate.currentRoleView === undefined ||
+      candidate.currentRoleView === "manager" ||
+      candidate.currentRoleView === "analyst" ||
+      candidate.currentRoleView === "developer")
+  );
+}
+
 export function isTranslateRequest(value: unknown): value is TranslateRequest {
   if (!value || typeof value !== "object") {
     return false;
@@ -477,6 +538,32 @@ export function isGenerateHandoverResponse(
     candidate.suggestedNextSteps.every((entry) => typeof entry === "string") &&
     typeof candidate.businessFacingSummary === "string" &&
     typeof candidate.suggestedNextOwner === "string"
+  );
+}
+
+export function isRepoImpactResponse(value: unknown): value is RepoImpactResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    Array.isArray(candidate.relevantFiles) &&
+    candidate.relevantFiles.every((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return false;
+      }
+
+      const candidateFile = entry as Record<string, unknown>;
+
+      return (
+        typeof candidateFile.path === "string" &&
+        typeof candidateFile.reason === "string" &&
+        typeof candidateFile.confidenceScore === "number"
+      );
+    }) &&
+    typeof candidate.overallImpactSummary === "string"
   );
 }
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { TicketHandoverSection } from "@/components/layout/ticket-detail/ticket-handover-section";
+import { TicketRepoImpactSection } from "@/components/layout/ticket-detail/ticket-repo-impact-section";
 import type {
   CreateHandoverRequest,
   CreateTicketCommentRequest
@@ -10,6 +11,7 @@ import type {
 import type {
   AppRole,
   Handover,
+  RepoFileSummary,
   TeamMember,
   Ticket,
   TicketComment,
@@ -25,6 +27,7 @@ type TicketDetailPanelProps = {
   teamMembers: TeamMember[];
   comments: TicketComment[];
   handovers: Handover[];
+  repoFileSummaries: RepoFileSummary[];
   onClose: () => void;
   onUpdate: (ticketId: string, updates: TicketUpdateInput) => Promise<void>;
   onCreateComment: (
@@ -49,6 +52,7 @@ export function TicketDetailPanel({
   teamMembers,
   comments,
   handovers,
+  repoFileSummaries,
   onClose,
   onUpdate,
   onCreateComment,
@@ -314,6 +318,12 @@ export function TicketDetailPanel({
           comments={comments}
           handovers={handovers}
           onSaveHandover={onSaveHandover}
+        />
+
+        <TicketRepoImpactSection
+          currentRole={currentRole}
+          ticket={ticket}
+          repoFileSummaries={repoFileSummaries}
         />
 
         <div className="rounded-2xl border border-line bg-white p-4">
