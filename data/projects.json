@@ -8,7 +8,10 @@
     "businessSummary": "The manager needs one coordinated view of scope, progress, and risks while the team extends the loan calculator with loan term calculation.",
     "technicalSummary": "Work will likely touch input validation, calculation rules, form copy, API handling, and regression coverage for both monthly payment and loan term scenarios.",
     "managerSummary": "The current plan is split into business clarification, frontend updates, backend rule support, QA coverage, and a handover path for one unavailable teammate.",
-    "languages": ["English", "German"],
+    "languages": [
+      "English",
+      "German"
+    ],
     "primaryView": "kanban",
     "secondaryView": "table"
   }

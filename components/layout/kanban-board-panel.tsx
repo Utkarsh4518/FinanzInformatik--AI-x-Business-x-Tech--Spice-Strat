@@ -19,7 +19,7 @@ const statusLabels: Record<TicketStatus, string> = {
 
 const priorityStyles: Record<Ticket["priority"], string> = {
   low: "bg-slate-100 text-slate-600",
-  medium: "bg-blue-50 text-blue-700",
+  medium: "bg-accentSoft text-accent",
   high: "bg-amber-50 text-amber-700",
   critical: "bg-rose-50 text-rose-700"
 };
@@ -42,10 +42,7 @@ export function KanbanBoardPanel({
           const columnTickets = tickets.filter((ticket) => ticket.status === status);
 
           return (
-            <div
-              key={status}
-              className="rounded-2xl border border-line bg-slate-50/85 p-3"
-            >
+            <div key={status} className="rounded-2xl border border-line bg-panelSoft p-3">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-slate-700">
                   {statusLabels[status]}
@@ -56,46 +53,52 @@ export function KanbanBoardPanel({
               </div>
 
               <div className="space-y-3">
-                {columnTickets.map((ticket) => {
-                  const assignee = memberById.get(ticket.assigneeId);
+                {columnTickets.length ? (
+                  columnTickets.map((ticket) => {
+                    const assignee = memberById.get(ticket.assigneeId);
 
-                  return (
-                    <button
-                      key={ticket.id}
-                      type="button"
-                      onClick={() => onSelectTicket(ticket.id)}
-                      className={`w-full rounded-xl border bg-white/95 p-4 text-left text-sm text-slate-600 shadow-sm transition ${
-                        selectedTicketId === ticket.id
-                          ? "border-slate-400 ring-2 ring-slate-200"
-                          : "border-line hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-slate-700">{ticket.title}</p>
-                          <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
-                            {ticket.code}
-                          </p>
+                    return (
+                      <button
+                        key={ticket.id}
+                        type="button"
+                        onClick={() => onSelectTicket(ticket.id)}
+                        className={`w-full rounded-xl border bg-white p-4 text-left text-sm text-slate-600 shadow-panelSoft transition ${
+                          selectedTicketId === ticket.id
+                            ? "border-accent ring-2 ring-accent/10"
+                            : "border-line hover:border-slate-300 hover:shadow-sm"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium text-slate-700">{ticket.title}</p>
+                            <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+                              {ticket.code}
+                            </p>
+                          </div>
+                          <span
+                            className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${priorityStyles[ticket.priority]}`}
+                          >
+                            {ticket.priority}
+                          </span>
                         </div>
-                        <span
-                          className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${priorityStyles[ticket.priority]}`}
-                        >
-                          {ticket.priority}
-                        </span>
-                      </div>
-                      <p className="mt-3 leading-6 text-slate-500">{ticket.summary}</p>
-                      {ticket.blockerReason ? (
-                        <div className="mt-3 rounded-lg bg-rose-50 px-2 py-2 text-xs text-rose-700">
-                          Blocked: {ticket.blockerReason}
+                        <p className="mt-3 leading-6 text-slate-500">{ticket.summary}</p>
+                        {ticket.blockerReason ? (
+                          <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                            Blocked: {ticket.blockerReason}
+                          </div>
+                        ) : null}
+                        <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                          <span className="capitalize">{ticket.type}</span>
+                          <span>{assignee?.name ?? "Unassigned"}</span>
                         </div>
-                      ) : null}
-                      <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                        <span className="capitalize">{ticket.type}</span>
-                        <span>{assignee?.name ?? "Unassigned"}</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="rounded-xl border border-dashed border-line bg-white px-3 py-6 text-center text-sm text-slate-400">
+                    No tickets in this stage.
+                  </div>
+                )}
               </div>
             </div>
           );

@@ -165,7 +165,7 @@ export function TranslateTab({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-line bg-white/95 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -179,7 +179,7 @@ export function TranslateTab({
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+          <div className="rounded-xl border border-line bg-panelSoft p-3">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Recommended Source
             </div>
@@ -187,7 +187,7 @@ export function TranslateTab({
               {sourceLabels[resolvePreferredSource(rolePreset.recommendedSource, availableSources)]}
             </p>
           </div>
-          <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+          <div className="rounded-xl border border-line bg-panelSoft p-3">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Recommended Mode
             </div>
@@ -196,7 +196,7 @@ export function TranslateTab({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-line bg-white/95 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           Translate Source
         </div>
@@ -263,7 +263,7 @@ export function TranslateTab({
             </label>
           </div>
 
-          <div className="rounded-xl border border-line bg-slate-50/90 p-4">
+          <div className="rounded-xl border border-line bg-panelSoft p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Selected Text Preview
@@ -288,10 +288,11 @@ export function TranslateTab({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => void handleTranslate()}
-            className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+            <button
+              type="button"
+              onClick={() => void handleTranslate()}
+            disabled={!selectedSourceText.trim() || isTranslating}
+            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#203f5f]"
           >
             {isTranslating ? "Translating..." : "Translate"}
           </button>
@@ -300,12 +301,12 @@ export function TranslateTab({
 
       {error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {error}
+          {error} The existing ticket and summary data remain available while you retry.
         </div>
       ) : null}
 
       {result ? (
-        <div className="rounded-2xl border border-line bg-white/95 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+        <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
           <div className="flex items-center justify-between gap-3">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Translation Result
@@ -315,7 +316,7 @@ export function TranslateTab({
             </span>
           </div>
 
-          <div className="mt-4 rounded-xl border border-line bg-slate-50/90 p-4">
+          <div className="mt-4 rounded-xl border border-line bg-panelSoft p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Translated Text
             </div>
@@ -324,7 +325,7 @@ export function TranslateTab({
             </p>
           </div>
 
-          <div className="mt-4 rounded-xl border border-line bg-slate-50/90 p-4">
+          <div className="mt-4 rounded-xl border border-line bg-panelSoft p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Explanation
             </div>
@@ -332,6 +333,10 @@ export function TranslateTab({
               {result.conciseExplanation}
             </p>
           </div>
+        </div>
+      ) : !error ? (
+        <div className="rounded-2xl border border-dashed border-line bg-panelSoft px-4 py-4 text-sm text-slate-500">
+          Translation results will appear here. The app will keep working even if the AI route falls back or the request needs to be retried.
         </div>
       ) : null}
     </div>

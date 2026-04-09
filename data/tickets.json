@@ -1,13 +1,13 @@
 [
   {
-    "id": "ticket-ai-1",
+    "id": "ticket-101",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-01",
-    "title": "Finalize multilingual scope baseline",
-    "description": "Consolidate the mixed English and German notes into one approved scope baseline for the loan term calculation extension.",
-    "summary": "Gives managers a single agreed scope before delivery work expands.",
-    "businessSummary": "Gives managers a single agreed scope before delivery work expands.",
-    "technicalSummary": "Provides a stable reference for acceptance criteria, labels, and ticket boundaries.",
+    "code": "BF-101",
+    "title": "Normalize multilingual manager notes",
+    "description": "Clean up the original English and German manager notes so the team works from a single consistent scope statement for the loan calculator extension.",
+    "summary": "Convert rough English and German intake into a shared scope baseline.",
+    "businessSummary": "Creates a stable project brief that managers and analysts can align on before execution.",
+    "technicalSummary": "Establishes terminology and scope boundaries that downstream UI, backend, and QA tickets can reference consistently.",
     "status": "done",
     "priority": "high",
     "type": "task",
@@ -16,130 +16,130 @@
     "blockerReason": ""
   },
   {
-    "id": "ticket-ai-2",
+    "id": "ticket-102",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-02",
-    "title": "Define acceptance criteria for loan term calculation",
-    "description": "Turn the manager request into explicit rules for direct and reverse loan term calculation scenarios.",
-    "summary": "Clarifies what the manager expects to see in the demo output.",
-    "businessSummary": "Clarifies what the manager expects to see in the demo output.",
-    "technicalSummary": "Locks the input combinations, validation rules, and result expectations needed for implementation.",
-    "status": "in_progress",
+    "code": "BF-102",
+    "title": "Define loan term calculation acceptance criteria",
+    "description": "Translate the manager request into explicit business rules for calculating loan term from payment, amount, and rate inputs.",
+    "summary": "Document business rules for calculating loan term from payment inputs.",
+    "businessSummary": "Clarifies what the manager expects the extended calculator to do and what outputs matter for review.",
+    "technicalSummary": "Specifies the input combinations, validation boundaries, and result expectations needed before implementation starts.",
+    "status": "review",
     "priority": "critical",
     "type": "feature",
     "assigneeId": "member-lukas",
     "dependencies": [
-      "Finalize multilingual scope baseline"
+      "Normalize multilingual manager notes"
     ],
-    "blockerReason": ""
+    "blockerReason": "Waiting for final confirmation on unsupported payment combinations."
   },
   {
-    "id": "ticket-ai-3",
+    "id": "ticket-103",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-03",
-    "title": "Update calculator UI for loan term output",
-    "description": "Extend the current calculator flow so the interface supports loan term calculation alongside existing scenarios.",
-    "summary": "Introduces the visible product change the manager wants to demo.",
-    "businessSummary": "Introduces the visible product change the manager wants to demo.",
-    "technicalSummary": "Requires new input states, conditional rendering, and manager-friendly copy updates.",
+    "code": "BF-103",
+    "title": "Add loan term fields to calculator UI",
+    "description": "Update the frontend calculator flow so users can request loan term output alongside the existing payment scenarios.",
+    "summary": "Extend the calculator form so users can request loan term output.",
+    "businessSummary": "Adds the visible product change the manager needs for the demo scenario.",
+    "technicalSummary": "Requires new input states, view logic, and consistent labeling for the extended calculator flow.",
     "status": "in_progress",
     "priority": "high",
     "type": "feature",
     "assigneeId": "member-maya",
     "dependencies": [
-      "Define acceptance criteria for loan term calculation"
+      "Define loan term calculation acceptance criteria"
     ],
     "blockerReason": ""
   },
   {
-    "id": "ticket-ai-4",
+    "id": "ticket-104",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-04",
-    "title": "Refine validation and bilingual empty states",
-    "description": "Improve validation messaging so incorrect or incomplete calculator input remains understandable in the demo.",
-    "summary": "Protects the manager-facing experience from confusing edge cases.",
-    "businessSummary": "Protects the manager-facing experience from confusing edge cases.",
-    "technicalSummary": "Touches field validation, fallback states, and copy consistency for both language contexts.",
+    "code": "BF-104",
+    "title": "Adjust validation and empty states",
+    "description": "Refine validation copy and edge-state handling so the calculator remains understandable when inputs are incomplete or invalid.",
+    "summary": "Handle invalid values, missing fields, and dual-language validation copy.",
+    "businessSummary": "Protects demo quality by keeping the experience clear for business stakeholders.",
+    "technicalSummary": "Touches frontend validation rules, inline messaging, and error-state coverage for both languages.",
     "status": "backlog",
     "priority": "medium",
     "type": "task",
     "assigneeId": "member-maya",
     "dependencies": [
-      "Update calculator UI for loan term output"
+      "Add loan term fields to calculator UI"
     ],
     "blockerReason": ""
   },
   {
-    "id": "ticket-ai-5",
+    "id": "ticket-105",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-05",
-    "title": "Align backend contract for loan term calculation",
-    "description": "Clarify payload shape, ownership, and response handling for the calculation contract before implementation continues.",
-    "summary": "Keeps the delivery plan realistic even with temporary backend capacity pressure.",
-    "businessSummary": "Keeps the delivery plan realistic even with temporary backend capacity pressure.",
-    "technicalSummary": "Defines request fields, response structure, and fallback ownership while backend availability is limited.",
+    "code": "BF-105",
+    "title": "Support backend calculation contract",
+    "description": "Define how the calculator should send and receive data for loan term calculation without breaking the current flow.",
+    "summary": "Align payload shape and result handling for loan term calculation.",
+    "businessSummary": "Keeps the demo story credible by showing that frontend and backend work are aligned.",
+    "technicalSummary": "Needs contract agreement for request shape, field validation, and response handling for calculated term results.",
     "status": "backlog",
     "priority": "high",
     "type": "feature",
-    "assigneeId": "member-ava",
+    "assigneeId": "member-noah",
     "dependencies": [
-      "Define acceptance criteria for loan term calculation"
+      "Define loan term calculation acceptance criteria"
     ],
-    "blockerReason": "Noah Garcia is unavailable, so backend confirmation is routed through fallback ownership."
+    "blockerReason": "Backend owner is unavailable and the endpoint shape is still undecided."
   },
   {
-    "id": "ticket-ai-6",
+    "id": "ticket-106",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-06",
-    "title": "Prepare QA coverage for loan term scenarios",
-    "description": "Document and execute QA coverage for positive, negative, and edge-case loan term paths.",
-    "summary": "Improves manager confidence that the demo is stable and review-ready.",
-    "businessSummary": "Improves manager confidence that the demo is stable and review-ready.",
-    "technicalSummary": "Covers regression, rounding behavior, and mixed-language validation cases.",
-    "status": "backlog",
+    "code": "BF-106",
+    "title": "Cover loan term regression paths",
+    "description": "Prepare QA coverage for the extended calculator so both happy paths and edge cases are represented in the demo.",
+    "summary": "Prepare QA cases for positive, negative, and boundary calculator flows.",
+    "businessSummary": "Reduces demo risk and gives the manager confidence that the change is being validated.",
+    "technicalSummary": "Includes test cases for rounding, thresholds, translations, and compatibility with current calculator behavior.",
+    "status": "in_progress",
     "priority": "high",
     "type": "task",
     "assigneeId": "member-zoe",
     "dependencies": [
-      "Update calculator UI for loan term output",
-      "Refine validation and bilingual empty states"
+      "Add loan term fields to calculator UI",
+      "Adjust validation and empty states"
     ],
-    "blockerReason": "Waiting on: Update calculator UI for loan term output, Refine validation and bilingual empty states"
+    "blockerReason": ""
   },
   {
-    "id": "ticket-ai-7",
+    "id": "ticket-107",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-07",
+    "code": "BF-107",
     "title": "Draft manager progress summary",
-    "description": "Create a business-friendly progress summary that explains the scope, current status, and key decisions.",
-    "summary": "Keeps managers informed without forcing them into technical detail.",
-    "businessSummary": "Keeps managers informed without forcing them into technical detail.",
-    "technicalSummary": "Summarizes workstream progress and dependencies into a concise stakeholder update.",
+    "description": "Prepare a concise manager-facing summary that explains the current state of the work in business language.",
+    "summary": "Explain implementation progress in business-friendly language for demo review.",
+    "businessSummary": "Provides a leadership-friendly update on scope, status, and next decisions.",
+    "technicalSummary": "Synthesizes ticket progress into a concise summary without exposing low-level implementation noise.",
     "status": "review",
     "priority": "medium",
     "type": "task",
     "assigneeId": "member-ava",
     "dependencies": [
-      "Define acceptance criteria for loan term calculation"
+      "Define loan term calculation acceptance criteria"
     ],
     "blockerReason": ""
   },
   {
-    "id": "ticket-ai-8",
+    "id": "ticket-108",
     "projectId": "project-loan-calc",
-    "code": "BF-AI-08",
-    "title": "Capture backend handover path",
-    "description": "Prepare a fallback handover path so the team can continue if the unavailable backend teammate cannot rejoin in time.",
-    "summary": "Reduces single-owner risk in the hackathon demo plan.",
-    "businessSummary": "Reduces single-owner risk in the hackathon demo plan.",
-    "technicalSummary": "Packages ownership notes, open questions, and next steps for temporary reassignment.",
-    "status": "backlog",
+    "code": "BF-108",
+    "title": "Prepare backend handover pack",
+    "description": "Capture backend status, open questions, and next steps so work can continue while one teammate is unavailable.",
+    "summary": "Capture open decisions and next steps while the backend owner is unavailable.",
+    "businessSummary": "Maintains continuity for the manager when a key contributor is unavailable.",
+    "technicalSummary": "Packages current contract assumptions, blockers, and next actions so another owner can step in quickly.",
+    "status": "done",
     "priority": "medium",
     "type": "research",
     "assigneeId": "member-ava",
     "dependencies": [
-      "Align backend contract for loan term calculation"
+      "Support backend calculation contract"
     ],
-    "blockerReason": "Noah Garcia is unavailable, so backend confirmation is routed through fallback ownership."
+    "blockerReason": ""
   }
 ]

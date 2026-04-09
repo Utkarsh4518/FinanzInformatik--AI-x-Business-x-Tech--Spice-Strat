@@ -1,40 +1,5 @@
 [
   {
-    "id": "handover-d483ec55-f557-433a-a12b-3af926d548b7",
-    "projectId": "project-loan-calc",
-    "unavailableMemberId": "member-lukas",
-    "fallbackOwnerId": "member-zoe",
-    "summary": "Finalize multilingual scope baseline is partially advanced and needs a clean ownership handoff so progress does not stall while Lukas Weber is unavailable or switching focus.",
-    "openTicketIds": [
-      "ticket-ai-1"
-    ],
-    "blockers": [
-      "No explicit blocker is recorded.",
-      "Confirm whether the current implementation path is still the preferred route.",
-      "Can Zoe Schmidt take over without delaying the current review window?"
-    ]
-  },
-  {
-    "id": "handover-b98eedba-d380-4d24-8a96-2607f3c83fb3",
-    "projectId": "project-loan-calc",
-    "unavailableMemberId": "member-lukas",
-    "fallbackOwnerId": "member-ava",
-    "summary": "Save a fresh handover snapshot for the current blocked and open work.",
-    "openTicketIds": [
-      "ticket-101",
-      "ticket-102",
-      "ticket-103",
-      "ticket-104",
-      "ticket-105",
-      "ticket-106",
-      "ticket-107"
-    ],
-    "blockers": [
-      "Waiting for final confirmation on unsupported payment combinations.",
-      "Backend owner is unavailable and the endpoint shape is still undecided."
-    ]
-  },
-  {
     "id": "handover-301",
     "projectId": "project-loan-calc",
     "unavailableMemberId": "member-noah",

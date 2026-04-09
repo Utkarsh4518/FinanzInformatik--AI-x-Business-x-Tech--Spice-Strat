@@ -114,11 +114,13 @@ export function ProgressSummarySection({
 
   if (!summary && isLoading) {
     return (
-      <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+      <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
           Progress Summary
         </div>
-        <p className="mt-3 text-sm text-slate-500">Generating the latest delivery summary...</p>
+        <p className="mt-3 text-sm text-slate-500">
+          Generating the latest delivery summary for the current role view.
+        </p>
       </div>
     );
   }
@@ -126,7 +128,14 @@ export function ProgressSummarySection({
   if (!summary) {
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50/90 p-5 text-sm text-rose-700">
-        {error ?? "Progress summary is not available."}
+        <p>{error ?? "Progress summary is not available."}</p>
+        <button
+          type="button"
+          onClick={() => void loadSummary()}
+          className="mt-3 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-medium text-rose-700"
+        >
+          Retry Summary
+        </button>
       </div>
     );
   }

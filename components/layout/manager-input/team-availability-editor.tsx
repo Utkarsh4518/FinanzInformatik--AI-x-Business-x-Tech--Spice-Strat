@@ -26,7 +26,7 @@ export function TeamAvailabilityEditor({
   onCapacityChange
 }: TeamAvailabilityEditorProps) {
   return (
-    <div className="rounded-xl border border-line bg-slate-50/70 p-4">
+    <div className="rounded-xl border border-line bg-panelSoft p-4 shadow-panelSoft">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-medium text-slate-700">{member.name}</p>

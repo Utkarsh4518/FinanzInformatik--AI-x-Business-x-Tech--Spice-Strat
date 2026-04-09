@@ -26,50 +26,50 @@ export function TicketTableToggle({
   return (
     <ShellPanel
       title="Ticket Table View"
-      description="Secondary view placeholder for teams that prefer a compact list."
+      description="Compact review view for the same tickets shown on the board."
     >
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className="rounded-full bg-slate-900 px-3 py-2 text-sm font-medium text-white"
-          >
-            Board Active
-          </button>
-          <button
-            type="button"
-            className="rounded-full border border-line bg-white px-3 py-2 text-sm text-slate-600"
-          >
-            Table Synced
-          </button>
+          <span className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600">
+            Synced with kanban board
+          </span>
+          <span className="rounded-full border border-line bg-white px-3 py-2 text-xs font-medium text-slate-600">
+            Click a row to open detail
+          </span>
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-line">
-          <div className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] bg-slate-100/90 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] bg-panelSoft px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <span>Ticket</span>
             <span>Summary</span>
             <span>Owner</span>
             <span>Priority</span>
             <span>Status</span>
           </div>
-          {tickets.map((ticket) => (
-            <button
-              key={ticket.id}
-              type="button"
-              onClick={() => onSelectTicket(ticket.id)}
-              className={`grid w-full grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t px-4 py-3 text-left text-sm text-slate-600 transition ${
-                selectedTicketId === ticket.id
-                  ? "border-slate-300 bg-slate-50"
-                  : "border-line bg-white hover:bg-slate-50"
-              }`}
-            >
-              <span className="font-medium text-slate-700">{ticket.code}</span>
-              <span>{ticket.title}</span>
-              <span>{memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}</span>
-              <span className="capitalize">{ticket.priority}</span>
-              <span>{statusLabels[ticket.status]}</span>
-            </button>
-          ))}
+          {tickets.length ? (
+            tickets.map((ticket) => (
+              <button
+                key={ticket.id}
+                type="button"
+                onClick={() => onSelectTicket(ticket.id)}
+                className={`grid w-full grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t px-4 py-3 text-left text-sm text-slate-600 transition ${
+                  selectedTicketId === ticket.id
+                    ? "border-accent/30 bg-accentSoft/60"
+                    : "border-line bg-white hover:bg-panelSoft"
+                }`}
+              >
+                <span className="font-medium text-slate-700">{ticket.code}</span>
+                <span>{ticket.title}</span>
+                <span>{memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}</span>
+                <span className="capitalize">{ticket.priority}</span>
+                <span>{statusLabels[ticket.status]}</span>
+              </button>
+            ))
+          ) : (
+            <div className="bg-white px-4 py-8 text-center text-sm text-slate-500">
+              No tickets are available yet. Run the intake organizer or reset the demo scenario.
+            </div>
+          )}
         </div>
       </div>
     </ShellPanel>

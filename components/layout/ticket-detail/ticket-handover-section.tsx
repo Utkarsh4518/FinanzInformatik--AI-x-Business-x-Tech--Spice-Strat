@@ -242,7 +242,7 @@ export function TicketHandoverSection({
     );
 
   return (
-    <div className="rounded-2xl border border-line bg-white p-4">
+    <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -256,7 +256,8 @@ export function TicketHandoverSection({
         <button
           type="button"
           onClick={() => void handleGenerate()}
-          className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+          disabled={isGenerating}
+          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#203f5f]"
         >
           {isGenerating ? "Generating..." : "Generate Handover"}
         </button>
@@ -298,7 +299,7 @@ export function TicketHandoverSection({
 
       {error ? (
         <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {error}
+          {error} Existing ticket details and saved handovers remain available.
         </div>
       ) : null}
 
@@ -320,11 +321,16 @@ export function TicketHandoverSection({
             <button
               type="button"
               onClick={() => void handleSave()}
-              className="flex-1 rounded-xl border border-line bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              disabled={isSaving}
+              className="flex-1 rounded-xl border border-line bg-white px-4 py-3 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-slate-50"
             >
               {isSaving ? "Saving..." : "Save Handover Record"}
             </button>
           </div>
+        </div>
+      ) : !error ? (
+        <div className="mt-4 rounded-xl border border-dashed border-line bg-panelSoft p-4 text-sm text-slate-500">
+          Generate a handover to prepare a safe reassignment summary for this ticket. Saved records for the same ticket will remain visible below.
         </div>
       ) : null}
 

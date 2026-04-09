@@ -16,7 +16,7 @@ export function RoleSwitcher({
   onRoleChange
 }: RoleSwitcherProps) {
   return (
-    <div className="flex items-center gap-2 rounded-full border border-line bg-white p-1 shadow-sm">
+    <div className="flex items-center gap-1 rounded-full border border-line bg-panelSoft p-1 shadow-panelSoft">
       {roleOptions.map((role) => (
         <button
           key={role.id}
@@ -24,8 +24,8 @@ export function RoleSwitcher({
           onClick={() => onRoleChange(role.id)}
           className={`rounded-full px-3 py-2 text-sm font-medium transition ${
             currentRole === role.id
-              ? "bg-slate-900 text-white"
-              : "text-slate-500 hover:bg-slate-50"
+              ? "bg-accent text-white shadow-sm"
+              : "text-slate-600 hover:bg-white"
           }`}
         >
           {role.label}

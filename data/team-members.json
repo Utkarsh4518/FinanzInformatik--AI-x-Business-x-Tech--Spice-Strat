@@ -6,7 +6,9 @@
     "availabilityStatus": "available",
     "capacityPercent": 70,
     "focus": "Own demo narrative, scope decisions, and stakeholder alignment.",
-    "languages": ["English"]
+    "languages": [
+      "English"
+    ]
   },
   {
     "id": "member-lukas",
@@ -15,7 +17,10 @@
     "availabilityStatus": "available",
     "capacityPercent": 85,
     "focus": "Translate mixed-language requirements into clean acceptance criteria.",
-    "languages": ["German", "English"]
+    "languages": [
+      "German",
+      "English"
+    ]
   },
   {
     "id": "member-maya",
@@ -24,7 +29,9 @@
     "availabilityStatus": "busy",
     "capacityPercent": 65,
     "focus": "Update calculator inputs, board views, and manager-facing status flows.",
-    "languages": ["English"]
+    "languages": [
+      "English"
+    ]
   },
   {
     "id": "member-noah",
@@ -33,7 +40,10 @@
     "availabilityStatus": "unavailable",
     "capacityPercent": 0,
     "focus": "Support calculation rules and local integration contracts when available.",
-    "languages": ["English", "Spanish"]
+    "languages": [
+      "English",
+      "Spanish"
+    ]
   },
   {
     "id": "member-zoe",
@@ -42,6 +52,9 @@
     "availabilityStatus": "available",
     "capacityPercent": 75,
     "focus": "Cover calculator edge cases, translations, and demo reliability.",
-    "languages": ["German", "English"]
+    "languages": [
+      "German",
+      "English"
+    ]
   }
 ]

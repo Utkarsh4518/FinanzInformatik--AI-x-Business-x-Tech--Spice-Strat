@@ -162,3 +162,13 @@ export async function createHandover(
   await writeJsonFile(fileNames.handovers, nextHandovers);
   return handover;
 }
+
+export async function resetDemoWorkspace() {
+  await Promise.all([
+    writeJsonFile(fileNames.projects, [bridgeFlowProject]),
+    writeJsonFile(fileNames.teamMembers, bridgeFlowTeamMembers),
+    writeJsonFile(fileNames.tickets, bridgeFlowTickets),
+    writeJsonFile(fileNames.ticketComments, bridgeFlowTicketComments),
+    writeJsonFile(fileNames.handovers, [bridgeFlowHandover])
+  ]);
+}

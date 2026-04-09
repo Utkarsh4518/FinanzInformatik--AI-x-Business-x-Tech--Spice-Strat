@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { IntakePayloadPreview } from "@/components/layout/manager-input/intake-payload-preview";
 import { TeamAvailabilityEditor } from "@/components/layout/manager-input/team-availability-editor";
@@ -58,6 +58,25 @@ export function ManagerInputPanel({
     null
   );
 
+  useEffect(() => {
+    setProjectName(project.name);
+    setRawProjectInput(project.managerBrief);
+    setTargetOutputLanguage("Bilingual");
+    setIncludeRepoContext(true);
+    setEditableTeam(buildInitialTeamAvailability(teamMembers));
+    setPayloadPreview(null);
+  }, [project.id, project.managerBrief, project.name, teamMembers]);
+
+  function restoreSeededIntake() {
+    setProjectName(project.name);
+    setRawProjectInput(project.managerBrief);
+    setTargetOutputLanguage("Bilingual");
+    setIncludeRepoContext(true);
+    setEditableTeam(buildInitialTeamAvailability(teamMembers));
+    setPayloadPreview(null);
+    onRawInputChange(project.managerBrief);
+  }
+
   function handleAvailabilityChange(
     memberId: string,
     availabilityStatus: AvailabilityStatus
@@ -103,9 +122,18 @@ export function ManagerInputPanel({
       description="Entry point for project notes, assumptions, and business context."
     >
       <div className="space-y-4">
-        <div className="rounded-2xl border border-line bg-white p-4">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Intake Form
+        <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+              Intake Form
+            </div>
+            <button
+              type="button"
+              onClick={restoreSeededIntake}
+              className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white"
+            >
+              Restore Demo Brief
+            </button>
           </div>
 
           <div className="mt-4 space-y-4">
@@ -113,13 +141,13 @@ export function ManagerInputPanel({
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Project Name
               </span>
-              <input
-                type="text"
-                value={projectName}
-                onChange={(event) => setProjectName(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-400"
-              />
-            </label>
+                <input
+                  type="text"
+                  value={projectName}
+                  onChange={(event) => setProjectName(event.target.value)}
+                  className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
+                />
+              </label>
 
             <label className="block">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -158,7 +186,7 @@ export function ManagerInputPanel({
                 </select>
               </label>
 
-              <label className="flex items-center justify-between rounded-xl border border-line bg-slate-50/90 px-4 py-3">
+              <label className="flex items-center justify-between rounded-xl border border-line bg-panelSoft px-4 py-3">
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     Include Repo Context
@@ -171,14 +199,14 @@ export function ManagerInputPanel({
                   type="checkbox"
                   checked={includeRepoContext}
                   onChange={(event) => setIncludeRepoContext(event.target.checked)}
-                  className="h-4 w-4 rounded border-line accent-teal-700"
+                  className="h-4 w-4 rounded border-line accent-accent"
                 />
               </label>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-line bg-white p-4">
+        <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -205,13 +233,19 @@ export function ManagerInputPanel({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => void handleBuildPayload()}
-          className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
-        >
-          {isOrganizing ? "Organizing..." : "Organize with AI"}
-        </button>
+        <div className="space-y-3">
+          <div className="rounded-xl border border-line bg-panelSoft px-4 py-3 text-sm text-slate-600">
+            The organizer uses the current intake state and falls back safely if the AI route is unavailable.
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleBuildPayload()}
+            disabled={isOrganizing}
+            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#203f5f]"
+          >
+            {isOrganizing ? "Organizing intake..." : "Organize with AI"}
+          </button>
+        </div>
 
         <IntakePayloadPreview payload={payloadPreview} />
       </div>
