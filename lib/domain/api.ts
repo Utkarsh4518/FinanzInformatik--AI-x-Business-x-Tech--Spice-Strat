@@ -2,10 +2,14 @@ import type {
   Handover,
   Project,
   RepoFileSummary,
+  TargetOutputLanguage,
   TeamMember,
+  TeamAvailabilityInput,
   Ticket,
   TicketComment,
+  TicketPriority,
   TicketStatus,
+  TicketType,
   TicketUpdateInput
 } from "@/lib/domain/models";
 
@@ -35,6 +39,35 @@ export type CreateHandoverRequest = {
   blockers: string[];
 };
 
+export type OrganizeProjectRequest = {
+  projectId: string;
+  rawInput: string;
+  teamContext: TeamAvailabilityInput[];
+  includeRepoContext: boolean;
+  targetLanguage: TargetOutputLanguage;
+};
+
+export type OrganizeProjectTicketSuggestion = {
+  title: string;
+  description: string;
+  businessSummary: string;
+  technicalSummary: string;
+  type: TicketType;
+  priority: TicketPriority;
+  suggestedAssigneeName: string;
+  dependencies: string[];
+  estimateHours: number;
+};
+
+export type OrganizeProjectResponse = {
+  projectSummary: string;
+  clarifiedScope: string[];
+  openQuestions: string[];
+  risks: string[];
+  tickets: OrganizeProjectTicketSuggestion[];
+  assignmentSuggestions: string[];
+};
+
 export type BootstrapResponse = {
   project: Project | null;
   teamMembers: TeamMember[];
@@ -49,6 +82,20 @@ export const ticketStatusValues: TicketStatus[] = [
   "in_progress",
   "review",
   "done"
+];
+
+export const ticketPriorityValues: TicketPriority[] = [
+  "low",
+  "medium",
+  "high",
+  "critical"
+];
+
+export const ticketTypeValues: TicketType[] = [
+  "feature",
+  "task",
+  "bug",
+  "research"
 ];
 
 export function isTicketUpdateInput(value: unknown): value is TicketUpdateInput {
@@ -79,6 +126,85 @@ export function isCreateTicketCommentRequest(
     typeof candidate.authorId === "string" &&
     typeof candidate.message === "string" &&
     candidate.message.trim().length > 0
+  );
+}
+
+export function isOrganizeProjectRequest(
+  value: unknown
+): value is OrganizeProjectRequest {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.projectId === "string" &&
+    typeof candidate.rawInput === "string" &&
+    typeof candidate.includeRepoContext === "boolean" &&
+    typeof candidate.targetLanguage === "string" &&
+    Array.isArray(candidate.teamContext) &&
+    candidate.teamContext.every((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return false;
+      }
+
+      const teamEntry = entry as Record<string, unknown>;
+
+      return (
+        typeof teamEntry.memberId === "string" &&
+        typeof teamEntry.name === "string" &&
+        typeof teamEntry.role === "string" &&
+        typeof teamEntry.availabilityStatus === "string" &&
+        typeof teamEntry.capacityPercent === "number"
+      );
+    })
+  );
+}
+
+export function isOrganizeProjectResponse(
+  value: unknown
+): value is OrganizeProjectResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.projectSummary === "string" &&
+    Array.isArray(candidate.clarifiedScope) &&
+    candidate.clarifiedScope.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.openQuestions) &&
+    candidate.openQuestions.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.risks) &&
+    candidate.risks.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.assignmentSuggestions) &&
+    candidate.assignmentSuggestions.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.tickets) &&
+    candidate.tickets.every((ticket) => {
+      if (!ticket || typeof ticket !== "object") {
+        return false;
+      }
+
+      const candidateTicket = ticket as Record<string, unknown>;
+
+      return (
+        typeof candidateTicket.title === "string" &&
+        typeof candidateTicket.description === "string" &&
+        typeof candidateTicket.businessSummary === "string" &&
+        typeof candidateTicket.technicalSummary === "string" &&
+        typeof candidateTicket.suggestedAssigneeName === "string" &&
+        typeof candidateTicket.estimateHours === "number" &&
+        candidateTicket.estimateHours >= 0 &&
+        typeof candidateTicket.type === "string" &&
+        ticketTypeValues.includes(candidateTicket.type as TicketType) &&
+        typeof candidateTicket.priority === "string" &&
+        ticketPriorityValues.includes(candidateTicket.priority as TicketPriority) &&
+        Array.isArray(candidateTicket.dependencies) &&
+        candidateTicket.dependencies.every((entry) => typeof entry === "string")
+      );
+    })
   );
 }
 

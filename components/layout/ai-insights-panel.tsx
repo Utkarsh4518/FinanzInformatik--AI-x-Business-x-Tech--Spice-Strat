@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-import type { CreateHandoverRequest } from "@/lib/domain/api";
+import type {
+  CreateHandoverRequest,
+  OrganizeProjectResponse
+} from "@/lib/domain/api";
 import { ShellPanel } from "@/components/ui/shell-panel";
 import type {
   Handover,
@@ -18,6 +21,7 @@ type AIInsightsPanelProps = {
   repoFileSummaries: RepoFileSummary[];
   teamMembers: TeamMember[];
   tickets: Ticket[];
+  organizeResult: OrganizeProjectResponse | null;
   onCreateHandover: (input: CreateHandoverRequest) => Promise<void>;
 };
 
@@ -27,6 +31,7 @@ export function AIInsightsPanel({
   repoFileSummaries,
   teamMembers,
   tickets,
+  organizeResult,
   onCreateHandover
 }: AIInsightsPanelProps) {
   const [unavailableMemberId, setUnavailableMemberId] = useState(
@@ -93,6 +98,43 @@ export function AIInsightsPanel({
       description="Space for summaries, translations, and handover support."
     >
       <div className="space-y-3">
+        {organizeResult ? (
+          <div className="rounded-2xl border border-line bg-white p-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+              Organized Project Summary
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              {organizeResult.projectSummary}
+            </p>
+
+            <div className="mt-4">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Open Questions
+              </div>
+              <ul className="mt-2 space-y-2 text-sm text-slate-600">
+                {organizeResult.openQuestions.map((question) => (
+                  <li key={question} className="rounded-xl border border-line bg-slate-50 p-3">
+                    {question}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-4">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Risks
+              </div>
+              <ul className="mt-2 space-y-2 text-sm text-slate-600">
+                {organizeResult.risks.map((risk) => (
+                  <li key={risk} className="rounded-xl border border-line bg-rose-50 p-3">
+                    {risk}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : null}
+
         {insightBlocks.map((block) => (
           <div
             key={block.label}

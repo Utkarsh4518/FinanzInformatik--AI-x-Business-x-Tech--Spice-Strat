@@ -5,6 +5,7 @@ import { useState } from "react";
 import { IntakePayloadPreview } from "@/components/layout/manager-input/intake-payload-preview";
 import { TeamAvailabilityEditor } from "@/components/layout/manager-input/team-availability-editor";
 import { ShellPanel } from "@/components/ui/shell-panel";
+import type { OrganizeProjectRequest } from "@/lib/domain/api";
 import type {
   AvailabilityStatus,
   ManagerIntakePayload,
@@ -17,6 +18,8 @@ import type {
 type ManagerInputPanelProps = {
   project: Project;
   teamMembers: TeamMember[];
+  isOrganizing: boolean;
+  onOrganizeProject: (input: OrganizeProjectRequest) => Promise<void>;
 };
 
 const targetOutputLanguages: TargetOutputLanguage[] = [
@@ -35,7 +38,12 @@ function buildInitialTeamAvailability(teamMembers: TeamMember[]): TeamAvailabili
   }));
 }
 
-export function ManagerInputPanel({ project, teamMembers }: ManagerInputPanelProps) {
+export function ManagerInputPanel({
+  project,
+  teamMembers,
+  isOrganizing,
+  onOrganizeProject
+}: ManagerInputPanelProps) {
   const [projectName, setProjectName] = useState(project.name);
   const [rawProjectInput, setRawProjectInput] = useState(project.managerBrief);
   const [targetOutputLanguage, setTargetOutputLanguage] =
@@ -67,7 +75,7 @@ export function ManagerInputPanel({ project, teamMembers }: ManagerInputPanelPro
     );
   }
 
-  function handleBuildPayload() {
+  async function handleBuildPayload() {
     const payload: ManagerIntakePayload = {
       projectName,
       rawProjectInput,
@@ -77,6 +85,14 @@ export function ManagerInputPanel({ project, teamMembers }: ManagerInputPanelPro
     };
 
     setPayloadPreview(payload);
+
+    await onOrganizeProject({
+      projectId: project.id,
+      rawInput: `Project: ${projectName}\n\n${rawProjectInput}`,
+      teamContext: editableTeam,
+      includeRepoContext,
+      targetLanguage: targetOutputLanguage
+    });
   }
 
   return (
@@ -186,10 +202,10 @@ export function ManagerInputPanel({ project, teamMembers }: ManagerInputPanelPro
 
         <button
           type="button"
-          onClick={handleBuildPayload}
+          onClick={() => void handleBuildPayload()}
           className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white"
         >
-          Build Structured Intake Payload
+          {isOrganizing ? "Organizing..." : "Organize with AI"}
         </button>
 
         <IntakePayloadPreview payload={payloadPreview} />

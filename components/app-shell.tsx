@@ -12,7 +12,9 @@ import type {
   ApiItemResponse,
   ApiListResponse,
   CreateHandoverRequest,
-  CreateTicketCommentRequest
+  CreateTicketCommentRequest,
+  OrganizeProjectRequest,
+  OrganizeProjectResponse
 } from "@/lib/domain/api";
 import type {
   Handover,
@@ -43,7 +45,11 @@ export function AppShell() {
   const [handovers, setHandovers] = useState<Handover[]>([]);
   const [repoFileSummaries, setRepoFileSummaries] = useState<RepoFileSummary[]>([]);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [organizeResult, setOrganizeResult] = useState<OrganizeProjectResponse | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
+  const [isOrganizing, setIsOrganizing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -183,6 +189,38 @@ export function AppShell() {
     }
   }
 
+  async function handleOrganizeProject(input: OrganizeProjectRequest) {
+    try {
+      setIsOrganizing(true);
+
+      const response = await fetch("/api/ai/organize-project", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(input)
+      });
+
+      if (!response.ok) {
+        throw new Error("Mock organize flow failed.");
+      }
+
+      const payload = (await response.json()) as ApiItemResponse<OrganizeProjectResponse>;
+      const refreshedTickets = await fetchList<Ticket>("/api/tickets");
+
+      setOrganizeResult(payload.data);
+      setTickets(refreshedTickets);
+      setSelectedTicketId(refreshedTickets[0]?.id ?? null);
+      setLoadError(null);
+    } catch (error) {
+      setLoadError(
+        error instanceof Error ? error.message : "Mock organize flow failed."
+      );
+    } finally {
+      setIsOrganizing(false);
+    }
+  }
+
   function handleSelectTicket(ticketId: string) {
     setSelectedTicketId(ticketId);
   }
@@ -226,6 +264,8 @@ export function AppShell() {
             <ManagerInputPanel
               project={project}
               teamMembers={teamMembers}
+              isOrganizing={isOrganizing}
+              onOrganizeProject={handleOrganizeProject}
             />
           </aside>
 
@@ -268,6 +308,7 @@ export function AppShell() {
                 repoFileSummaries={repoFileSummaries}
                 teamMembers={teamMembers}
                 tickets={tickets}
+                organizeResult={organizeResult}
                 onCreateHandover={handleCreateHandover}
               />
             </div>

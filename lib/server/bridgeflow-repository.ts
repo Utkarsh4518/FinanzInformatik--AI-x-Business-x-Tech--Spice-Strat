@@ -62,6 +62,11 @@ export async function getRepoFileSummaries() {
   );
 }
 
+export async function replaceTickets(tickets: Ticket[]) {
+  await writeJsonFile(fileNames.tickets, tickets);
+  return tickets;
+}
+
 export async function updateTicket(
   ticketId: string,
   updates: TicketUpdateInput
