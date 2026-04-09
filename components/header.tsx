@@ -1,10 +1,13 @@
-import type { Project } from "@/lib/domain/models";
+import { RoleSwitcher } from "@/components/role-switcher";
+import type { AppRole, Project } from "@/lib/domain/models";
 
 type HeaderProps = {
   project: Project;
+  currentRole: AppRole;
+  onRoleChange: (role: AppRole) => void;
 };
 
-export function Header({ project }: HeaderProps) {
+export function Header({ project, currentRole, onRoleChange }: HeaderProps) {
   return (
     <header className="rounded-xl2 border border-line bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.96))] px-6 py-5 shadow-panel backdrop-blur-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -20,7 +23,8 @@ export function Header({ project }: HeaderProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-start gap-3 md:items-end">
+          <RoleSwitcher currentRole={currentRole} onRoleChange={onRoleChange} />
           <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700">
             {project.primaryView === "kanban" ? "Board First" : "Demo Mode"}
           </div>

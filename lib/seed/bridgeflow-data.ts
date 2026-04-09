@@ -91,6 +91,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "high",
     type: "task",
     assigneeId: "member-lukas",
+    dependencies: [],
     blockerReason: ""
   },
   {
@@ -109,6 +110,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "critical",
     type: "feature",
     assigneeId: "member-lukas",
+    dependencies: ["Normalize multilingual manager notes"],
     blockerReason: "Waiting for final confirmation on unsupported payment combinations."
   },
   {
@@ -127,6 +129,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "high",
     type: "feature",
     assigneeId: "member-maya",
+    dependencies: ["Define loan term calculation acceptance criteria"],
     blockerReason: ""
   },
   {
@@ -145,6 +148,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "medium",
     type: "task",
     assigneeId: "member-maya",
+    dependencies: ["Add loan term fields to calculator UI"],
     blockerReason: ""
   },
   {
@@ -163,6 +167,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "high",
     type: "feature",
     assigneeId: "member-noah",
+    dependencies: ["Define loan term calculation acceptance criteria"],
     blockerReason: "Backend owner is unavailable and the endpoint shape is still undecided."
   },
   {
@@ -181,6 +186,10 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "high",
     type: "task",
     assigneeId: "member-zoe",
+    dependencies: [
+      "Add loan term fields to calculator UI",
+      "Adjust validation and empty states"
+    ],
     blockerReason: ""
   },
   {
@@ -199,6 +208,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "medium",
     type: "task",
     assigneeId: "member-ava",
+    dependencies: ["Define loan term calculation acceptance criteria"],
     blockerReason: ""
   },
   {
@@ -217,6 +227,7 @@ export const bridgeFlowTickets: Ticket[] = [
     priority: "medium",
     type: "research",
     assigneeId: "member-ava",
+    dependencies: ["Support backend calculation contract"],
     blockerReason: ""
   }
 ];

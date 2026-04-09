@@ -217,6 +217,7 @@ export function buildPersistedTicketsFromOrganizeResponse(
     priority: ticket.priority,
     type: ticket.type,
     assigneeId: getAssigneeIdByName(input.teamContext, ticket.suggestedAssigneeName),
+    dependencies: ticket.dependencies,
     blockerReason:
       unavailableTeammate && ticket.title.includes("backend")
         ? `${unavailableTeammate.name} is unavailable, so backend confirmation is routed through fallback ownership.`

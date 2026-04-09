@@ -15,6 +15,8 @@ export type TeamRole =
 
 export type TargetOutputLanguage = "English" | "German" | "Bilingual";
 
+export type AppRole = "manager" | "analyst" | "developer";
+
 export type Project = {
   id: string;
   name: string;
@@ -52,6 +54,7 @@ export type Ticket = {
   priority: TicketPriority;
   type: TicketType;
   assigneeId: string;
+  dependencies: string[];
   blockerReason: string;
 };
 

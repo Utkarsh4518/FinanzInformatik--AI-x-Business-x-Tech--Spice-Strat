@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import type { CreateTicketCommentRequest } from "@/lib/domain/api";
 import type {
+  AppRole,
   TeamMember,
   Ticket,
   TicketComment,
@@ -13,6 +14,7 @@ import type {
 
 type TicketDetailPanelProps = {
   ticket: Ticket | null;
+  currentRole: AppRole;
   teamMembers: TeamMember[];
   comments: TicketComment[];
   onClose: () => void;
@@ -32,6 +34,7 @@ const statusOptions: { value: TicketStatus; label: string }[] = [
 
 export function TicketDetailPanel({
   ticket,
+  currentRole,
   teamMembers,
   comments,
   onClose,
@@ -89,6 +92,23 @@ export function TicketDetailPanel({
   }
 
   const authorNameById = new Map(teamMembers.map((member) => [member.id, member.name]));
+  const assignee = teamMembers.find((member) => member.id === ticket.assigneeId) ?? null;
+  const dependencyItems = ticket.dependencies.length
+    ? ticket.dependencies
+    : ["No explicit dependencies recorded."];
+  const blockerLabel = ticket.blockerReason || "No blocker currently recorded.";
+  const roleSummaryTitle =
+    currentRole === "manager"
+      ? "Delivery Snapshot"
+      : currentRole === "analyst"
+        ? "Business Context"
+        : "Engineering Focus";
+  const roleSummaryBody =
+    currentRole === "manager"
+      ? ticket.businessSummary
+      : currentRole === "analyst"
+        ? ticket.description
+        : ticket.technicalSummary;
 
   return (
     <div className="rounded-xl2 border border-line bg-panel/95 p-5 shadow-panel">
@@ -115,19 +135,30 @@ export function TicketDetailPanel({
       <div className="mt-5 space-y-4">
         <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Description
+            {roleSummaryTitle}
           </div>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{ticket.description}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{roleSummaryBody}</p>
         </div>
 
-        <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Business Summary
+        {currentRole !== "analyst" ? (
+          <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Business Summary
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              {ticket.businessSummary}
+            </p>
           </div>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            {ticket.businessSummary}
-          </p>
-        </div>
+        ) : null}
+
+        {currentRole !== "developer" ? (
+          <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Description
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{ticket.description}</p>
+          </div>
+        ) : null}
 
         <div className="rounded-2xl border border-line bg-slate-50/90 p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -148,6 +179,20 @@ export function TicketDetailPanel({
             </p>
           </div>
 
+          <div className="rounded-2xl border border-line bg-white p-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Assignee Detail
+            </div>
+            <p className="mt-2 text-sm font-medium text-slate-700">
+              {assignee?.name ?? "Unassigned"}
+            </p>
+            <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+              {assignee?.role ?? "No role assigned"}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
           <label className="rounded-2xl border border-line bg-white p-4">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Status
@@ -170,34 +215,34 @@ export function TicketDetailPanel({
               ))}
             </select>
           </label>
+
+          <label className="rounded-2xl border border-line bg-white p-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Assignee
+            </span>
+            <select
+              value={ticket.assigneeId}
+              onChange={(event) =>
+                void onUpdate(ticket.id, {
+                  status: ticket.status,
+                  assigneeId: event.target.value,
+                  blockerReason: ticket.blockerReason
+                })
+              }
+              className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+            >
+              {teamMembers.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <label className="block rounded-2xl border border-line bg-white p-4">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Assignee
-          </span>
-          <select
-            value={ticket.assigneeId}
-            onChange={(event) =>
-              void onUpdate(ticket.id, {
-                status: ticket.status,
-                assigneeId: event.target.value,
-                blockerReason: ticket.blockerReason
-              })
-            }
-            className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
-          >
-            {teamMembers.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="block rounded-2xl border border-line bg-white p-4">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Blocker Reason
+            {currentRole === "developer" ? "Blocker Detail" : "Blocker Reason"}
           </span>
           <textarea
             value={blockerDraft}
@@ -208,6 +253,44 @@ export function TicketDetailPanel({
             className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-slate-400"
           />
         </label>
+
+        {currentRole === "developer" ? (
+          <div className="rounded-2xl border border-line bg-white p-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Dependencies
+            </div>
+            <div className="mt-3 space-y-2">
+              {dependencyItems.map((dependency) => (
+                <div
+                  key={dependency}
+                  className="rounded-xl border border-line bg-slate-50/90 p-3 text-sm text-slate-600"
+                >
+                  {dependency}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {currentRole === "manager" ? (
+          <div className="rounded-2xl border border-line bg-white p-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Delivery Readout
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-line bg-slate-50/90 p-3 text-sm text-slate-600">
+                Overall owner
+                <div className="mt-2 font-medium text-slate-800">
+                  {assignee?.name ?? "Unassigned"}
+                </div>
+              </div>
+              <div className="rounded-xl border border-line bg-slate-50/90 p-3 text-sm text-slate-600">
+                Current blocker
+                <div className="mt-2 font-medium text-slate-800">{blockerLabel}</div>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div className="rounded-2xl border border-line bg-white p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">

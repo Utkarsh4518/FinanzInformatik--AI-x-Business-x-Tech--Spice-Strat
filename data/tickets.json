@@ -12,6 +12,7 @@
     "priority": "high",
     "type": "task",
     "assigneeId": "member-lukas",
+    "dependencies": [],
     "blockerReason": ""
   },
   {
@@ -27,6 +28,7 @@
     "priority": "critical",
     "type": "feature",
     "assigneeId": "member-lukas",
+    "dependencies": ["Finalize multilingual scope baseline"],
     "blockerReason": ""
   },
   {
@@ -42,6 +44,7 @@
     "priority": "high",
     "type": "feature",
     "assigneeId": "member-maya",
+    "dependencies": ["Define acceptance criteria for loan term calculation"],
     "blockerReason": ""
   },
   {
@@ -57,6 +60,7 @@
     "priority": "medium",
     "type": "task",
     "assigneeId": "member-maya",
+    "dependencies": ["Update calculator UI for loan term output"],
     "blockerReason": ""
   },
   {
@@ -72,6 +76,7 @@
     "priority": "high",
     "type": "feature",
     "assigneeId": "member-ava",
+    "dependencies": ["Define acceptance criteria for loan term calculation"],
     "blockerReason": "Noah Garcia is unavailable, so backend confirmation is routed through fallback ownership."
   },
   {
@@ -87,6 +92,10 @@
     "priority": "high",
     "type": "task",
     "assigneeId": "member-zoe",
+    "dependencies": [
+      "Update calculator UI for loan term output",
+      "Refine validation and bilingual empty states"
+    ],
     "blockerReason": "Waiting on: Update calculator UI for loan term output, Refine validation and bilingual empty states"
   },
   {
@@ -102,6 +111,7 @@
     "priority": "medium",
     "type": "task",
     "assigneeId": "member-ava",
+    "dependencies": ["Define acceptance criteria for loan term calculation"],
     "blockerReason": ""
   },
   {
@@ -117,6 +127,7 @@
     "priority": "medium",
     "type": "research",
     "assigneeId": "member-ava",
+    "dependencies": ["Align backend contract for loan term calculation"],
     "blockerReason": "Noah Garcia is unavailable, so backend confirmation is routed through fallback ownership."
   }
 ]

@@ -17,6 +17,7 @@ import type {
   OrganizeProjectResponse
 } from "@/lib/domain/api";
 import type {
+  AppRole,
   Handover,
   Project,
   RepoFileSummary,
@@ -39,6 +40,7 @@ async function fetchList<T>(url: string): Promise<T[]> {
 
 export function AppShell() {
   const [project, setProject] = useState<Project | null>(null);
+  const [currentRole, setCurrentRole] = useState<AppRole>("manager");
   const [managerRawInput, setManagerRawInput] = useState("");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -257,9 +259,13 @@ export function AppShell() {
   }
 
   return (
-    <main className="min-h-screen bg-canvas px-4 py-4 text-ink md:px-6 md:py-6">
+      <main className="min-h-screen bg-canvas px-4 py-4 text-ink md:px-6 md:py-6">
       <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4">
-        <Header project={project} />
+        <Header
+          project={project}
+          currentRole={currentRole}
+          onRoleChange={setCurrentRole}
+        />
 
         <div className="grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)_360px]">
           <aside>
@@ -297,6 +303,7 @@ export function AppShell() {
             <div className="space-y-4">
               <TicketDetailPanel
                 ticket={selectedTicket}
+                currentRole={currentRole}
                 teamMembers={teamMembers}
                 comments={ticketComments.filter(
                   (comment) => comment.ticketId === selectedTicketId
@@ -306,6 +313,7 @@ export function AppShell() {
                 onCreateComment={handleCreateComment}
               />
               <AIInsightsPanel
+                currentRole={currentRole}
                 project={project}
                 handovers={handovers}
                 repoFileSummaries={repoFileSummaries}
