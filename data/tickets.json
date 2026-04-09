@@ -42,7 +42,7 @@
     "summary": "Extend the calculator form so users can request loan term output.",
     "businessSummary": "Adds the visible product change the manager needs for the demo scenario.",
     "technicalSummary": "Requires new input states, view logic, and consistent labeling for the extended calculator flow.",
-    "status": "in_progress",
+    "status": "backlog",
     "priority": "high",
     "type": "feature",
     "assigneeId": "member-maya",

@@ -5,13 +5,21 @@ type ProjectBriefPanelProps = {
   teamMembers: TeamMember[];
   tickets: Ticket[];
   onEditIntake: () => void;
+  onImportJira: () => Promise<void>;
+  isImportingJira: boolean;
+  jiraImportMessage: string | null;
+  jiraImportError: string | null;
 };
 
 export function ProjectBriefPanel({
   project,
   teamMembers,
   tickets,
-  onEditIntake
+  onEditIntake,
+  onImportJira,
+  isImportingJira,
+  jiraImportMessage,
+  jiraImportError
 }: ProjectBriefPanelProps) {
   const blockedCount = tickets.filter((ticket) => ticket.blockerReason.trim()).length;
   const inFlightCount = tickets.filter(
@@ -44,6 +52,33 @@ export function ProjectBriefPanel({
       </div>
 
       <div className="mt-5 grid gap-4">
+        <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                Jira Import
+              </div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Pull external Jira issues into the same BridgeFlow task model without changing the role-based workflow.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void onImportJira()}
+              disabled={isImportingJira}
+              className="rounded-full border border-line bg-panelSoft px-3.5 py-2 text-xs font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-white"
+            >
+              {isImportingJira ? "Importing..." : "Import Jira Issues"}
+            </button>
+          </div>
+          {jiraImportMessage ? (
+            <p className="mt-3 text-sm text-slate-500">{jiraImportMessage}</p>
+          ) : null}
+          {jiraImportError ? (
+            <p className="mt-3 text-sm text-rose-700">{jiraImportError}</p>
+          ) : null}
+        </div>
+
         <div className="rounded-2xl border border-line bg-panelSoft p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
             Executive Summary

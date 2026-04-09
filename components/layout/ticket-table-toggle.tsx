@@ -67,9 +67,16 @@ export function TicketTableToggle({
               >
                 <div>
                   <span className="font-semibold text-slate-800">{ticket.code}</span>
-                  <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
-                    {ticket.type}
-                  </p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    <p className="text-xs uppercase tracking-wide text-slate-400">
+                      {ticket.type}
+                    </p>
+                    {ticket.sourceType === "jira" ? (
+                      <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                        Jira
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 <div className="pr-4">
                   <span className="font-medium text-slate-700">{ticket.title}</span>

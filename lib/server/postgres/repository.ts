@@ -105,6 +105,10 @@ export async function getTicketsFromPostgres(): Promise<Ticket[]> {
     assignee_id: string;
     dependencies: unknown;
     blocker_reason: string;
+    source_type: Ticket["sourceType"];
+    external_key: string | null;
+    external_url: string | null;
+    last_synced_at: string | null;
   }>(`
     SELECT
       id,
@@ -120,7 +124,11 @@ export async function getTicketsFromPostgres(): Promise<Ticket[]> {
       type,
       assignee_id,
       dependencies,
-      blocker_reason
+      blocker_reason,
+      source_type,
+      external_key,
+      external_url,
+      last_synced_at
     FROM tickets
     ORDER BY code ASC
   `);
@@ -187,11 +195,11 @@ export async function replaceTicketsInPostgres(tickets: Ticket[]) {
 
       if (projectIds.length) {
         await client.query(
-          "DELETE FROM tickets WHERE project_id = ANY($1::text[])",
+          "DELETE FROM tickets WHERE project_id = ANY($1::text[]) AND source_type = 'local'",
           [projectIds]
         );
       } else {
-        await client.query("DELETE FROM tickets");
+        await client.query("DELETE FROM tickets WHERE source_type = 'local'");
       }
 
       for (const ticket of tickets) {
@@ -211,11 +219,15 @@ export async function replaceTicketsInPostgres(tickets: Ticket[]) {
               type,
               assignee_id,
               dependencies,
-              blocker_reason
+              blocker_reason,
+              source_type,
+              external_key,
+              external_url,
+              last_synced_at
             )
             VALUES (
               $1, $2, $3, $4, $5, $6, $7, $8,
-              $9, $10, $11, $12, $13::jsonb, $14
+              $9, $10, $11, $12, $13::jsonb, $14, $15, $16, $17, $18
             )
           `,
           [
@@ -232,7 +244,97 @@ export async function replaceTicketsInPostgres(tickets: Ticket[]) {
             ticket.type,
             ticket.assigneeId,
             toJson(ticket.dependencies),
-            ticket.blockerReason
+            ticket.blockerReason,
+            ticket.sourceType,
+            ticket.externalKey,
+            ticket.externalUrl,
+            ticket.lastSyncedAt
+          ]
+        );
+      }
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+
+  return tickets;
+}
+
+export async function upsertTicketsInPostgres(tickets: Ticket[]) {
+  await ensurePostgresReady();
+
+  await withPostgresClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      for (const ticket of tickets) {
+        await client.query(
+          `
+            INSERT INTO tickets (
+              id,
+              project_id,
+              code,
+              title,
+              description,
+              summary,
+              business_summary,
+              technical_summary,
+              status,
+              priority,
+              type,
+              assignee_id,
+              dependencies,
+              blocker_reason,
+              source_type,
+              external_key,
+              external_url,
+              last_synced_at
+            )
+            VALUES (
+              $1, $2, $3, $4, $5, $6, $7, $8,
+              $9, $10, $11, $12, $13::jsonb, $14, $15, $16, $17, $18
+            )
+            ON CONFLICT (id) DO UPDATE SET
+              project_id = EXCLUDED.project_id,
+              code = EXCLUDED.code,
+              title = EXCLUDED.title,
+              description = EXCLUDED.description,
+              summary = EXCLUDED.summary,
+              business_summary = EXCLUDED.business_summary,
+              technical_summary = EXCLUDED.technical_summary,
+              status = EXCLUDED.status,
+              priority = EXCLUDED.priority,
+              type = EXCLUDED.type,
+              assignee_id = EXCLUDED.assignee_id,
+              dependencies = EXCLUDED.dependencies,
+              blocker_reason = EXCLUDED.blocker_reason,
+              source_type = EXCLUDED.source_type,
+              external_key = EXCLUDED.external_key,
+              external_url = EXCLUDED.external_url,
+              last_synced_at = EXCLUDED.last_synced_at
+          `,
+          [
+            ticket.id,
+            ticket.projectId,
+            ticket.code,
+            ticket.title,
+            ticket.description,
+            ticket.summary,
+            ticket.businessSummary,
+            ticket.technicalSummary,
+            ticket.status,
+            ticket.priority,
+            ticket.type,
+            ticket.assigneeId,
+            toJson(ticket.dependencies),
+            ticket.blockerReason,
+            ticket.sourceType,
+            ticket.externalKey,
+            ticket.externalUrl,
+            ticket.lastSyncedAt
           ]
         );
       }
@@ -277,6 +379,10 @@ export async function updateTicketInPostgres(
     assignee_id: string;
     dependencies: unknown;
     blocker_reason: string;
+    source_type: Ticket["sourceType"];
+    external_key: string | null;
+    external_url: string | null;
+    last_synced_at: string | null;
   }>(
     `
       UPDATE tickets
@@ -299,7 +405,11 @@ export async function updateTicketInPostgres(
         type,
         assignee_id,
         dependencies,
-        blocker_reason
+        blocker_reason,
+        source_type,
+        external_key,
+        external_url,
+        last_synced_at
     `,
     [ticketId, updates.status, updates.assigneeId, updates.blockerReason]
   );

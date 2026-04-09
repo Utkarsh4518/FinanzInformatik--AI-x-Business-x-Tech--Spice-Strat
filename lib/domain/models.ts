@@ -17,6 +17,8 @@ export type TargetOutputLanguage = "English" | "German" | "Bilingual";
 
 export type AppRole = "manager" | "analyst" | "developer";
 
+export type TicketSourceType = "local" | "jira";
+
 export type Project = {
   id: string;
   name: string;
@@ -56,6 +58,10 @@ export type Ticket = {
   assigneeId: string;
   dependencies: string[];
   blockerReason: string;
+  sourceType: TicketSourceType;
+  externalKey: string | null;
+  externalUrl: string | null;
+  lastSyncedAt: string | null;
 };
 
 export type TicketUpdateInput = {

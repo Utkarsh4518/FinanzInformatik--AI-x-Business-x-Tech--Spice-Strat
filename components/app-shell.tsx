@@ -23,6 +23,7 @@ import type {
   ApiListResponse,
   CreateHandoverRequest,
   CreateTicketCommentRequest,
+  JiraImportResponse,
   OrganizeProjectRequest,
   OrganizeProjectResponse
 } from "@/lib/domain/api";
@@ -68,8 +69,11 @@ export function AppShell() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isOrganizing, setIsOrganizing] = useState(false);
+  const [isImportingJira, setIsImportingJira] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [jiraImportMessage, setJiraImportMessage] = useState<string | null>(null);
+  const [jiraImportError, setJiraImportError] = useState<string | null>(null);
 
   async function loadWorkspace(options?: { preserveSelection?: boolean }) {
     setIsLoading(true);
@@ -288,6 +292,8 @@ export function AppShell() {
       setIsResetting(true);
       setLoadError(null);
       setOrganizeResult(null);
+      setJiraImportError(null);
+      setJiraImportMessage(null);
 
       const response = await fetch("/api/demo/reset", {
         method: "POST"
@@ -307,6 +313,46 @@ export function AppShell() {
     } finally {
       setIsResetting(false);
       setIsLoading(false);
+    }
+  }
+
+  async function handleImportJira() {
+    try {
+      setIsImportingJira(true);
+      setJiraImportError(null);
+      setJiraImportMessage(null);
+
+      const response = await fetch("/api/jira/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          projectId: project?.id
+        })
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json()) as { error?: string };
+        throw new Error(payload.error ?? "Jira import failed.");
+      }
+
+      const payload = (await response.json()) as ApiItemResponse<JiraImportResponse>;
+      await loadWorkspace({ preserveSelection: true });
+      setActiveWorkspaceTab("tasks");
+      setJiraImportMessage(
+        payload.data.importedCount
+          ? `Imported ${payload.data.importedCount} Jira issue${payload.data.importedCount === 1 ? "" : "s"} into the shared task workspace.`
+          : "No Jira issues matched the current import query."
+      );
+    } catch (error) {
+      setJiraImportError(
+        error instanceof Error
+          ? error.message
+          : "Jira import failed. Existing demo data remains available."
+      );
+    } finally {
+      setIsImportingJira(false);
     }
   }
 
@@ -416,6 +462,10 @@ export function AppShell() {
                 teamMembers={teamMembers}
                 tickets={tickets}
                 onEditIntake={() => setIsIntakeExpanded(true)}
+                onImportJira={handleImportJira}
+                isImportingJira={isImportingJira}
+                jiraImportMessage={jiraImportMessage}
+                jiraImportError={jiraImportError}
               />
             )}
           </aside>
@@ -491,9 +541,16 @@ export function AppShell() {
                           <p className="text-sm font-semibold text-slate-800">
                             {selectedTicket.title}
                           </p>
-                          <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
-                            {selectedTicket.code}
-                          </p>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            <p className="text-xs uppercase tracking-wide text-slate-400">
+                              {selectedTicket.code}
+                            </p>
+                            {selectedTicket.sourceType === "jira" ? (
+                              <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                                Jira
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                         <button
                           type="button"

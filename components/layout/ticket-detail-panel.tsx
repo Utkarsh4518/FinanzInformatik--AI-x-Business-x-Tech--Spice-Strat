@@ -167,6 +167,11 @@ export function TicketDetailPanel({
                 <span className="rounded-full border border-line bg-panelSoft px-2 py-1">
                   {currentTicket.code}
                 </span>
+                {currentTicket.sourceType === "jira" ? (
+                  <span className="rounded-full border border-accent/15 bg-accentSoft px-2.5 py-1 font-semibold uppercase tracking-wide text-accent">
+                    Jira
+                  </span>
+                ) : null}
                 <span
                   className={`rounded-full px-2.5 py-1 font-semibold capitalize ${priorityStyles[currentTicket.priority]}`}
                 >
@@ -252,6 +257,25 @@ export function TicketDetailPanel({
               </div>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                    Source
+                  </div>
+                  <p className="mt-2 text-sm font-medium uppercase text-slate-700">
+                    {currentTicket.sourceType}
+                  </p>
+                  {currentTicket.externalUrl ? (
+                    <a
+                      href={currentTicket.externalUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-2 inline-flex text-xs font-medium text-accent hover:underline"
+                    >
+                      Open external issue
+                    </a>
+                  ) : null}
+                </div>
+
                 <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                     Priority

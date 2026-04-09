@@ -43,8 +43,28 @@ export const postgresSchemaStatements = [
       assignee_id TEXT NOT NULL REFERENCES team_members(id),
       dependencies JSONB NOT NULL DEFAULT '[]'::jsonb,
       blocker_reason TEXT NOT NULL DEFAULT '',
+      source_type TEXT NOT NULL DEFAULT 'local',
+      external_key TEXT,
+      external_url TEXT,
+      last_synced_at TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `,
+  `
+    ALTER TABLE tickets
+    ADD COLUMN IF NOT EXISTS source_type TEXT NOT NULL DEFAULT 'local'
+  `,
+  `
+    ALTER TABLE tickets
+    ADD COLUMN IF NOT EXISTS external_key TEXT
+  `,
+  `
+    ALTER TABLE tickets
+    ADD COLUMN IF NOT EXISTS external_url TEXT
+  `,
+  `
+    ALTER TABLE tickets
+    ADD COLUMN IF NOT EXISTS last_synced_at TEXT
   `,
   `
     CREATE TABLE IF NOT EXISTS ticket_comments (
@@ -54,6 +74,11 @@ export const postgresSchemaStatements = [
       message TEXT NOT NULL,
       created_at TEXT NOT NULL
     )
+  `,
+  `
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_tickets_external_key
+    ON tickets (external_key)
+    WHERE external_key IS NOT NULL
   `,
   `
     CREATE TABLE IF NOT EXISTS handovers (

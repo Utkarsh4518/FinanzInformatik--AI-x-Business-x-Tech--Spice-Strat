@@ -110,11 +110,15 @@ export async function seedPostgresDemoScenario(client: PoolClient) {
           type,
           assignee_id,
           dependencies,
-          blocker_reason
+          blocker_reason,
+          source_type,
+          external_key,
+          external_url,
+          last_synced_at
         )
         VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8,
-          $9, $10, $11, $12, $13::jsonb, $14
+          $9, $10, $11, $12, $13::jsonb, $14, $15, $16, $17, $18
         )
         ON CONFLICT (id) DO UPDATE SET
           project_id = EXCLUDED.project_id,
@@ -129,7 +133,11 @@ export async function seedPostgresDemoScenario(client: PoolClient) {
           type = EXCLUDED.type,
           assignee_id = EXCLUDED.assignee_id,
           dependencies = EXCLUDED.dependencies,
-          blocker_reason = EXCLUDED.blocker_reason
+          blocker_reason = EXCLUDED.blocker_reason,
+          source_type = EXCLUDED.source_type,
+          external_key = EXCLUDED.external_key,
+          external_url = EXCLUDED.external_url,
+          last_synced_at = EXCLUDED.last_synced_at
       `,
       [
         ticket.id,
@@ -145,7 +153,11 @@ export async function seedPostgresDemoScenario(client: PoolClient) {
         ticket.type,
         ticket.assigneeId,
         toJson(ticket.dependencies),
-        ticket.blockerReason
+        ticket.blockerReason,
+        ticket.sourceType,
+        ticket.externalKey,
+        ticket.externalUrl,
+        ticket.lastSyncedAt
       ]
     );
   }

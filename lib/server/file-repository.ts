@@ -32,6 +32,26 @@ const fileNames = {
   repoFileSummaries: "repo-file-summaries.json"
 } as const;
 
+type StoredTicket = Omit<
+  Ticket,
+  "sourceType" | "externalKey" | "externalUrl" | "lastSyncedAt"
+> & {
+  sourceType?: Ticket["sourceType"];
+  externalKey?: string | null;
+  externalUrl?: string | null;
+  lastSyncedAt?: string | null;
+};
+
+function normalizeTicket(ticket: StoredTicket): Ticket {
+  return {
+    ...ticket,
+    sourceType: ticket.sourceType ?? "local",
+    externalKey: ticket.externalKey ?? null,
+    externalUrl: ticket.externalUrl ?? null,
+    lastSyncedAt: ticket.lastSyncedAt ?? null
+  };
+}
+
 export async function getProjectsFromFiles() {
   return readJsonFile<Project[]>(fileNames.projects, [bridgeFlowProject]);
 }
@@ -41,7 +61,11 @@ export async function getTeamMembersFromFiles() {
 }
 
 export async function getTicketsFromFiles() {
-  return readJsonFile<Ticket[]>(fileNames.tickets, bridgeFlowTickets);
+  const tickets = await readJsonFile<StoredTicket[]>(
+    fileNames.tickets,
+    bridgeFlowTickets
+  );
+  return tickets.map(normalizeTicket);
 }
 
 export async function getTicketCommentsFromFiles() {
@@ -60,8 +84,28 @@ export async function getRepoFileSummariesFromFiles() {
 }
 
 export async function replaceTicketsInFiles(tickets: Ticket[]) {
-  await writeJsonFile(fileNames.tickets, tickets);
-  return tickets;
+  const currentTickets = await getTicketsFromFiles();
+  const projectIds = new Set(tickets.map((ticket) => ticket.projectId));
+  const preservedTickets = currentTickets.filter(
+    (ticket) =>
+      ticket.sourceType === "jira" || !projectIds.has(ticket.projectId)
+  );
+  const nextTickets = [...preservedTickets, ...tickets];
+  await writeJsonFile(fileNames.tickets, nextTickets);
+  return nextTickets;
+}
+
+export async function upsertTicketsInFiles(tickets: Ticket[]) {
+  const currentTickets = await getTicketsFromFiles();
+  const nextTicketsById = new Map(currentTickets.map((ticket) => [ticket.id, ticket]));
+
+  for (const ticket of tickets) {
+    nextTicketsById.set(ticket.id, ticket);
+  }
+
+  const nextTickets = Array.from(nextTicketsById.values());
+  await writeJsonFile(fileNames.tickets, nextTickets);
+  return nextTickets;
 }
 
 export async function updateTicketInFiles(

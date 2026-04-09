@@ -9,6 +9,7 @@ import type {
   Ticket,
   TicketComment,
   TicketPriority,
+  TicketSourceType,
   TicketStatus,
   TicketType,
   TicketUpdateInput
@@ -150,6 +151,31 @@ export type BootstrapResponse = {
   ticketComments: TicketComment[];
   handovers: Handover[];
   repoFileSummaries: RepoFileSummary[];
+};
+
+export type JiraIssuePreview = {
+  id: string;
+  key: string;
+  summary: string;
+  status: string;
+  priority: string | null;
+  issueType: string;
+  assigneeName: string | null;
+  url: string;
+};
+
+export type JiraImportRequest = {
+  projectId?: string;
+  projectKey?: string;
+  jql?: string;
+  maxResults?: number;
+};
+
+export type JiraImportResponse = {
+  projectId: string;
+  importedCount: number;
+  tickets: Ticket[];
+  sourceType: TicketSourceType;
 };
 
 export const ticketStatusValues: TicketStatus[] = [
@@ -585,5 +611,21 @@ export function isCreateHandoverRequest(
     candidate.openTicketIds.every((entry) => typeof entry === "string") &&
     Array.isArray(candidate.blockers) &&
     candidate.blockers.every((entry) => typeof entry === "string")
+  );
+}
+
+export function isJiraImportRequest(value: unknown): value is JiraImportRequest {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    (candidate.projectId === undefined || typeof candidate.projectId === "string") &&
+    (candidate.projectKey === undefined || typeof candidate.projectKey === "string") &&
+    (candidate.jql === undefined || typeof candidate.jql === "string") &&
+    (candidate.maxResults === undefined ||
+      (typeof candidate.maxResults === "number" && candidate.maxResults > 0))
   );
 }

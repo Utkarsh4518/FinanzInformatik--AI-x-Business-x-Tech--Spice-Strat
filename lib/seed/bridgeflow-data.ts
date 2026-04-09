@@ -92,7 +92,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "task",
     assigneeId: "member-lukas",
     dependencies: [],
-    blockerReason: ""
+    blockerReason: "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-102",
@@ -111,7 +115,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "feature",
     assigneeId: "member-lukas",
     dependencies: ["Normalize multilingual manager notes"],
-    blockerReason: "Waiting for final confirmation on unsupported payment combinations."
+    blockerReason: "Waiting for final confirmation on unsupported payment combinations.",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-103",
@@ -130,7 +138,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "feature",
     assigneeId: "member-maya",
     dependencies: ["Define loan term calculation acceptance criteria"],
-    blockerReason: ""
+    blockerReason: "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-104",
@@ -149,7 +161,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "task",
     assigneeId: "member-maya",
     dependencies: ["Add loan term fields to calculator UI"],
-    blockerReason: ""
+    blockerReason: "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-105",
@@ -168,7 +184,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "feature",
     assigneeId: "member-noah",
     dependencies: ["Define loan term calculation acceptance criteria"],
-    blockerReason: "Backend owner is unavailable and the endpoint shape is still undecided."
+    blockerReason: "Backend owner is unavailable and the endpoint shape is still undecided.",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-106",
@@ -190,7 +210,11 @@ export const bridgeFlowTickets: Ticket[] = [
       "Add loan term fields to calculator UI",
       "Adjust validation and empty states"
     ],
-    blockerReason: ""
+    blockerReason: "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-107",
@@ -209,7 +233,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "task",
     assigneeId: "member-ava",
     dependencies: ["Define loan term calculation acceptance criteria"],
-    blockerReason: ""
+    blockerReason: "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   },
   {
     id: "ticket-108",
@@ -228,7 +256,11 @@ export const bridgeFlowTickets: Ticket[] = [
     type: "research",
     assigneeId: "member-ava",
     dependencies: ["Support backend calculation contract"],
-    blockerReason: ""
+    blockerReason: "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   }
 ];
 

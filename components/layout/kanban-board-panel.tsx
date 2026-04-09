@@ -91,6 +91,11 @@ export function KanbanBoardPanel({
                               <span className="rounded-full border border-line bg-panelSoft px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-slate-500">
                                 {ticket.code}
                               </span>
+                              {ticket.sourceType === "jira" && ticket.externalKey ? (
+                                <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-accent">
+                                  Jira
+                                </span>
+                              ) : null}
                               <span className="rounded-full border border-line bg-panelSoft px-2 py-1 text-[11px] font-medium capitalize text-slate-500">
                                 {ticket.type}
                               </span>

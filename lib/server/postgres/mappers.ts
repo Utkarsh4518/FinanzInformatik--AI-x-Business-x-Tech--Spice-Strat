@@ -3,7 +3,8 @@ import type {
   Project,
   TeamMember,
   Ticket,
-  TicketComment
+  TicketComment,
+  TicketSourceType
 } from "@/lib/domain/models";
 
 type JsonValue = unknown;
@@ -47,6 +48,10 @@ type TicketRow = {
   assignee_id: string;
   dependencies: JsonValue;
   blocker_reason: string;
+  source_type: TicketSourceType;
+  external_key: string | null;
+  external_url: string | null;
+  last_synced_at: string | null;
 };
 
 type TicketCommentRow = {
@@ -122,7 +127,11 @@ export function mapTicketRow(row: TicketRow): Ticket {
     type: row.type,
     assigneeId: row.assignee_id,
     dependencies: toStringArray(row.dependencies),
-    blockerReason: row.blocker_reason
+    blockerReason: row.blocker_reason,
+    sourceType: row.source_type,
+    externalKey: row.external_key,
+    externalUrl: row.external_url,
+    lastSyncedAt: row.last_synced_at
   };
 }
 

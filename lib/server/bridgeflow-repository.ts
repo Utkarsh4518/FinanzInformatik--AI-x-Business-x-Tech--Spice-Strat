@@ -22,6 +22,7 @@ import {
   getTicketsFromPostgres,
   replaceTicketsInPostgres,
   resetDemoWorkspaceInPostgres,
+  upsertTicketsInPostgres,
   updateTicketInPostgres
 } from "@/lib/server/postgres/repository";
 import {
@@ -35,6 +36,7 @@ import {
   getTicketsFromFiles,
   replaceTicketsInFiles,
   resetDemoWorkspaceInFiles,
+  upsertTicketsInFiles,
   updateTicketInFiles
 } from "@/lib/server/file-repository";
 
@@ -124,6 +126,14 @@ export async function replaceTickets(tickets: Ticket[]) {
     "replaceTickets",
     () => replaceTicketsInPostgres(tickets),
     () => replaceTicketsInFiles(tickets)
+  );
+}
+
+export async function upsertTickets(tickets: Ticket[]) {
+  return runWithPrimaryStorage<Ticket[]>(
+    "upsertTickets",
+    () => upsertTicketsInPostgres(tickets),
+    () => upsertTicketsInFiles(tickets)
   );
 }
 

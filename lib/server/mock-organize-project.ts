@@ -223,6 +223,10 @@ export function buildPersistedTicketsFromOrganizeResponse(
         ? `${unavailableTeammate.name} is unavailable, so backend confirmation is routed through fallback ownership.`
         : ticket.dependencies.length > 1
           ? `Waiting on: ${ticket.dependencies.join(", ")}`
-          : ""
+          : "",
+    sourceType: "local",
+    externalKey: null,
+    externalUrl: null,
+    lastSyncedAt: null
   }));
 }
