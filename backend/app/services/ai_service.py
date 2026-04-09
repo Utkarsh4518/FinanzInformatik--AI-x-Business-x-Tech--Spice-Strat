@@ -22,10 +22,42 @@ def _has_openai() -> bool:
 GEMINI_MODELS = [
     "gemini-3.1-pro",
     "gemini-3-flash",
+    "gemini-2.5-pro",
     "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
 ]
 
 RETRYABLE_MARKERS = ("RESOURCE_EXHAUSTED", "429", "503", "UNAVAILABLE", "high demand")
+
+# When a model ID is wrong or not enabled for the key, API often returns 404 / NOT_FOUND — try next model.
+_GEMINI_TRY_NEXT_MODEL_MARKERS = (
+    "404",
+    "not found",
+    "not_found",
+    "NOT_FOUND",
+    "does not exist",
+    "invalid model",
+    "unknown model",
+    "model not found",
+    "no such model",
+    "is not supported for",
+    "FAILED_PRECONDITION",
+)
+
+
+def _gemini_should_try_next_model(exc: BaseException) -> bool:
+    err = str(exc).lower()
+    return any(m.lower() in err for m in _GEMINI_TRY_NEXT_MODEL_MARKERS)
+
+
+def _gemini_auth_fatal(exc: BaseException) -> bool:
+    err = str(exc).lower()
+    if "401" in err:
+        return True
+    if "api key" in err and ("invalid" in err or "not valid" in err):
+        return True
+    return False
 
 
 def _sync_call_gemini(prompt: str) -> str:
@@ -49,12 +81,17 @@ def _sync_call_gemini(prompt: str) -> str:
                 return response.text or ""
             except Exception as exc:
                 err_str = str(exc)
-                logger.warning("Model %s attempt %d failed: %s", model_name, attempt + 1, err_str[:150])
+                logger.warning("Model %s attempt %d failed: %s", model_name, attempt + 1, err_str[:200])
                 last_err = exc
+                if _gemini_auth_fatal(exc):
+                    raise
                 if any(m in err_str for m in RETRYABLE_MARKERS):
                     if attempt == 0:
                         time.sleep(1)
                     continue
+                if _gemini_should_try_next_model(exc):
+                    logger.info("Skipping model %s (unavailable or 404), trying next", model_name)
+                    break
                 raise
 
     raise last_err or RuntimeError("All Gemini models failed")
@@ -97,28 +134,26 @@ async def _call_llm(prompt: str) -> str:
     return _mock_response(prompt)
 
 
+def _translate_llm_unavailable_fallback(text: str, target_audience: str) -> str:
+    """When Gemini/OpenAI fails, never use generic _mock_response (it matched audience prompts)."""
+    snippet = text.strip()[:2000]
+    if not snippet:
+        return "Translation unavailable: no source text and the AI service did not respond."
+    if target_audience == "business":
+        return (
+            "The AI service could not complete this translation (check GEMINI_API_KEY, quotas, or model availability). "
+            "Below is the original text in plain form so you still have the source:\n\n"
+            f"{snippet}"
+        )
+    return (
+        "The AI service could not complete this translation (check GEMINI_API_KEY, quotas, or model availability). "
+        "Source text:\n\n"
+        f"{snippet}"
+    )
+
+
 def _mock_response(prompt: str) -> str:
     lower = prompt.lower()
-
-    if "business" in lower and ("translat" in lower or "non-technical" in lower or "simple" in lower):
-        return (
-            "This project is a software solution that helps the company process and manage "
-            "financial transactions more efficiently. It automates key calculations like loan "
-            "amortization, interest rate comparisons, and repayment schedules. The expected "
-            "impact is a 30% reduction in manual processing time, fewer calculation errors, "
-            "and faster turnaround for customer loan approvals. Stakeholders can use the "
-            "generated reports for quarterly reviews and compliance audits."
-        )
-
-    if "developer" in lower and ("translat" in lower or "technical" in lower):
-        return (
-            "This service exposes a RESTful API built with FastAPI (Python 3.12). It uses "
-            "async request handlers with Pydantic validation for input schemas. The core "
-            "computation module implements a loan calculation pipeline with configurable "
-            "stages (amortization, interest accrual, payment scheduling). The architecture "
-            "follows a clean service-layer pattern. To run locally: clone the repo, create a "
-            "virtualenv, pip install -r requirements.txt, then uvicorn app.main:app --reload."
-        )
 
     if "impact" in lower or "roi" in lower:
         return (
@@ -341,7 +376,20 @@ async def translate_text(text: str, target_audience: str, context: str | None = 
     if context:
         prompt += f"\n\nAdditional context:\n{context}"
 
-    return await _call_llm(prompt)
+    try:
+        if _has_gemini():
+            result = (await _call_gemini(prompt)).strip()
+            if result:
+                return result
+            logger.warning("translate_text: Gemini returned empty string")
+        if _has_openai():
+            result = (await _call_openai(prompt)).strip()
+            if result:
+                return result
+    except Exception as exc:
+        logger.error("translate_text LLM error: %s", str(exc)[:200])
+
+    return _translate_llm_unavailable_fallback(text, target_audience)
 
 
 async def chat_response(message: str, mode: str, context: str | None = None, history: list[dict] | None = None) -> str:

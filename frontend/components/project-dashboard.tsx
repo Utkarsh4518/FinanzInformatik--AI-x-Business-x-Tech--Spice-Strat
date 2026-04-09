@@ -55,12 +55,23 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
     return () => { cancelled = true; };
   }, [selectedRepo]);
 
+  function stripHtml(html: string): string {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || doc.body.innerText || "";
+  }
+
+  function getPlainReadme(): string {
+    if (!detail?.readme) return "";
+    return stripHtml(detail.readme).slice(0, 3000);
+  }
+
   async function handleTranslate() {
-    if (!detail?.readme) return;
+    const plain = getPlainReadme();
+    if (!plain) return;
     setTranslating(true);
     try {
       const target = isBusiness ? "business" : "developer";
-      const result = await translateText(detail.readme.slice(0, 3000), target);
+      const result = await translateText(plain, target);
       setTranslatedReadme(result.translated);
     } catch {
       setTranslatedReadme("Translation failed. Make sure the backend is running.");
@@ -70,7 +81,7 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
   }
 
   async function handleLanguageTranslate() {
-    const source = translatedReadme || detail?.readme;
+    const source = translatedReadme || getPlainReadme();
     if (!source) return;
     setLangTranslating(true);
     try {
@@ -204,13 +215,22 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
               <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
                 {langTranslated}
               </p>
-              <button
-                onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(langTranslated)}
-                className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
-              >
-                {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
-                {tts.isSpeaking ? "Stop" : "Listen"}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(langTranslated)}
+                  className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                >
+                  {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                  {tts.isSpeaking ? "Stop" : "Listen"}
+                </button>
+                <button
+                  onClick={() => setLangTranslated(null)}
+                  className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                >
+                  <ArrowLeftRight className="h-3 w-3" />
+                  Clear
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -224,20 +244,30 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
               <h3 className="mb-3 text-sm font-semibold text-fi-text">Project Overview</h3>
               {translatedReadme ? (
                 <div className="space-y-2">
-                  <p className="text-sm leading-relaxed text-fi-text/70">{translatedReadme}</p>
-                  <button
-                    onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
-                    className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
-                  >
-                    {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
-                    {tts.isSpeaking ? "Stop" : "Listen to translation"}
-                  </button>
+                  <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap">{translatedReadme}</p>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
+                      className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                    >
+                      {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                      {tts.isSpeaking ? "Stop" : "Listen"}
+                    </button>
+                    <button
+                      onClick={() => setTranslatedReadme(null)}
+                      className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                    >
+                      <ArrowLeftRight className="h-3 w-3" />
+                      Show original
+                    </button>
+                  </div>
                 </div>
               ) : detail.readme ? (
                 <div className="space-y-3">
-                  <p className="text-sm leading-relaxed text-fi-text/50">
-                    {detail.readme.slice(0, 500).replace(/[#*`_\[\]]/g, "")}...
-                  </p>
+                  <div
+                    className="prose-markdown max-h-[300px] overflow-y-auto text-sm leading-relaxed text-fi-text/50"
+                    dangerouslySetInnerHTML={{ __html: detail.readme }}
+                  />
                   <Button
                     variant="accent"
                     size="sm"
@@ -314,23 +344,30 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
               <h3 className="mb-3 text-sm font-semibold text-fi-text">README</h3>
               {translatedReadme ? (
                 <div className="space-y-2">
-                  <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/70">
-                    {translatedReadme}
-                  </pre>
-                  <button
-                    onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
-                    className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
-                  >
-                    {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
-                    {tts.isSpeaking ? "Stop" : "Listen to translation"}
-                  </button>
+                  <pre className="max-h-[400px] overflow-y-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/70">{translatedReadme}</pre>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
+                      className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                    >
+                      {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                      {tts.isSpeaking ? "Stop" : "Listen"}
+                    </button>
+                    <button
+                      onClick={() => setTranslatedReadme(null)}
+                      className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                    >
+                      <ArrowLeftRight className="h-3 w-3" />
+                      Show original
+                    </button>
+                  </div>
                 </div>
               ) : detail.readme ? (
                 <div className="space-y-3">
-                  <pre className="max-h-[400px] overflow-y-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/50">
-                    {detail.readme.slice(0, 2000)}
-                    {detail.readme.length > 2000 && "\n\n... (truncated)"}
-                  </pre>
+                  <div
+                    className="prose-markdown max-h-[400px] overflow-y-auto text-xs leading-relaxed text-fi-text/50"
+                    dangerouslySetInnerHTML={{ __html: detail.readme }}
+                  />
                   <Button
                     variant="accent"
                     size="sm"

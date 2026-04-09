@@ -44,7 +44,7 @@ export function DashboardShell() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       {/* Navbar */}
-      <header className="relative z-50 flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 backdrop-blur-2xl md:px-6" style={{ background: "linear-gradient(90deg, rgba(47,23,58,0.85), rgba(38,25,77,0.85))" }}>
+      <header className="relative z-50 flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 backdrop-blur-2xl md:px-6" style={{ background: isBusiness ? "linear-gradient(90deg, rgba(47,23,58,0.85), rgba(38,25,77,0.85))" : "rgba(10,10,10,0.95)" }}>
         {/* Left: Logo + mobile toggle */}
         <div className="flex items-center gap-3">
           <button
@@ -55,8 +55,8 @@ export function DashboardShell() {
           </button>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fi-gradient shadow-md shadow-fi-red/20">
-              <span className="text-sm font-bold text-white">B</span>
+            <div className={`flex h-8 w-8 items-center justify-center rounded-lg shadow-md ${isBusiness ? "bg-fi-gradient shadow-fi-red/20" : "bg-white shadow-white/10"}`}>
+              <span className={`text-sm font-bold ${isBusiness ? "text-white" : "text-black"}`}>B</span>
             </div>
             <span className="font-display text-base font-semibold text-fi-text">
               Bridge
@@ -81,7 +81,7 @@ export function DashboardShell() {
             onClick={() => { if (isBusiness) toggle(); }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all duration-300 ${
               !isBusiness
-                ? "bg-fi-purple/20 text-fi-purple shadow-sm shadow-fi-purple/10"
+                ? "bg-white/15 text-white shadow-sm shadow-white/5"
                 : "text-fi-text/40 hover:text-fi-text/70"
             }`}
           >

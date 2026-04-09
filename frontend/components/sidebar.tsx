@@ -135,7 +135,7 @@ export function Sidebar({
   );
 
   return (
-    <aside className="flex h-full w-full flex-col border-r border-white/[0.08]" style={{ background: "linear-gradient(180deg, rgba(47,23,58,0.6), rgba(26,14,34,0.8))" }}>
+    <aside className="flex h-full w-full flex-col border-r border-white/[0.08]" style={{ background: isBusiness ? "linear-gradient(180deg, rgba(47,23,58,0.6), rgba(26,14,34,0.8))" : "rgba(10,10,10,0.9)" }}>
       {/* Tab switcher */}
       <div className="flex border-b border-white/[0.08]">
         {tabs.map((tab) => {
