@@ -22,6 +22,7 @@ import type { RepoDetail, RepoSummary } from "@/lib/types";
 import BorderGlow from "@/components/BorderGlow";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ContextualChat } from "@/components/contextual-chat";
 
 type ProjectDashboardProps = {
   selectedRepo: RepoSummary | null;
@@ -409,6 +410,24 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
           </>
         )}
       </div>
+
+      {/* Contextual Chat */}
+      <ContextualChat
+        context={[
+          `Repository: ${detail.full_name}`,
+          `Description: ${detail.description || "No description"}`,
+          `Language: ${detail.language || "Unknown"}`,
+          `Stars: ${detail.stargazers_count}, Forks: ${detail.forks_count}, Issues: ${detail.open_issues_count}`,
+          `Topics: ${detail.topics.join(", ") || "none"}`,
+          `Default branch: ${detail.default_branch}`,
+          detail.readme ? `\nREADME (excerpt):\n${stripHtml(detail.readme).slice(0, 2000)}` : "",
+        ].filter(Boolean).join("\n")}
+        contextLabel={`Repository: ${detail.name}`}
+        quickPrompts={isBusiness
+          ? ["What does this project do?", "What's the business value?", "Summarize for stakeholders"]
+          : ["Explain the architecture", "How do I set up locally?", "What's the tech stack?"]
+        }
+      />
     </motion.div>
   );
 }

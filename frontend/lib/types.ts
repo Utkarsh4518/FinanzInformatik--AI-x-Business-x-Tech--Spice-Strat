@@ -44,14 +44,7 @@ export type Website = {
   category: string;
 };
 
-export type Scenario = {
-  id: string;
-  title: string;
-  description: string;
-  businessPrompt: string;
-  developerPrompt: string;
-  icon: string;
-};
+
 
 export type JiraProject = {
   key: string;
@@ -122,5 +115,5 @@ export type ExplainCommitResponse = {
   mode: string;
 };
 
-export type SidebarTab = "projects" | "websites" | "scenarios" | "jira" | "commits";
-export type MainView = "dashboard" | "project-detail" | "scenarios" | "chat" | "jira" | "commit-detail";
+export type SidebarTab = "projects" | "websites" | "jira" | "commits";
+export type MainView = "dashboard" | "project-detail" | "chat" | "jira" | "commit-detail";

@@ -441,24 +441,47 @@ async def chat_response(message: str, mode: str, context: str | None = None, his
 
 
 async def generate_ticket_content(requirement: str, mode: str, context: str | None = None) -> tuple[str, str]:
-    """Use LLM to generate a Jira ticket summary + description from a natural-language requirement."""
+    """Use LLM to generate a Jira ticket summary + description from a natural-language requirement.
+
+    When context is provided (e.g. commit diffs, repo README), the AI uses it to produce
+    a technically accurate and detailed ticket -- even from vague business language.
+    """
     prompt = (
-        "You are a project management assistant for 'Bridge', a collaboration tool.\n"
-        "Given a requirement, generate a Jira ticket with:\n"
-        "1. A concise summary (one line, max 80 chars)\n"
-        "2. A detailed description with acceptance criteria\n\n"
+        "You are a senior project management assistant for 'Bridge', a collaboration tool "
+        "that helps business and tech teams work together.\n\n"
+        "Your task: Convert a user's requirement into a professional Jira ticket.\n"
+        "Generate:\n"
+        "1. A concise, actionable summary (one line, max 80 chars)\n"
+        "2. A detailed description with:\n"
+        "   - Clear problem statement\n"
+        "   - Acceptance criteria (bullet points)\n"
+        "   - Technical implementation notes (based on context if available)\n"
+        "   - Priority suggestion and estimated effort\n\n"
     )
 
     if mode == "business":
-        prompt += "Write for a business audience: focus on outcomes, impact, and success metrics.\n"
+        prompt += (
+            "The requirement comes from a BUSINESS user who may use non-technical language.\n"
+            "Translate their intent into a proper technical ticket with clear developer instructions.\n"
+            "Make the description actionable for developers while keeping the summary business-readable.\n"
+        )
     else:
-        prompt += "Write for a developer audience: include technical details, API contracts, edge cases.\n"
+        prompt += (
+            "The requirement comes from a DEVELOPER.\n"
+            "Include technical details, API contracts, edge cases, and architecture notes.\n"
+        )
 
     if context:
-        prompt += f"\nProject context:\n{context}\n"
+        prompt += (
+            f"\n--- CODEBASE CONTEXT ---\n"
+            f"Use this context to make the ticket specific and technically accurate. "
+            f"Reference actual files, patterns, and code structure from the context below:\n\n"
+            f"{context[:4000]}\n"
+            f"--- END CONTEXT ---\n\n"
+        )
 
     prompt += (
-        f"\nRequirement:\n{requirement}\n\n"
+        f"\nUser's requirement:\n\"{requirement}\"\n\n"
         "Respond in EXACTLY this format (no markdown, no extra text):\n"
         "SUMMARY: <one line summary>\n"
         "DESCRIPTION: <multi-line description with acceptance criteria>"

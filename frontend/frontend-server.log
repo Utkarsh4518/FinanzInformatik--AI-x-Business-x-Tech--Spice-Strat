@@ -1,0 +1,80 @@
+
+> finbridge-ai-frontend@0.1.0 dev
+> next dev
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\Utkarsh\Desktop\spice_strat\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\Utkarsh\Desktop\spice_strat\frontend\package-lock.json
+
+ ⚠ Port 3000 is in use by process 29252, using available port 3002 instead.
+   ▲ Next.js 15.5.15
+   - Local:        http://localhost:3002
+   - Network:      http://10.5.0.2:3002
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ○ Compiling / ...
+ ✓ Compiled / in 2.5s (1753 modules)
+ GET / 200 in 3004ms
+<w> [webpack.cache.PackFileCacheStrategy] Restoring pack failed from C:\Users\Utkarsh\Desktop\spice_strat\frontend\.next\cache\webpack\client-development.pack.gz: Error: incorrect header check
+ ✓ Compiled in 8.7s (1776 modules)
+ ✓ Compiled in 818ms (812 modules)
+ ✓ Compiled in 483ms (812 modules)
+ ⚠ ./components/scenario-library.tsx
+Attempted import error: 'scenarios' is not exported from '@/lib/mock-data' (imported as 'scenarios').
+
+Import trace for requested module:
+./components/scenario-library.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+
+./components/sidebar.tsx
+Attempted import error: 'scenarios' is not exported from '@/lib/mock-data' (imported as 'scenarioData').
+
+Import trace for requested module:
+./components/sidebar.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+
+./components/scenario-library.tsx
+Attempted import error: 'scenarios' is not exported from '@/lib/mock-data' (imported as 'scenarios').
+
+Import trace for requested module:
+./components/scenario-library.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+
+./components/sidebar.tsx
+Attempted import error: 'scenarios' is not exported from '@/lib/mock-data' (imported as 'scenarioData').
+
+Import trace for requested module:
+./components/sidebar.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+ ⚠ ./components/scenario-library.tsx
+Attempted import error: 'scenarios' is not exported from '@/lib/mock-data' (imported as 'scenarios').
+
+Import trace for requested module:
+./components/scenario-library.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+
+./components/scenario-library.tsx
+Attempted import error: 'scenarios' is not exported from '@/lib/mock-data' (imported as 'scenarios').
+
+Import trace for requested module:
+./components/scenario-library.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+ ✓ Compiled in 1749ms (1734 modules)
+ ✓ Compiled in 777ms (1764 modules)
+ ✓ Compiled in 958ms (1764 modules)
+ ✓ Compiled in 599ms (806 modules)
+ ✓ Compiled in 913ms (806 modules)
+ ✓ Compiled in 459ms (806 modules)
+ ✓ Compiled in 3.2s (1772 modules)
+ ✓ Compiled in 1211ms (1772 modules)

@@ -25,6 +25,7 @@ import { explainCommit, fetchCommitDetail, translateLanguage } from "@/lib/api";
 import { useTextToSpeech } from "@/lib/use-tts";
 import type { CommitDetail as CommitDetailType, CommitFile, CommitSummary, RepoSummary } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { ContextualChat } from "@/components/contextual-chat";
 
 type CommitDetailProps = {
   commit: CommitSummary;
@@ -117,6 +118,22 @@ export function CommitDetail({ commit, repo, onBack }: CommitDetailProps) {
 
   const firstLine = detail.message.split("\n")[0];
   const restLines = detail.message.split("\n").slice(1).join("\n").trim();
+
+  // Build context for the contextual chat
+  const chatContext = [
+    `Repository: ${repo.full_name}`,
+    `Commit: ${detail.sha.slice(0, 7)} by ${detail.author_name}`,
+    `Message: ${detail.message}`,
+    `Stats: +${detail.additions} -${detail.deletions} across ${detail.file_count} files`,
+    `\nFiles changed:`,
+    ...detail.files.slice(0, 15).map(f =>
+      `- ${f.filename} (${f.status}): +${f.additions} -${f.deletions}${f.patch ? `\n${f.patch.slice(0, 500)}` : ""}`
+    ),
+  ].join("\n");
+
+  const commitQuickPrompts = isBusiness
+    ? ["What does this update mean for the product?", "Any risks for users?", "Summarize for my report"]
+    : ["Review the code quality", "What patterns are used?", "Any tech debt introduced?"];
 
   return (
     <motion.div
@@ -296,6 +313,13 @@ export function CommitDetail({ commit, repo, onBack }: CommitDetailProps) {
           })}
         </div>
       </div>
+
+      {/* Contextual Chat */}
+      <ContextualChat
+        context={chatContext}
+        contextLabel={`Commit ${detail.sha.slice(0, 7)} in ${repo.name}`}
+        quickPrompts={commitQuickPrompts}
+      />
     </motion.div>
   );
 }

@@ -9,7 +9,6 @@ import { defaultOwner } from "@/lib/mock-data";
 import type { CommitSummary, JiraIssue, MainView, RepoSummary, SidebarTab } from "@/lib/types";
 import { Sidebar } from "@/components/sidebar";
 import { ProjectDashboard } from "@/components/project-dashboard";
-import { ScenarioLibrary } from "@/components/scenario-library";
 import { AiChatPanel } from "@/components/ai-chat-panel";
 import { JiraBoard } from "@/components/jira-board";
 import { CommitDetail } from "@/components/commit-detail";
@@ -27,10 +26,6 @@ export function DashboardShell() {
   const [commitRepo, setCommitRepo] = useState<RepoSummary | null>(null);
   const [chatPrefill, setChatPrefill] = useState<string | undefined>();
   const [mobileMenu, setMobileMenu] = useState(false);
-
-  const handleSelectScenario = useCallback((_id: string) => {
-    setMainView("scenarios");
-  }, []);
 
   const handleTryScenario = useCallback((prompt: string) => {
     setChatPrefill(prompt);
@@ -164,7 +159,6 @@ export function DashboardShell() {
             activeTab={sidebarTab}
             onTabChange={setSidebarTab}
             onSelectRepo={setSelectedRepo}
-            onSelectScenario={handleSelectScenario}
             onSelectJiraIssue={setSelectedJiraIssue}
             onSelectCommit={handleSelectCommit}
             onViewChange={setMainView}
@@ -195,7 +189,6 @@ export function DashboardShell() {
                   activeTab={sidebarTab}
                   onTabChange={(tab) => { setSidebarTab(tab); setMobileMenu(false); }}
                   onSelectRepo={(repo) => { setSelectedRepo(repo); setMobileMenu(false); }}
-                  onSelectScenario={(id) => { handleSelectScenario(id); setMobileMenu(false); }}
                   onSelectJiraIssue={(issue) => { setSelectedJiraIssue(issue); setMobileMenu(false); }}
                   onSelectCommit={(c, r) => { handleSelectCommit(c, r); setMobileMenu(false); }}
                   onViewChange={(view) => { setMainView(view); setMobileMenu(false); }}
@@ -223,17 +216,6 @@ export function DashboardShell() {
                   prefillPrompt={chatPrefill}
                   clearPrefill={() => setChatPrefill(undefined)}
                 />
-              </motion.div>
-            ) : mainView === "scenarios" ? (
-              <motion.div
-                key="scenarios"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="h-full"
-              >
-                <ScenarioLibrary onTryScenario={handleTryScenario} />
               </motion.div>
             ) : mainView === "commit-detail" && selectedCommit && commitRepo ? (
               <motion.div

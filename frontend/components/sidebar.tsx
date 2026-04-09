@@ -2,10 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  AlertTriangle,
-  ArrowLeftRight,
-  BookOpen,
-  Briefcase,
   CheckCircle2,
   Circle,
   Clock,
@@ -19,7 +15,6 @@ import {
   Search,
   Star,
   TicketCheck,
-  UserPlus,
 } from "lucide-react";
 
 import { motion } from "framer-motion";
@@ -27,22 +22,15 @@ import { motion } from "framer-motion";
 import { useMode } from "@/lib/mode-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchRepos, fetchJiraProjects, fetchJiraIssues, fetchCommits } from "@/lib/api";
-import { websites, scenarios as scenarioData } from "@/lib/mock-data";
+import { websites } from "@/lib/mock-data";
 import type { CommitSummary, JiraIssue, JiraProject, MainView, RepoSummary, SidebarTab } from "@/lib/types";
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Briefcase,
-  Code2,
-  ArrowLeftRight,
-  AlertTriangle,
-  UserPlus,
-};
+
 
 type SidebarProps = {
   activeTab: SidebarTab;
   onTabChange: (tab: SidebarTab) => void;
   onSelectRepo: (repo: RepoSummary) => void;
-  onSelectScenario: (id: string) => void;
   onSelectJiraIssue: (issue: JiraIssue) => void;
   onSelectCommit: (commit: CommitSummary, repo: RepoSummary) => void;
   onViewChange: (view: MainView) => void;
@@ -55,7 +43,6 @@ const tabs: { id: SidebarTab; label: string; icon: React.ComponentType<{ classNa
   { id: "commits", label: "Commits", icon: GitCommitHorizontal },
   { id: "jira", label: "Jira", icon: TicketCheck },
   { id: "websites", label: "Websites", icon: Globe },
-  { id: "scenarios", label: "Scenarios", icon: BookOpen },
 ];
 
 const statusIcon: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -68,7 +55,6 @@ export function Sidebar({
   activeTab,
   onTabChange,
   onSelectRepo,
-  onSelectScenario,
   onSelectJiraIssue,
   onSelectCommit,
   onViewChange,
@@ -177,8 +163,7 @@ export function Sidebar({
                 key={tab.id}
                 onClick={() => {
                   onTabChange(tab.id);
-                  if (tab.id === "scenarios") onViewChange("scenarios");
-                  else if (tab.id === "jira") onViewChange("jira");
+                  if (tab.id === "jira") onViewChange("jira");
                   else if (tab.id === "commits") onViewChange("dashboard");
                   else if (tab.id === "projects") onViewChange("dashboard");
                 }}
@@ -427,42 +412,7 @@ export function Sidebar({
           </div>
         )}
 
-        {activeTab === "scenarios" && (
-          <motion.div
-            className="space-y-1 p-3"
-            initial="hidden"
-            animate="show"
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
-          >
-            {scenarioData.map((sc) => {
-              const Icon = iconMap[sc.icon] ?? BookOpen;
-              return (
-                <motion.button
-                  key={sc.id}
-                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-                  transition={{ duration: 0.25 }}
-                  onClick={() => {
-                    onSelectScenario(sc.id);
-                    onViewChange("scenarios");
-                  }}
-                  className="w-full rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-fi-magenta/10"
-                >
-                  <div className="flex items-start gap-2.5">
-                    <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md accent-bg">
-                      <Icon className="h-3 w-3 accent-text" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium text-fi-text">{sc.title}</p>
-                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-fi-text/40">
-                        {sc.description}
-                      </p>
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </motion.div>
-        )}
+
 
         {activeTab === "commits" && (
           <div className="flex flex-col">
