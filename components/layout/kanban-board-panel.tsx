@@ -18,10 +18,10 @@ const statusLabels: Record<TicketStatus, string> = {
 };
 
 const priorityStyles: Record<Ticket["priority"], string> = {
-  low: "bg-slate-100 text-slate-600",
-  medium: "bg-accentSoft text-accent",
-  high: "bg-amber-50 text-amber-700",
-  critical: "bg-rose-50 text-rose-700"
+  low: "border border-line bg-white text-slate-600",
+  medium: "border border-accent/10 bg-accentSoft text-accent",
+  high: "border border-amber-200 bg-amber-50 text-amber-700",
+  critical: "border border-rose-200 bg-rose-50 text-rose-700"
 };
 
 export function KanbanBoardPanel({
@@ -42,12 +42,26 @@ export function KanbanBoardPanel({
           const columnTickets = tickets.filter((ticket) => ticket.status === status);
 
           return (
-            <div key={status} className="rounded-2xl border border-line bg-panelSoft p-3">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-700">
-                  {statusLabels[status]}
-                </h3>
-                <span className="rounded-full bg-white px-2 py-1 text-xs text-slate-500">
+            <div
+              key={status}
+              className="rounded-2xl border border-line bg-panelSoft/90 p-3.5 shadow-panelSoft"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-800">
+                    {statusLabels[status]}
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {status === "backlog"
+                      ? "Planned work"
+                      : status === "in_progress"
+                        ? "Active delivery"
+                        : status === "review"
+                          ? "Validation and sign-off"
+                          : "Completed items"}
+                  </p>
+                </div>
+                <span className="rounded-full border border-line bg-white px-2.5 py-1 text-xs font-medium text-slate-500">
                   {columnTickets.length}
                 </span>
               </div>
@@ -62,40 +76,62 @@ export function KanbanBoardPanel({
                         key={ticket.id}
                         type="button"
                         onClick={() => onSelectTicket(ticket.id)}
-                        className={`w-full rounded-xl border bg-white p-4 text-left text-sm text-slate-600 shadow-panelSoft transition ${
+                        className={`w-full rounded-2xl border bg-white p-4 text-left text-sm text-slate-600 shadow-panelSoft transition ${
                           selectedTicketId === ticket.id
-                            ? "border-accent ring-2 ring-accent/10"
-                            : "border-line hover:border-slate-300 hover:shadow-sm"
+                            ? "border-accent bg-accentSoft/55 ring-1 ring-accent/10"
+                            : "border-line hover:border-slate-300 hover:bg-slate-50/70"
                         }`}
                       >
                         <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-medium text-slate-700">{ticket.title}</p>
-                            <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
-                              {ticket.code}
+                          <div className="min-w-0">
+                            <p className="font-semibold leading-6 text-slate-800">
+                              {ticket.title}
                             </p>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <span className="rounded-full border border-line bg-panelSoft px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                                {ticket.code}
+                              </span>
+                              <span className="rounded-full border border-line bg-panelSoft px-2 py-1 text-[11px] font-medium capitalize text-slate-500">
+                                {ticket.type}
+                              </span>
+                            </div>
                           </div>
                           <span
-                            className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${priorityStyles[ticket.priority]}`}
+                            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${priorityStyles[ticket.priority]}`}
                           >
                             {ticket.priority}
                           </span>
                         </div>
-                        <p className="mt-3 leading-6 text-slate-500">{ticket.summary}</p>
+
+                        <p className="mt-3 line-clamp-3 leading-6 text-slate-600">
+                          {ticket.summary}
+                        </p>
+
                         {ticket.blockerReason ? (
-                          <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                          <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs leading-5 text-rose-700">
                             Blocked: {ticket.blockerReason}
                           </div>
                         ) : null}
-                        <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                          <span className="capitalize">{ticket.type}</span>
-                          <span>{assignee?.name ?? "Unassigned"}</span>
+
+                        <div className="mt-4 grid gap-2 text-xs text-slate-500">
+                          <div className="flex items-center justify-between gap-3">
+                            <span>Owner</span>
+                            <span className="font-medium text-slate-700">
+                              {assignee?.name ?? "Unassigned"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-3">
+                            <span>Current state</span>
+                            <span className="font-medium text-slate-700">
+                              {statusLabels[ticket.status]}
+                            </span>
+                          </div>
                         </div>
                       </button>
                     );
                   })
                 ) : (
-                  <div className="rounded-xl border border-dashed border-line bg-white px-3 py-6 text-center text-sm text-slate-400">
+                  <div className="rounded-2xl border border-dashed border-line bg-white px-3 py-8 text-center text-sm leading-6 text-slate-400">
                     No tickets in this stage.
                   </div>
                 )}

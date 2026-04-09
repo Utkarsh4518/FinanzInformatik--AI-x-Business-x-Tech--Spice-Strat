@@ -17,9 +17,13 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  color: #162233;
-  background: linear-gradient(180deg, #f8fafc 0%, #f4f7fa 100%);
+  color: #182434;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.75), transparent 34%),
+    linear-gradient(180deg, #f8fafc 0%, #f3f6f9 100%);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {

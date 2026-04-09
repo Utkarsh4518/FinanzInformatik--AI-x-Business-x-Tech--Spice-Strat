@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
 import { ProgressSummarySection } from "@/components/layout/ai-insights/progress-summary-section";
@@ -40,6 +41,23 @@ const roleLabels: Record<AppRole, string> = {
   analyst: "Analyst",
   developer: "Developer"
 };
+
+function InsightCard({
+  title,
+  children
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
+      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+        {title}
+      </div>
+      <div className="mt-3">{children}</div>
+    </div>
+  );
+}
 
 export function AIInsightsPanel({
   currentRole,
@@ -114,22 +132,19 @@ export function AIInsightsPanel({
   const roleSpecificContent =
     currentRole === "manager" ? (
       <div className="space-y-4">
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Executive Snapshot
-          </div>
-          <p className="mt-3 text-sm leading-7 text-slate-700">
+        <InsightCard title="Executive Snapshot">
+          <p className="text-sm leading-7 text-slate-700">
             {organizeResult?.projectSummary ?? project.managerSummary}
           </p>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+            <div className="rounded-xl border border-line bg-panelSoft p-3">
               <div className="text-xs uppercase tracking-wide text-slate-400">Done</div>
               <div className="mt-2 text-xl font-semibold text-slate-800">
                 {progressSummary.done}
               </div>
             </div>
-            <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+            <div className="rounded-xl border border-line bg-panelSoft p-3">
               <div className="text-xs uppercase tracking-wide text-slate-400">
                 In Progress
               </div>
@@ -137,128 +152,101 @@ export function AIInsightsPanel({
                 {progressSummary.inProgress}
               </div>
             </div>
-            <div className="rounded-xl border border-line bg-rose-50/80 p-3">
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3">
               <div className="text-xs uppercase tracking-wide text-rose-400">Blocked</div>
               <div className="mt-2 text-xl font-semibold text-rose-700">
                 {progressSummary.blocked}
               </div>
             </div>
           </div>
-        </div>
+        </InsightCard>
 
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Risks And Blockers
-          </div>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+        <InsightCard title="Risks And Blockers">
+          <ul className="space-y-2 text-sm text-slate-600">
             {(organizeResult?.risks ?? currentBlockers).slice(0, 4).map((item) => (
-              <li
-                key={item}
-                className="rounded-xl border border-rose-200 bg-rose-50/80 p-3"
-              >
+              <li key={item} className="rounded-xl border border-rose-200 bg-rose-50 p-3">
                 {item}
               </li>
             ))}
           </ul>
-        </div>
+        </InsightCard>
 
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Team Availability
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-line bg-slate-50/90 p-3 text-sm text-slate-600">
+        <InsightCard title="Team Availability">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-line bg-panelSoft p-3 text-sm text-slate-600">
               Available
               <div className="mt-2 text-lg font-semibold text-slate-800">
                 {teamAvailabilitySummary.available}
               </div>
             </div>
-            <div className="rounded-xl border border-line bg-amber-50/80 p-3 text-sm text-amber-700">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
               Busy
               <div className="mt-2 text-lg font-semibold">{teamAvailabilitySummary.busy}</div>
             </div>
-            <div className="rounded-xl border border-line bg-rose-50/80 p-3 text-sm text-rose-700">
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
               Unavailable
               <div className="mt-2 text-lg font-semibold">
                 {teamAvailabilitySummary.unavailable}
               </div>
             </div>
           </div>
-        </div>
+        </InsightCard>
       </div>
     ) : currentRole === "analyst" ? (
       <div className="space-y-4">
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Business Summary
-          </div>
-          <p className="mt-3 text-sm leading-7 text-slate-700">
+        <InsightCard title="Business Summary">
+          <p className="text-sm leading-7 text-slate-700">
             {selectedTicket?.businessSummary ?? project.businessSummary}
           </p>
-        </div>
+        </InsightCard>
 
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Clarified Scope
-          </div>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+        <InsightCard title="Clarified Scope">
+          <ul className="space-y-2 text-sm text-slate-600">
             {(organizeResult?.clarifiedScope ?? [project.businessSummary]).map((item) => (
-              <li key={item} className="rounded-xl border border-line bg-slate-50/90 p-3">
+              <li key={item} className="rounded-xl border border-line bg-panelSoft p-3">
                 {item}
               </li>
             ))}
           </ul>
-        </div>
+        </InsightCard>
 
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Open Questions
-          </div>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+        <InsightCard title="Open Questions">
+          <ul className="space-y-2 text-sm text-slate-600">
             {(organizeResult?.openQuestions ?? ["Clarify remaining business assumptions."]).map(
               (item) => (
-                <li key={item} className="rounded-xl border border-line bg-slate-50/90 p-3">
+                <li key={item} className="rounded-xl border border-line bg-panelSoft p-3">
                   {item}
                 </li>
               )
             )}
           </ul>
-        </div>
+        </InsightCard>
       </div>
     ) : (
       <div className="space-y-4">
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Technical Summary
-          </div>
-          <p className="mt-3 text-sm leading-7 text-slate-700">
+        <InsightCard title="Technical Summary">
+          <p className="text-sm leading-7 text-slate-700">
             {selectedTicket?.technicalSummary ?? project.technicalSummary}
           </p>
-        </div>
+        </InsightCard>
 
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Dependency Focus
-          </div>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+        <InsightCard title="Dependency Focus">
+          <ul className="space-y-2 text-sm text-slate-600">
             {(selectedTicket?.dependencies.length
               ? selectedTicket.dependencies
               : ["No explicit dependencies recorded."]).map((item) => (
-              <li key={item} className="rounded-xl border border-line bg-slate-50/90 p-3">
+              <li key={item} className="rounded-xl border border-line bg-panelSoft p-3">
                 {item}
               </li>
             ))}
           </ul>
-        </div>
+        </InsightCard>
 
-        <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Blocker Detail
-          </div>
-          <p className="mt-3 text-sm leading-7 text-slate-700">
+        <InsightCard title="Blocker Detail">
+          <p className="text-sm leading-7 text-slate-700">
             {selectedTicket?.blockerReason || "No blocker currently recorded."}
           </p>
-        </div>
+        </InsightCard>
       </div>
     );
 
@@ -268,14 +256,14 @@ export function AIInsightsPanel({
       description="The same project data, reordered and emphasized for the selected role."
     >
       <div className="space-y-4">
-        <div className="flex items-center gap-2 rounded-xl border border-line bg-slate-50/90 p-1">
+        <div className="flex items-center gap-2 rounded-2xl border border-line bg-panelSoft p-1.5">
           <button
             type="button"
             onClick={() => setActiveTab("insights")}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+            className={`rounded-xl px-3.5 py-2 text-sm font-medium transition ${
               activeTab === "insights"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500"
+                ? "bg-white text-slate-900 shadow-panelSoft"
+                : "text-slate-500 hover:bg-white"
             }`}
           >
             Insights
@@ -283,10 +271,10 @@ export function AIInsightsPanel({
           <button
             type="button"
             onClick={() => setActiveTab("translate")}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+            className={`rounded-xl px-3.5 py-2 text-sm font-medium transition ${
               activeTab === "translate"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500"
+                ? "bg-white text-slate-900 shadow-panelSoft"
+                : "text-slate-500 hover:bg-white"
             }`}
           >
             Translate
@@ -312,12 +300,12 @@ export function AIInsightsPanel({
             {roleSpecificContent}
 
             {latestHandover && currentRole === "manager" ? (
-              <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+              <InsightCard title="Handover Status">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Handover Status
-                  </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+                  <span className="text-sm text-slate-500">
+                    Latest continuity snapshot
+                  </span>
+                  <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs text-slate-600">
                     {handovers.length} records
                   </span>
                 </div>
@@ -332,22 +320,19 @@ export function AIInsightsPanel({
                   {handoverTickets.map((ticket) => (
                     <div
                       key={ticket.id}
-                      className="rounded-xl border border-line bg-slate-50/90 p-3"
+                      className="rounded-xl border border-line bg-panelSoft p-3"
                     >
                       <p className="font-medium text-slate-700">{ticket.code}</p>
                       <p className="mt-1 text-sm text-slate-500">{ticket.title}</p>
                     </div>
                   ))}
                 </div>
-              </div>
+              </InsightCard>
             ) : null}
 
             {currentRole === "manager" ? (
-              <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Save Handover
-                </div>
-                <div className="mt-4 space-y-3">
+              <InsightCard title="Save Handover">
+                <div className="space-y-3">
                   <label className="block">
                     <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                       Unavailable Teammate
@@ -355,7 +340,7 @@ export function AIInsightsPanel({
                     <select
                       value={unavailableMemberId}
                       onChange={(event) => setUnavailableMemberId(event.target.value)}
-                      className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+                      className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
                     >
                       {teamMembers.map((member) => (
                         <option key={member.id} value={member.id}>
@@ -372,7 +357,7 @@ export function AIInsightsPanel({
                     <select
                       value={fallbackOwnerId}
                       onChange={(event) => setFallbackOwnerId(event.target.value)}
-                      className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+                      className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
                     >
                       {teamMembers.map((member) => (
                         <option key={member.id} value={member.id}>
@@ -390,23 +375,23 @@ export function AIInsightsPanel({
                       value={summary}
                       onChange={(event) => setSummary(event.target.value)}
                       rows={4}
-                      className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-slate-400"
+                      className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-accent"
                     />
                   </label>
 
                   <button
                     type="button"
                     onClick={() => void handleSaveHandover()}
-                    className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+                    className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white transition hover:bg-[#244362]"
                   >
                     Save Handover Record
                   </button>
                 </div>
-              </div>
+              </InsightCard>
             ) : null}
 
             {currentRole === "developer" ? (
-              <div className="rounded-2xl border border-dashed border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+              <div className="rounded-2xl border border-dashed border-line bg-white p-5 shadow-panelSoft">
                 <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Repo Impact Snapshot
                 </div>
@@ -414,7 +399,7 @@ export function AIInsightsPanel({
                   {repoFileSummaries.map((file) => (
                     <div
                       key={file.id}
-                      className="rounded-xl border border-line bg-slate-50/90 p-3"
+                      className="rounded-xl border border-line bg-panelSoft p-3"
                     >
                       <p className="text-sm font-medium text-slate-700">{file.path}</p>
                       <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">

@@ -118,7 +118,7 @@ export function ProgressSummarySection({
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
           Progress Summary
         </div>
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm leading-6 text-slate-500">
           Generating the latest delivery summary for the current role view.
         </p>
       </div>
@@ -132,7 +132,7 @@ export function ProgressSummarySection({
         <button
           type="button"
           onClick={() => void loadSummary()}
-          className="mt-3 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-medium text-rose-700"
+          className="mt-3 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-medium text-rose-700 shadow-panelSoft"
         >
           Retry Summary
         </button>
@@ -142,7 +142,7 @@ export function ProgressSummarySection({
 
   if (currentRole === "manager") {
     return (
-      <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
         <div className="flex items-center justify-between gap-3">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -153,13 +153,13 @@ export function ProgressSummarySection({
           <button
             type="button"
             onClick={() => void loadSummary()}
-            className="rounded-full border border-line bg-white px-3 py-2 text-xs font-medium text-slate-600"
+            className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
           >
             {isLoading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
 
-        <div className="mt-4 rounded-xl border border-line bg-slate-50/90 p-4">
+        <div className="mt-4 rounded-xl border border-line bg-panelSoft p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Manager Readout
           </div>
@@ -189,7 +189,7 @@ export function ProgressSummarySection({
             </div>
             <ul className="mt-2 space-y-2 text-sm text-slate-600">
               {summary.risks.map((item) => (
-                <li key={item} className="rounded-xl border border-line bg-slate-50/90 p-3">
+                <li key={item} className="rounded-xl border border-line bg-panelSoft p-3">
                   {item}
                 </li>
               ))}
@@ -215,7 +215,7 @@ export function ProgressSummarySection({
 
   if (currentRole === "analyst") {
     return (
-      <div className="rounded-2xl border border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
         <div className="flex items-center justify-between gap-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Business Progress Summary
@@ -223,7 +223,7 @@ export function ProgressSummarySection({
           <button
             type="button"
             onClick={() => void loadSummary()}
-            className="rounded-full border border-line bg-white px-3 py-2 text-xs font-medium text-slate-600"
+            className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
           >
             {isLoading ? "Refreshing..." : "Refresh"}
           </button>
@@ -238,7 +238,7 @@ export function ProgressSummarySection({
           </div>
           <ul className="mt-2 space-y-2 text-sm text-slate-600">
             {[...summary.blockedItems, ...summary.risks].slice(0, 4).map((item) => (
-              <li key={item} className="rounded-xl border border-line bg-slate-50/90 p-3">
+              <li key={item} className="rounded-xl border border-line bg-panelSoft p-3">
                 {item}
               </li>
             ))}
@@ -249,7 +249,7 @@ export function ProgressSummarySection({
   }
 
   return (
-    <div className="rounded-2xl border border-dashed border-line bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+    <div className="rounded-2xl border border-dashed border-line bg-white p-5 shadow-panelSoft">
       <div className="flex items-center justify-between gap-3">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           Delivery Snapshot
@@ -257,14 +257,14 @@ export function ProgressSummarySection({
         <button
           type="button"
           onClick={() => void loadSummary()}
-          className="rounded-full border border-line bg-white px-3 py-2 text-xs font-medium text-slate-600"
+          className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
         >
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
       <p className="mt-3 text-sm leading-6 text-slate-700">{summary.overallStatus}</p>
       <div className="mt-4 grid gap-3">
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             In Progress
           </div>
@@ -274,7 +274,7 @@ export function ProgressSummarySection({
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Next Steps
           </div>

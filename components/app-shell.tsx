@@ -336,7 +336,7 @@ export function AppShell() {
       <main className="min-h-screen bg-canvas px-4 py-4 text-ink md:px-6 md:py-6">
         <div className="mx-auto flex max-w-[1600px] items-center justify-center rounded-xl2 border border-line bg-panel p-10 shadow-panel">
           <div className="space-y-2 text-center">
-            <p className="text-sm font-medium text-slate-700">
+            <p className="text-sm font-semibold text-slate-700">
               Loading BridgeFlow workspace
             </p>
             <p className="text-sm text-slate-500">
@@ -384,7 +384,7 @@ export function AppShell() {
           <aside className="xl:sticky xl:top-4 xl:self-start">
             {isIntakeExpanded ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between rounded-xl2 border border-line bg-panel px-4 py-3 shadow-panelSoft">
+              <div className="flex items-center justify-between rounded-xl2 border border-line bg-panel px-4 py-3 shadow-panelSoft">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                       Intake Workspace
@@ -518,7 +518,7 @@ export function AppShell() {
 
             {activeWorkspaceTab === "tasks" ? (
               <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl2 border border-line bg-panel px-4 py-3 shadow-panelSoft">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl2 border border-line bg-panel px-4 py-4 shadow-panelSoft">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                       Task Workspace
@@ -527,13 +527,13 @@ export function AppShell() {
                       Keep one primary task view in focus and open the drawer for deeper work.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 rounded-full border border-line bg-panelSoft p-1">
+                  <div className="flex items-center gap-2 rounded-full border border-line bg-panelSoft p-1.5">
                     <button
                       type="button"
                       onClick={() => setTaskView("board")}
-                      className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
                         taskView === "board"
-                          ? "bg-accent text-white"
+                          ? "bg-white text-accent shadow-panelSoft"
                           : "text-slate-600 hover:bg-white"
                       }`}
                     >
@@ -542,9 +542,9 @@ export function AppShell() {
                     <button
                       type="button"
                       onClick={() => setTaskView("table")}
-                      className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
                         taskView === "table"
-                          ? "bg-accent text-white"
+                          ? "bg-white text-accent shadow-panelSoft"
                           : "text-slate-600 hover:bg-white"
                       }`}
                     >

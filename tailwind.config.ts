@@ -8,18 +8,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#f6f8fb",
-        ink: "#162233",
+        canvas: "#f4f7fa",
+        ink: "#182434",
         panel: "#ffffff",
-        line: "#d7dee7",
-        accent: "#264d73",
-        accentSoft: "#ebf2f8",
-        accentMuted: "#6b88a8",
-        panelSoft: "#f8fafc"
+        line: "#d6dde5",
+        accent: "#2b4f73",
+        accentSoft: "#edf3f8",
+        accentMuted: "#677f98",
+        panelSoft: "#f7f9fb"
       },
       boxShadow: {
-        panel: "0 12px 28px rgba(15, 23, 42, 0.05)",
-        panelSoft: "0 4px 14px rgba(15, 23, 42, 0.04)"
+        panel: "0 12px 28px rgba(17, 24, 39, 0.045)",
+        panelSoft: "0 5px 18px rgba(17, 24, 39, 0.035)"
       },
       borderRadius: {
         xl2: "1.25rem"

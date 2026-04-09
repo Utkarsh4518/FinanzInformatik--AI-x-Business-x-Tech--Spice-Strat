@@ -165,7 +165,7 @@ export function TranslateTab({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+      <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -196,7 +196,7 @@ export function TranslateTab({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+      <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           Translate Source
         </div>
@@ -209,7 +209,7 @@ export function TranslateTab({
             <select
               value={source}
               onChange={(event) => setSource(event.target.value as TranslationSource)}
-              className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+              className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
             >
               {availableSources.length ? (
                 availableSources.map((entry) => (
@@ -233,7 +233,7 @@ export function TranslateTab({
                 onChange={(event) =>
                   setMode(event.target.value as TranslateRequest["mode"])
                 }
-                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
               >
                 <option value="normalize">normalize</option>
                 <option value="business-to-technical">business-to-technical</option>
@@ -252,7 +252,7 @@ export function TranslateTab({
                     event.target.value as TranslateRequest["targetLanguage"]
                   )
                 }
-                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
               >
                 {targetLanguageOptions.map((option) => (
                   <option key={option} value={option}>
@@ -288,9 +288,9 @@ export function TranslateTab({
             </p>
           </div>
 
-            <button
-              type="button"
-              onClick={() => void handleTranslate()}
+          <button
+            type="button"
+            onClick={() => void handleTranslate()}
             disabled={!selectedSourceText.trim() || isTranslating}
             className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#203f5f]"
           >

@@ -165,13 +165,13 @@ export function TicketHandoverSection({
   const roleSpecificView =
     currentRole === "manager" ? (
       <div className="space-y-3">
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Continuity Summary
           </div>
           <p className="mt-2 text-sm leading-6 text-slate-700">{generated?.summary}</p>
         </div>
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Reassignment Impact
           </div>
@@ -185,7 +185,7 @@ export function TicketHandoverSection({
       </div>
     ) : currentRole === "analyst" ? (
       <div className="space-y-3">
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Business-Facing Summary
           </div>
@@ -193,7 +193,7 @@ export function TicketHandoverSection({
             {generated?.businessFacingSummary}
           </p>
         </div>
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Unresolved Questions
           </div>
@@ -206,7 +206,7 @@ export function TicketHandoverSection({
       </div>
     ) : (
       <div className="space-y-3">
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Completed Work
           </div>
@@ -242,7 +242,7 @@ export function TicketHandoverSection({
     );
 
   return (
-    <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+    <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -257,14 +257,14 @@ export function TicketHandoverSection({
           type="button"
           onClick={() => void handleGenerate()}
           disabled={isGenerating}
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#203f5f]"
+          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#244362]"
         >
           {isGenerating ? "Generating..." : "Generate Handover"}
         </button>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <div className="rounded-xl border border-line bg-panelSoft p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Current Assignee
           </div>
@@ -276,14 +276,14 @@ export function TicketHandoverSection({
           </p>
         </div>
 
-        <label className="rounded-xl border border-line bg-slate-50/90 p-3">
+        <label className="rounded-xl border border-line bg-panelSoft p-3">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Next Assignee Override
           </span>
           <select
             value={nextAssigneeId}
             onChange={(event) => setNextAssigneeId(event.target.value)}
-            className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+            className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-accent"
           >
             <option value="">Auto-suggest next owner</option>
             {availableTeamMembers

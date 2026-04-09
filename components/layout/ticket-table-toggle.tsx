@@ -15,6 +15,13 @@ const statusLabels: Record<TicketStatus, string> = {
   done: "Done"
 };
 
+const priorityStyles: Record<Ticket["priority"], string> = {
+  low: "border border-line bg-panelSoft text-slate-600",
+  medium: "border border-accent/10 bg-accentSoft text-accent",
+  high: "border border-amber-200 bg-amber-50 text-amber-700",
+  critical: "border border-rose-200 bg-rose-50 text-rose-700"
+};
+
 export function TicketTableToggle({
   tickets,
   teamMembers,
@@ -38,8 +45,8 @@ export function TicketTableToggle({
           </span>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-line">
-          <div className="grid grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] bg-panelSoft px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-panelSoft">
+          <div className="grid grid-cols-[0.85fr_1.9fr_1.05fr_0.95fr_1fr] bg-panelSoft px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
             <span>Ticket</span>
             <span>Summary</span>
             <span>Owner</span>
@@ -52,17 +59,41 @@ export function TicketTableToggle({
                 key={ticket.id}
                 type="button"
                 onClick={() => onSelectTicket(ticket.id)}
-                className={`grid w-full grid-cols-[0.8fr_1.8fr_1.1fr_0.8fr_0.9fr] border-t px-4 py-3 text-left text-sm text-slate-600 transition ${
+                className={`grid w-full grid-cols-[0.85fr_1.9fr_1.05fr_0.95fr_1fr] border-t px-5 py-4 text-left text-sm text-slate-600 transition ${
                   selectedTicketId === ticket.id
-                    ? "border-accent/30 bg-accentSoft/60"
-                    : "border-line bg-white hover:bg-panelSoft"
+                    ? "border-accent/20 bg-accentSoft/55"
+                    : "border-line bg-white hover:bg-panelSoft/70"
                 }`}
               >
-                <span className="font-medium text-slate-700">{ticket.code}</span>
-                <span>{ticket.title}</span>
-                <span>{memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}</span>
-                <span className="capitalize">{ticket.priority}</span>
-                <span>{statusLabels[ticket.status]}</span>
+                <div>
+                  <span className="font-semibold text-slate-800">{ticket.code}</span>
+                  <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+                    {ticket.type}
+                  </p>
+                </div>
+                <div className="pr-4">
+                  <span className="font-medium text-slate-700">{ticket.title}</span>
+                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500">
+                    {ticket.summary}
+                  </p>
+                </div>
+                <div>
+                  <span className="font-medium text-slate-700">
+                    {memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}
+                  </span>
+                </div>
+                <div>
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${priorityStyles[ticket.priority]}`}
+                  >
+                    {ticket.priority}
+                  </span>
+                </div>
+                <div>
+                  <span className="inline-flex rounded-full border border-line bg-panelSoft px-2.5 py-1 text-xs font-medium text-slate-600">
+                    {statusLabels[ticket.status]}
+                  </span>
+                </div>
               </button>
             ))
           ) : (

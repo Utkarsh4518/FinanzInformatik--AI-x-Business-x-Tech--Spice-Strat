@@ -63,7 +63,7 @@ export function TicketRepoImpactSection({
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+    <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -77,7 +77,7 @@ export function TicketRepoImpactSection({
           type="button"
           onClick={() => void handleAnalyze()}
           disabled={isAnalyzing}
-          className="rounded-xl border border-line bg-white px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-slate-50"
+          className="rounded-xl border border-line bg-panelSoft px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-white"
         >
           {isAnalyzing ? "Analyzing..." : "Run Repo Impact"}
         </button>
@@ -91,7 +91,7 @@ export function TicketRepoImpactSection({
 
       {result ? (
         <div className="mt-4 space-y-4">
-          <div className="rounded-xl border border-line bg-slate-50/90 p-4">
+          <div className="rounded-xl border border-line bg-panelSoft p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Overall Impact Summary
             </div>
@@ -106,7 +106,7 @@ export function TicketRepoImpactSection({
                 repoFileSummaries.find((entry) => entry.path === file.path) ?? null;
 
               return (
-                <div key={file.path} className="rounded-xl border border-line bg-slate-50/90 p-4">
+                <div key={file.path} className="rounded-xl border border-line bg-panelSoft p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-800">{file.path}</p>

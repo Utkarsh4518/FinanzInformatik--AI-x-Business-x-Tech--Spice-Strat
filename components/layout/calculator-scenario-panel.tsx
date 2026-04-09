@@ -24,9 +24,55 @@ export function CalculatorScenarioPanel({
       title="Calculator Scenario"
       description="Static demo framing for the loan calculator extension and why BridgeFlow matters."
     >
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-line bg-panelSoft p-6">
+          <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr] xl:items-start">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                Demo Story
+              </div>
+              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-ink">
+                Extend the loan calculator with loan term calculation
+              </h3>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                BridgeFlow demonstrates how one shared workspace can help managers,
+                analysts, and developers turn a messy multilingual project brief into
+                structured delivery work, clearer explanations, and safe handovers.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+              <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Current Surface
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-700">
+                  Existing loan calculator
+                </p>
+              </div>
+              <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  New Capability
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-700">
+                  Loan term calculation from payment inputs
+                </p>
+              </div>
+              <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Why BridgeFlow
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-700">
+                  Align scope, delivery detail, and continuity risk
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-4">
-          <div className="rounded-2xl border border-line bg-panelSoft p-5">
+          <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
               Current Context
             </div>
@@ -61,7 +107,7 @@ export function CalculatorScenarioPanel({
 
         <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-            Related Tickets
+            Related Workflow Touchpoints
           </div>
           <div className="mt-4 space-y-3">
             {relatedTickets.map((ticket) => (
@@ -84,6 +130,7 @@ export function CalculatorScenarioPanel({
             ))}
           </div>
         </div>
+      </div>
       </div>
     </ShellPanel>
   );

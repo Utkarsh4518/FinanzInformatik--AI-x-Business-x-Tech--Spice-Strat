@@ -56,6 +56,13 @@ const statusOptions: { value: TicketStatus; label: string }[] = [
   { value: "done", label: "Done" }
 ];
 
+const priorityStyles: Record<Ticket["priority"], string> = {
+  low: "border border-line bg-panelSoft text-slate-600",
+  medium: "border border-accent/10 bg-accentSoft text-accent",
+  high: "border border-amber-200 bg-amber-50 text-amber-700",
+  critical: "border border-rose-200 bg-rose-50 text-rose-700"
+};
+
 export function TicketDetailPanel({
   ticket,
   currentRole,
@@ -138,7 +145,7 @@ export function TicketDetailPanel({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/24 backdrop-blur-[1px]">
+    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/18 backdrop-blur-[1px]">
       <button
         type="button"
         aria-label="Close ticket detail"
@@ -146,8 +153,8 @@ export function TicketDetailPanel({
         className="hidden flex-1 cursor-default xl:block"
       />
 
-      <aside className="flex h-full w-full max-w-[840px] flex-col border-l border-line bg-panel shadow-[0_0_40px_rgba(15,23,42,0.12)]">
-        <div className="border-b border-line bg-white px-6 py-5">
+      <aside className="flex h-full w-full max-w-[840px] flex-col border-l border-line bg-panel shadow-[0_0_42px_rgba(17,24,39,0.09)]">
+        <div className="border-b border-line bg-white px-6 py-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accentMuted">
@@ -160,11 +167,16 @@ export function TicketDetailPanel({
                 <span className="rounded-full border border-line bg-panelSoft px-2 py-1">
                   {currentTicket.code}
                 </span>
-                <span className="rounded-full border border-line bg-panelSoft px-2 py-1 capitalize">
+                <span
+                  className={`rounded-full px-2.5 py-1 font-semibold capitalize ${priorityStyles[currentTicket.priority]}`}
+                >
                   {currentTicket.priority}
                 </span>
                 <span className="rounded-full border border-line bg-panelSoft px-2 py-1">
                   {assignee?.name ?? "Unassigned"}
+                </span>
+                <span className="rounded-full border border-line bg-panelSoft px-2 py-1">
+                  {statusOptions.find((option) => option.value === currentTicket.status)?.label}
                 </span>
               </div>
             </div>
@@ -172,79 +184,85 @@ export function TicketDetailPanel({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-line bg-white px-3 py-1.5 text-sm text-slate-500 shadow-panelSoft"
+              className="rounded-full border border-line bg-panelSoft px-3.5 py-2 text-sm font-medium text-slate-600 shadow-panelSoft transition hover:bg-white"
             >
               Close
             </button>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 rounded-2xl border border-line bg-panelSoft p-2">
+            <div className="flex flex-wrap gap-2">
             {detailTabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition ${
                   activeTab === tab.id
-                    ? "bg-accent text-white"
-                    : "border border-line bg-panelSoft text-slate-600 hover:bg-white"
+                    ? "border-accent bg-white text-accent shadow-panelSoft"
+                    : "border-transparent bg-transparent text-slate-600 hover:border-line hover:bg-white"
                 }`}
               >
                 {tab.label}
               </button>
             ))}
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="flex-1 overflow-y-auto px-6 py-6">
           {activeTab === "details" ? (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-line bg-panelSoft p-4">
+            <div className="space-y-5">
+              <div className="rounded-2xl border border-line bg-panelSoft p-5">
                 <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                   {roleSummaryTitle}
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{roleSummaryBody}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-700">{roleSummaryBody}</p>
               </div>
 
               {currentRole !== "analyst" ? (
-                <div className="rounded-2xl border border-line bg-panelSoft p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-                  Business Summary
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                    Business Summary
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-700">
                     {currentTicket.businessSummary}
-                </p>
-              </div>
+                  </p>
+                </div>
               ) : null}
 
               {currentRole !== "developer" ? (
-                <div className="rounded-2xl border border-line bg-panelSoft p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-                  Description
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                    Description
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-700">
                     {currentTicket.description}
-                </p>
-              </div>
+                  </p>
+                </div>
               ) : null}
 
-              <div className="rounded-2xl border border-line bg-panelSoft p-4">
+              <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
                 <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                   Technical Summary
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <p className="mt-3 text-sm leading-7 text-slate-700">
                   {currentTicket.technicalSummary}
                 </p>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                     Priority
                   </div>
-                  <p className="mt-2 text-sm font-medium capitalize text-slate-700">
-                    {currentTicket.priority}
-                  </p>
+                  <div className="mt-3">
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${priorityStyles[currentTicket.priority]}`}
+                    >
+                      {currentTicket.priority}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
@@ -256,6 +274,15 @@ export function TicketDetailPanel({
                   </p>
                   <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
                     {assignee?.role ?? "No role assigned"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                    Current Status
+                  </div>
+                  <p className="mt-2 text-sm font-medium text-slate-700">
+                    {statusOptions.find((option) => option.value === currentTicket.status)?.label}
                   </p>
                 </div>
               </div>
@@ -366,17 +393,17 @@ export function TicketDetailPanel({
 
           {activeTab === "comments" ? (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+              <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
                 <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                   Ticket Comments
                 </div>
 
-                <div className="mt-3 space-y-2">
+                <div className="mt-4 space-y-3">
                   {comments.length ? (
                     comments.map((comment) => (
                       <div
                         key={comment.id}
-                        className="rounded-xl border border-line bg-panelSoft p-3"
+                        className="rounded-2xl border border-line bg-panelSoft p-4"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <p className="text-sm font-medium text-slate-700">
@@ -397,7 +424,7 @@ export function TicketDetailPanel({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+              <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
                 <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                   Add Comment
                 </div>
