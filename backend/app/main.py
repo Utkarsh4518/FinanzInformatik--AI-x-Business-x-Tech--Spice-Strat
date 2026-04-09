@@ -2,8 +2,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import os
+
+import httpx
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 
 from app.schemas import (
     AiGenerateTicketRequest,
@@ -13,12 +18,14 @@ from app.schemas import (
     JiraCreateResponse,
     JiraIssue,
     JiraProject,
+    LanguageTranslateRequest,
+    LanguageTranslateResponse,
     RepoDetail,
     RepoSummary,
     TranslateRequest,
     TranslateResponse,
 )
-from app.services.ai_service import chat_response, generate_ticket_content, translate_text
+from app.services.ai_service import chat_response, generate_ticket_content, translate_language, translate_text
 from app.services.github_service import fetch_repo_detail, fetch_repos
 from app.services.jira_service import (
     create_issue as jira_create_issue,
@@ -132,6 +139,29 @@ async def chat(payload: ChatRequest):
     return ChatResponse(reply=reply, mode=payload.mode)
 
 
+# ── Language Translation (EN <-> DE) ─────────────────────────────────
+
+@app.post("/ai/translate-language", response_model=LanguageTranslateResponse)
+async def translate_lang(payload: LanguageTranslateRequest):
+    try:
+        translated, rewritten = await translate_language(
+            payload.text,
+            payload.source_language,
+            payload.target_language,
+            payload.audience,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Translation error: {exc}") from exc
+
+    return LanguageTranslateResponse(
+        original_text=payload.text,
+        translated_text=translated,
+        rewritten_text=rewritten,
+        source_language=payload.source_language,
+        target_language=payload.target_language,
+    )
+
+
 # ── Jira endpoints ──────────────────────────────────────────────────
 
 @app.get("/jira/projects", response_model=list[JiraProject])
@@ -190,3 +220,44 @@ async def ai_generate_ticket(payload: AiGenerateTicketRequest):
         )
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Error: {exc}") from exc
+
+
+# ── Text-to-Speech (ElevenLabs) ─────────────────────────────────────
+
+_ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
+_ELEVENLABS_VOICE_ID = "pNInz6obpgDQGcFmaJgB"  # "Adam" professional voice
+
+
+class TTSRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=5000)
+
+
+@app.post("/tts")
+async def text_to_speech(payload: TTSRequest):
+    api_key = _ELEVENLABS_API_KEY or os.getenv("ELEVENLABS_API_KEY", "")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="ElevenLabs API key not configured")
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{_ELEVENLABS_VOICE_ID}/stream"
+    headers = {
+        "xi-api-key": api_key,
+        "Content-Type": "application/json",
+    }
+    body = {
+        "text": payload.text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.75,
+        },
+    }
+
+    async def stream_audio():
+        async with httpx.AsyncClient(timeout=30) as client:
+            async with client.stream("POST", url, headers=headers, json=body) as resp:
+                if resp.status_code != 200:
+                    raise HTTPException(status_code=resp.status_code, detail="ElevenLabs API error")
+                async for chunk in resp.aiter_bytes(4096):
+                    yield chunk
+
+    return StreamingResponse(stream_audio(), media_type="audio/mpeg")

@@ -30,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-mode="business">
-      <body className={`${sans.variable} ${display.variable} ${mono.variable} font-sans antialiased`}>
+    <html lang="en" data-mode="business" suppressHydrationWarning>
+      <body className={`${sans.variable} ${display.variable} ${mono.variable} font-sans antialiased`} suppressHydrationWarning>
         <ModeProvider>{children}</ModeProvider>
       </body>
     </html>

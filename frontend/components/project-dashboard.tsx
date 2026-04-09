@@ -10,11 +10,14 @@ import {
   Star,
   AlertCircle,
   ChevronLeft,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
-import { fetchRepoDetail, translateText } from "@/lib/api";
+import { fetchRepoDetail, translateLanguage, translateText } from "@/lib/api";
+import { useTextToSpeech } from "@/lib/use-tts";
 import type { RepoDetail, RepoSummary } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,10 +29,14 @@ type ProjectDashboardProps = {
 
 export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps) {
   const { mode, isBusiness } = useMode();
+  const tts = useTextToSpeech();
   const [detail, setDetail] = useState<RepoDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [translatedReadme, setTranslatedReadme] = useState<string | null>(null);
   const [translating, setTranslating] = useState(false);
+  const [langTranslated, setLangTranslated] = useState<string | null>(null);
+  const [langTranslating, setLangTranslating] = useState(false);
+  const [langDirection, setLangDirection] = useState<"en-de" | "de-en">("en-de");
 
   useEffect(() => {
     if (!selectedRepo) {
@@ -39,6 +46,7 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
     let cancelled = false;
     setLoading(true);
     setTranslatedReadme(null);
+    setLangTranslated(null);
     const [owner, repo] = selectedRepo.full_name.split("/");
     fetchRepoDetail(owner, repo)
       .then((data) => { if (!cancelled) setDetail(data); })
@@ -58,6 +66,21 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
       setTranslatedReadme("Translation failed. Make sure the backend is running.");
     } finally {
       setTranslating(false);
+    }
+  }
+
+  async function handleLanguageTranslate() {
+    const source = translatedReadme || detail?.readme;
+    if (!source) return;
+    setLangTranslating(true);
+    try {
+      const [src, tgt] = langDirection === "en-de" ? ["en", "de"] : ["de", "en"];
+      const result = await translateLanguage(source.slice(0, 3000), src, tgt, mode);
+      setLangTranslated(result.rewritten_text || result.translated_text);
+    } catch {
+      setLangTranslated("Language translation failed. Please try again.");
+    } finally {
+      setLangTranslating(false);
     }
   }
 
@@ -142,6 +165,57 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
         )}
       </div>
 
+      {/* Language Translation EN <-> DE */}
+      {(detail.readme || translatedReadme) && (
+        <div className="mb-6 glass-elevated rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-fi-text flex items-center gap-2">
+              <ArrowLeftRight className="h-4 w-4 accent-text" />
+              Language Translation
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-lg border border-white/[0.08] bg-white/[0.04] p-0.5">
+                <button
+                  onClick={() => { setLangDirection("en-de"); setLangTranslated(null); }}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${langDirection === "en-de" ? "accent-bg accent-text" : "text-fi-text/40 hover:text-fi-text"}`}
+                >
+                  EN → DE
+                </button>
+                <button
+                  onClick={() => { setLangDirection("de-en"); setLangTranslated(null); }}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${langDirection === "de-en" ? "accent-bg accent-text" : "text-fi-text/40 hover:text-fi-text"}`}
+                >
+                  DE → EN
+                </button>
+              </div>
+              <Button
+                variant="accent"
+                size="sm"
+                onClick={handleLanguageTranslate}
+                disabled={langTranslating}
+              >
+                {langTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <ArrowLeftRight className="h-3 w-3" />}
+                {langTranslating ? "Translating..." : `Translate ${langDirection === "en-de" ? "to German" : "to English"}`}
+              </Button>
+            </div>
+          </div>
+          {langTranslated && (
+            <div className="space-y-2">
+              <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                {langTranslated}
+              </p>
+              <button
+                onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(langTranslated)}
+                className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+              >
+                {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                {tts.isSpeaking ? "Stop" : "Listen"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Business view: Project summary */}
         {isBusiness ? (
@@ -149,7 +223,16 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
             <div className="glass-elevated rounded-2xl p-5">
               <h3 className="mb-3 text-sm font-semibold text-fi-text">Project Overview</h3>
               {translatedReadme ? (
-                <p className="text-sm leading-relaxed text-fi-text/70">{translatedReadme}</p>
+                <div className="space-y-2">
+                  <p className="text-sm leading-relaxed text-fi-text/70">{translatedReadme}</p>
+                  <button
+                    onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
+                    className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                  >
+                    {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                    {tts.isSpeaking ? "Stop" : "Listen to translation"}
+                  </button>
+                </div>
               ) : detail.readme ? (
                 <div className="space-y-3">
                   <p className="text-sm leading-relaxed text-fi-text/50">
@@ -230,9 +313,18 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
             <div className="glass-elevated rounded-2xl p-5">
               <h3 className="mb-3 text-sm font-semibold text-fi-text">README</h3>
               {translatedReadme ? (
-                <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/70">
-                  {translatedReadme}
-                </pre>
+                <div className="space-y-2">
+                  <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/70">
+                    {translatedReadme}
+                  </pre>
+                  <button
+                    onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
+                    className="flex items-center gap-1 text-[11px] text-fi-text/40 hover:text-fi-text transition-colors"
+                  >
+                    {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                    {tts.isSpeaking ? "Stop" : "Listen to translation"}
+                  </button>
+                </div>
               ) : detail.readme ? (
                 <div className="space-y-3">
                   <pre className="max-h-[400px] overflow-y-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/50">

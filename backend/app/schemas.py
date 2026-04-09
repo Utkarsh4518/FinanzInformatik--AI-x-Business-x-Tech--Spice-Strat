@@ -99,3 +99,18 @@ class AiGenerateTicketRequest(BaseModel):
     project_key: str = Field(..., min_length=1)
     mode: str = Field(..., pattern="^(business|developer)$")
     context: str | None = None
+
+
+class LanguageTranslateRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=5000)
+    source_language: str = "en"
+    target_language: str = "de"
+    audience: str | None = None
+
+
+class LanguageTranslateResponse(BaseModel):
+    original_text: str
+    translated_text: str
+    rewritten_text: str
+    source_language: str
+    target_language: str

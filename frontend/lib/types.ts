@@ -85,5 +85,13 @@ export type JiraCreateResponse = {
   id: string;
 };
 
+export type LanguageTranslateResponse = {
+  original_text: string;
+  translated_text: string;
+  rewritten_text: string;
+  source_language: string;
+  target_language: string;
+};
+
 export type SidebarTab = "projects" | "websites" | "scenarios" | "jira";
 export type MainView = "dashboard" | "project-detail" | "scenarios" | "chat" | "jira";

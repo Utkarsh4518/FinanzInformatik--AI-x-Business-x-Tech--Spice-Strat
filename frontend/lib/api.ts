@@ -5,6 +5,7 @@ import type {
   JiraCreateResponse,
   JiraIssue,
   JiraProject,
+  LanguageTranslateResponse,
   Mode,
   RepoDetail,
   RepoSummary,
@@ -50,6 +51,23 @@ export async function chatWithAI(
     mode,
     context,
     history: history ?? [],
+  });
+  return data;
+}
+
+// ── Language Translation (EN <-> DE) ────────────────────────────────
+
+export async function translateLanguage(
+  text: string,
+  sourceLanguage = "en",
+  targetLanguage = "de",
+  audience?: Mode,
+): Promise<LanguageTranslateResponse> {
+  const { data } = await api.post<LanguageTranslateResponse>("/ai/translate-language", {
+    text,
+    source_language: sourceLanguage,
+    target_language: targetLanguage,
+    audience,
   });
   return data;
 }

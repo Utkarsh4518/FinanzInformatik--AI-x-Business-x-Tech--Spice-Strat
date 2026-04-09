@@ -3,25 +3,34 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft,
+  ArrowLeftRight,
   CheckCircle2,
   Circle,
   Clock,
   ExternalLink,
   Loader2,
+  Mic,
+  MicOff,
   Plus,
   RefreshCw,
   Sparkles,
   TicketCheck,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 
 import { useMode } from "@/lib/mode-context";
 import {
   aiGenerateTicket,
   createJiraIssue,
+  fetchJiraIssue,
   fetchJiraIssues,
   fetchJiraProjects,
+  translateLanguage,
   translateText,
 } from "@/lib/api";
+import { useVoiceInput } from "@/lib/use-voice-input";
+import { useTextToSpeech } from "@/lib/use-tts";
 import type { JiraCreateResponse, JiraIssue, JiraProject } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
@@ -38,6 +47,8 @@ const statusIcon: Record<string, React.ComponentType<{ className?: string }>> = 
 
 export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
   const { mode, isBusiness } = useMode();
+  const voice = useVoiceInput();
+  const tts = useTextToSpeech();
 
   const [projects, setProjects] = useState<JiraProject[]>([]);
   const [issues, setIssues] = useState<JiraIssue[]>([]);
@@ -46,6 +57,9 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
 
   const [translating, setTranslating] = useState(false);
   const [translated, setTranslated] = useState<string | null>(null);
+  const [langTranslated, setLangTranslated] = useState<string | null>(null);
+  const [langTranslating, setLangTranslating] = useState(false);
+  const [langDirection, setLangDirection] = useState<"en-de" | "de-en">("en-de");
 
   const [showCreate, setShowCreate] = useState(false);
   const [createMode, setCreateMode] = useState<"manual" | "ai">("ai");
@@ -54,6 +68,10 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
   const [aiRequirement, setAiRequirement] = useState("");
   const [creating, setCreating] = useState(false);
   const [created, setCreated] = useState<JiraCreateResponse | null>(null);
+
+  useEffect(() => {
+    if (voice.transcript) setAiRequirement(voice.transcript);
+  }, [voice.transcript]);
 
   useEffect(() => {
     let c = false;
@@ -94,13 +112,40 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
     }
   };
 
+  const handleLangTranslate = async (text: string) => {
+    setLangTranslating(true);
+    setLangTranslated(null);
+    try {
+      const [src, tgt] = langDirection === "en-de" ? ["en", "de"] : ["de", "en"];
+      const result = await translateLanguage(text.slice(0, 3000), src, tgt, mode);
+      setLangTranslated(result.rewritten_text || result.translated_text);
+    } catch {
+      setLangTranslated("Language translation failed. Please try again.");
+    } finally {
+      setLangTranslating(false);
+    }
+  };
+
+  const addNewTicketToBoard = async (ticketKey: string) => {
+    try {
+      const detail = await fetchJiraIssue(ticketKey);
+      setIssues((prev) => {
+        if (prev.some((i) => i.key === detail.key)) return prev;
+        return [detail, ...prev];
+      });
+    } catch {
+      // Jira detail fetch failed; do a full reload after a short delay
+      setTimeout(() => { if (activeProject) loadIssues(activeProject); }, 2000);
+    }
+  };
+
   const handleCreateManual = async () => {
     if (!newSummary.trim() || !activeProject) return;
     setCreating(true);
     try {
       const result = await createJiraIssue(activeProject, newSummary, newDesc);
       setCreated(result);
-      loadIssues(activeProject);
+      await addNewTicketToBoard(result.key);
     } catch {
       setCreated(null);
     } finally {
@@ -114,7 +159,7 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
     try {
       const result = await aiGenerateTicket(aiRequirement, activeProject, mode);
       setCreated(result);
-      loadIssues(activeProject);
+      await addNewTicketToBoard(result.key);
     } catch {
       setCreated(null);
     } finally {
@@ -175,7 +220,18 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
 
           {/* Description */}
           <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-4">
-            <h3 className="mb-2 text-sm font-medium text-fi-text">Description</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-fi-text">Description</h3>
+              {selectedIssue.description && (
+                <button
+                  onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(selectedIssue.description)}
+                  className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[10px] text-fi-text/50 hover:text-fi-text hover:bg-fi-magenta/10 transition-colors"
+                >
+                  {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                  {tts.isSpeaking ? "Stop" : "Read aloud"}
+                </button>
+              )}
+            </div>
             <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap">
               {selectedIssue.description || "No description provided."}
             </p>
@@ -199,9 +255,69 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
                 </Button>
               </div>
               {translated && (
-                <p className="mt-3 text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
-                  {translated}
-                </p>
+                <div className="mt-3 space-y-2">
+                  <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                    {translated}
+                  </p>
+                  <button
+                    onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translated)}
+                    className="flex items-center gap-1 text-[10px] text-fi-text/50 hover:text-fi-text transition-colors"
+                  >
+                    {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                    {tts.isSpeaking ? "Stop" : "Listen to translation"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Language Translation EN <-> DE */}
+          {selectedIssue.description && (
+            <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-fi-text flex items-center gap-2">
+                  <ArrowLeftRight className="h-3.5 w-3.5 accent-text" />
+                  Language Translation
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex rounded-lg border border-white/[0.08] bg-white/[0.04] p-0.5">
+                    <button
+                      onClick={() => { setLangDirection("en-de"); setLangTranslated(null); }}
+                      className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${langDirection === "en-de" ? "accent-bg accent-text" : "text-fi-text/40 hover:text-fi-text"}`}
+                    >
+                      EN → DE
+                    </button>
+                    <button
+                      onClick={() => { setLangDirection("de-en"); setLangTranslated(null); }}
+                      className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${langDirection === "de-en" ? "accent-bg accent-text" : "text-fi-text/40 hover:text-fi-text"}`}
+                    >
+                      DE → EN
+                    </button>
+                  </div>
+                  <Button
+                    variant="accent"
+                    size="sm"
+                    onClick={() => handleLangTranslate(selectedIssue.description)}
+                    disabled={langTranslating}
+                  >
+                    {langTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <ArrowLeftRight className="h-3 w-3" />}
+                    {langTranslating ? "Translating..." : langDirection === "en-de" ? "Translate to German" : "Translate to English"}
+                  </Button>
+                </div>
+              </div>
+              {langTranslated && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                    {langTranslated}
+                  </p>
+                  <button
+                    onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(langTranslated)}
+                    className="flex items-center gap-1 text-[10px] text-fi-text/50 hover:text-fi-text transition-colors"
+                  >
+                    {tts.isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                    {tts.isSpeaking ? "Stop" : "Listen"}
+                  </button>
+                </div>
               )}
             </div>
           )}
@@ -288,14 +404,31 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
 
             {createMode === "ai" ? (
               <div className="space-y-2">
-                <textarea
-                  value={aiRequirement}
-                  onChange={(e) => setAiRequirement(e.target.value)}
-                  placeholder="Describe the requirement in plain language... e.g. 'Users should be able to export reports as PDF'"
-                  className="w-full rounded-lg border border-white/[0.08] bg-fi-dark/50 px-3 py-2 text-xs text-fi-text placeholder:text-fi-text/40 focus:outline-none min-h-[80px] resize-y"
-                />
+                <div className="relative">
+                  <textarea
+                    value={aiRequirement}
+                    onChange={(e) => setAiRequirement(e.target.value)}
+                    placeholder={voice.isListening ? "Listening... speak now" : "Describe the requirement in plain language, or use the mic..."}
+                    className={`w-full rounded-lg border bg-fi-dark/50 px-3 py-2 pr-10 text-xs text-fi-text placeholder:text-fi-text/40 focus:outline-none min-h-[80px] resize-y ${voice.isListening ? "border-fi-red/40" : "border-white/[0.08]"}`}
+                  />
+                  {voice.supported && (
+                    <button
+                      type="button"
+                      onClick={() => voice.isListening ? voice.stop() : voice.start()}
+                      className={`absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                        voice.isListening
+                          ? "bg-fi-red/20 text-fi-red animate-pulse"
+                          : "bg-white/[0.06] text-fi-text/40 hover:text-fi-text hover:bg-fi-magenta/10"
+                      }`}
+                    >
+                      {voice.isListening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+                    </button>
+                  )}
+                </div>
                 <p className="text-[10px] text-fi-text/40">
-                  AI will generate a {isBusiness ? "business-focused" : "technical"} ticket with acceptance criteria
+                  {voice.isListening
+                    ? "Listening... click mic or wait to stop"
+                    : `AI will generate a ${isBusiness ? "business-focused" : "technical"} ticket with acceptance criteria`}
                 </p>
                 <Button variant="accent" size="sm" onClick={handleCreateAi} disabled={creating || !aiRequirement.trim()}>
                   {creating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}

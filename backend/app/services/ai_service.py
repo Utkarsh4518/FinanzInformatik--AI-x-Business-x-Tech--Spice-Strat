@@ -20,9 +20,9 @@ def _has_openai() -> bool:
 
 
 GEMINI_MODELS = [
+    "gemini-3.1-pro",
+    "gemini-3-flash",
     "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-2.5-pro",
 ]
 
 RETRYABLE_MARKERS = ("RESOURCE_EXHAUSTED", "429", "503", "UNAVAILABLE", "high demand")
@@ -92,8 +92,8 @@ async def _call_llm(prompt: str) -> str:
             return await _call_gemini(prompt)
         if _has_openai():
             return await _call_openai(prompt)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.error("LLM call failed, falling back to mock: %s", str(exc)[:200])
     return _mock_response(prompt)
 
 
@@ -173,6 +173,152 @@ def _mock_response(prompt: str) -> str:
         "any aspect in more detail -- just let me know if you'd like the business view "
         "or the technical deep-dive."
     )
+
+
+_deepl_key = os.getenv("DEEPL_API_KEY", "")
+
+DEEPL_LANG_MAP = {
+    "en": "EN",
+    "de": "DE",
+    "fr": "FR",
+    "es": "ES",
+    "it": "IT",
+    "nl": "NL",
+    "pl": "PL",
+    "pt": "PT-PT",
+    "ja": "JA",
+    "zh": "ZH",
+}
+
+LANG_NAMES = {"en": "English", "de": "German", "fr": "French", "es": "Spanish"}
+
+
+async def _translate_with_deepl(text: str, source_lang: str, target_lang: str) -> str | None:
+    """Primary translation via DeepL API Free (500k chars/month, best EN<->DE quality)."""
+    import httpx
+
+    key = os.getenv("DEEPL_API_KEY", _deepl_key)
+    if not key:
+        return None
+
+    base_url = "https://api-free.deepl.com" if key.endswith(":fx") else "https://api.deepl.com"
+    tgt = DEEPL_LANG_MAP.get(target_lang, target_lang.upper())
+    src = DEEPL_LANG_MAP.get(source_lang, source_lang.upper())
+
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(
+                f"{base_url}/v2/translate",
+                headers={
+                    "Authorization": f"DeepL-Auth-Key {key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "text": [text],
+                    "source_lang": src,
+                    "target_lang": tgt,
+                },
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                translations = data.get("translations", [])
+                if translations and translations[0].get("text"):
+                    logger.info("DeepL translation successful (%s -> %s)", src, tgt)
+                    return translations[0]["text"]
+            else:
+                logger.warning("DeepL API returned %d: %s", resp.status_code, resp.text[:200])
+    except Exception as exc:
+        logger.warning("DeepL call failed: %s", str(exc)[:150])
+    return None
+
+
+async def _translate_with_mymemory(text: str, source_lang: str, target_lang: str) -> str | None:
+    """Last-resort fallback via MyMemory free API."""
+    import httpx
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                "https://api.mymemory.translated.net/get",
+                params={"q": text[:500], "langpair": f"{source_lang}|{target_lang}"},
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                translated = data.get("responseData", {}).get("translatedText")
+                if translated and isinstance(translated, str):
+                    return translated
+    except Exception:
+        pass
+    return None
+
+
+async def translate_language(
+    text: str,
+    source_language: str = "en",
+    target_language: str = "de",
+    audience: str | None = None,
+) -> tuple[str, str]:
+    """Translate text between languages (e.g. EN<->DE) with optional audience rewriting.
+
+    Returns (translated_text, rewritten_text).
+    Priority: DeepL (best quality) -> Gemini 3.1 -> MyMemory (free fallback).
+    """
+    src_name = LANG_NAMES.get(source_language, source_language)
+    tgt_name = LANG_NAMES.get(target_language, target_language)
+
+    if source_language == target_language:
+        return text, text
+
+    # 1) DeepL -- purpose-built translator, best quality
+    translated = await _translate_with_deepl(text, source_language, target_language)
+
+    # 2) Gemini fallback
+    if not translated:
+        logger.info("DeepL unavailable, falling back to Gemini for translation")
+        translate_prompt = (
+            f"You are a professional {src_name}-to-{tgt_name} translator.\n"
+            f"Translate the following {src_name} text into {tgt_name}.\n"
+            f"IMPORTANT: Your entire response must be in {tgt_name}. "
+            f"Do NOT summarize, do NOT explain, do NOT add commentary. "
+            f"Return ONLY the {tgt_name} translation.\n\n"
+            f"{text}"
+        )
+        result = await _call_llm(translate_prompt)
+        if result != _mock_response(translate_prompt):
+            translated = result
+
+    # 3) MyMemory last resort
+    if not translated:
+        translated = await _translate_with_mymemory(text, source_language, target_language)
+
+    if not translated:
+        translated = f"[{target_language}] {text}"
+
+    # Audience rewrite via Gemini (keeps target language)
+    rewritten = translated
+    if audience == "business":
+        rewrite_prompt = (
+            f"Rewrite the following {tgt_name} text in plain, non-technical business language. "
+            f"Focus on impact and outcomes. "
+            f"IMPORTANT: Your entire response MUST remain in {tgt_name}. Do NOT switch to {src_name}. "
+            f"Return concise {tgt_name} text only.\n\n"
+            f"{translated}"
+        )
+        rewritten = await _call_llm(rewrite_prompt)
+        if rewritten == _mock_response(rewrite_prompt):
+            rewritten = translated
+    elif audience == "developer":
+        rewrite_prompt = (
+            f"Rewrite the following {tgt_name} text in concrete developer language with technical terms. "
+            f"IMPORTANT: Your entire response MUST remain in {tgt_name}. Do NOT switch to {src_name}. "
+            f"Return concise {tgt_name} text only.\n\n"
+            f"{translated}"
+        )
+        rewritten = await _call_llm(rewrite_prompt)
+        if rewritten == _mock_response(rewrite_prompt):
+            rewritten = translated
+
+    return translated, rewritten
 
 
 async def translate_text(text: str, target_audience: str, context: str | None = None) -> str:
