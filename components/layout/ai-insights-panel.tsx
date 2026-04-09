@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { ProgressSummarySection } from "@/components/layout/ai-insights/progress-summary-section";
 import { TranslateTab } from "@/components/layout/ai-insights/translate-tab";
 import { ShellPanel } from "@/components/ui/shell-panel";
 import type {
@@ -14,7 +15,8 @@ import type {
   Project,
   RepoFileSummary,
   TeamMember,
-  Ticket
+  Ticket,
+  TicketComment
 } from "@/lib/domain/models";
 
 type AIInsightsPanelProps = {
@@ -24,6 +26,7 @@ type AIInsightsPanelProps = {
   repoFileSummaries: RepoFileSummary[];
   teamMembers: TeamMember[];
   tickets: Ticket[];
+  comments: TicketComment[];
   selectedTicket: Ticket | null;
   managerRawInput: string;
   organizeResult: OrganizeProjectResponse | null;
@@ -45,6 +48,7 @@ export function AIInsightsPanel({
   repoFileSummaries,
   teamMembers,
   tickets,
+  comments,
   selectedTicket,
   managerRawInput,
   organizeResult,
@@ -297,6 +301,14 @@ export function AIInsightsPanel({
           />
         ) : (
           <div className="space-y-4">
+            <ProgressSummarySection
+              currentRole={currentRole}
+              project={project}
+              tickets={tickets}
+              teamMembers={teamMembers}
+              comments={comments}
+            />
+
             {roleSpecificContent}
 
             {latestHandover && currentRole === "manager" ? (

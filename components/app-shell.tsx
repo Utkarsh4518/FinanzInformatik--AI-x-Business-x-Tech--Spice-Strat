@@ -319,6 +319,7 @@ export function AppShell() {
                 repoFileSummaries={repoFileSummaries}
                 teamMembers={teamMembers}
                 tickets={tickets}
+                comments={ticketComments}
                 selectedTicket={selectedTicket}
                 managerRawInput={managerRawInput}
                 organizeResult={organizeResult}

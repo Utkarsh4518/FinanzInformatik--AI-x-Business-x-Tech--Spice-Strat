@@ -56,6 +56,24 @@ export type TranslateResponse = {
   conciseExplanation: string;
 };
 
+export type SummarizeProgressRequest = {
+  project: Project;
+  tickets: Ticket[];
+  teamMembers: TeamMember[];
+  comments: TicketComment[];
+};
+
+export type SummarizeProgressResponse = {
+  overallStatus: string;
+  completedItems: string[];
+  inProgressItems: string[];
+  blockedItems: string[];
+  risks: string[];
+  nextSteps: string[];
+  businessFacingSummary: string;
+  managerFacingSummary: string;
+};
+
 export type OrganizeProjectRequest = {
   projectId: string;
   rawInput: string;
@@ -179,6 +197,67 @@ export function isOrganizeProjectRequest(
   );
 }
 
+export function isSummarizeProgressRequest(
+  value: unknown
+): value is SummarizeProgressRequest {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    !!candidate.project &&
+    typeof candidate.project === "object" &&
+    typeof (candidate.project as Project).id === "string" &&
+    Array.isArray(candidate.tickets) &&
+    candidate.tickets.every((ticket) => {
+      if (!ticket || typeof ticket !== "object") {
+        return false;
+      }
+
+      const candidateTicket = ticket as Record<string, unknown>;
+
+      return (
+        typeof candidateTicket.id === "string" &&
+        typeof candidateTicket.title === "string" &&
+        typeof candidateTicket.status === "string" &&
+        typeof candidateTicket.blockerReason === "string"
+      );
+    }) &&
+    Array.isArray(candidate.teamMembers) &&
+    candidate.teamMembers.every((member) => {
+      if (!member || typeof member !== "object") {
+        return false;
+      }
+
+      const candidateMember = member as Record<string, unknown>;
+
+      return (
+        typeof candidateMember.id === "string" &&
+        typeof candidateMember.name === "string" &&
+        typeof candidateMember.availabilityStatus === "string" &&
+        typeof candidateMember.capacityPercent === "number"
+      );
+    }) &&
+    Array.isArray(candidate.comments) &&
+    candidate.comments.every((comment) => {
+      if (!comment || typeof comment !== "object") {
+        return false;
+      }
+
+      const candidateComment = comment as Record<string, unknown>;
+
+      return (
+        typeof candidateComment.id === "string" &&
+        typeof candidateComment.ticketId === "string" &&
+        typeof candidateComment.authorId === "string" &&
+        typeof candidateComment.message === "string"
+      );
+    })
+  );
+}
+
 export function isTranslateRequest(value: unknown): value is TranslateRequest {
   if (!value || typeof value !== "object") {
     return false;
@@ -254,6 +333,32 @@ export function isOrganizeProjectResponse(
         candidateTicket.dependencies.every((entry) => typeof entry === "string")
       );
     })
+  );
+}
+
+export function isSummarizeProgressResponse(
+  value: unknown
+): value is SummarizeProgressResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.overallStatus === "string" &&
+    Array.isArray(candidate.completedItems) &&
+    candidate.completedItems.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.inProgressItems) &&
+    candidate.inProgressItems.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.blockedItems) &&
+    candidate.blockedItems.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.risks) &&
+    candidate.risks.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.nextSteps) &&
+    candidate.nextSteps.every((entry) => typeof entry === "string") &&
+    typeof candidate.businessFacingSummary === "string" &&
+    typeof candidate.managerFacingSummary === "string"
   );
 }
 
