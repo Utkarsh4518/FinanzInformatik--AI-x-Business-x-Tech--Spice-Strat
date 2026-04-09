@@ -1,3 +1,8 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
+import type { CreateHandoverRequest } from "@/lib/domain/api";
 import { ShellPanel } from "@/components/ui/shell-panel";
 import type {
   Handover,
@@ -9,28 +14,42 @@ import type {
 
 type AIInsightsPanelProps = {
   project: Project;
-  handover: Handover;
+  handovers: Handover[];
   repoFileSummaries: RepoFileSummary[];
   teamMembers: TeamMember[];
   tickets: Ticket[];
+  onCreateHandover: (input: CreateHandoverRequest) => Promise<void>;
 };
 
 export function AIInsightsPanel({
   project,
-  handover,
+  handovers,
   repoFileSummaries,
   teamMembers,
-  tickets
+  tickets,
+  onCreateHandover
 }: AIInsightsPanelProps) {
+  const [unavailableMemberId, setUnavailableMemberId] = useState(
+    teamMembers.find((member) => member.availabilityStatus === "unavailable")?.id ??
+      teamMembers[0]?.id ??
+      ""
+  );
+  const [fallbackOwnerId, setFallbackOwnerId] = useState(teamMembers[0]?.id ?? "");
+  const [summary, setSummary] = useState(
+    "Save a fresh handover snapshot for the current blocked and open work."
+  );
+
+  const latestHandover = handovers[0] ?? null;
   const unavailableMember = teamMembers.find(
-    (member) => member.id === handover.unavailableMemberId
+    (member) => member.id === latestHandover?.unavailableMemberId
   );
   const fallbackOwner = teamMembers.find(
-    (member) => member.id === handover.fallbackOwnerId
+    (member) => member.id === latestHandover?.fallbackOwnerId
   );
   const handoverTickets = tickets.filter((ticket) =>
-    handover.openTicketIds.includes(ticket.id)
+    latestHandover?.openTicketIds.includes(ticket.id)
   );
+
   const insightBlocks = [
     {
       label: "Business Summary",
@@ -45,6 +64,28 @@ export function AIInsightsPanel({
       text: project.managerSummary
     }
   ];
+
+  const currentBlockers = useMemo(
+    () => tickets.map((ticket) => ticket.blockerReason).filter(Boolean),
+    [tickets]
+  );
+  const currentOpenTicketIds = useMemo(
+    () => tickets.filter((ticket) => ticket.status !== "done").map((ticket) => ticket.id),
+    [tickets]
+  );
+
+  async function handleSaveHandover() {
+    await onCreateHandover({
+      projectId: project.id,
+      unavailableMemberId,
+      fallbackOwnerId,
+      summary,
+      openTicketIds: currentOpenTicketIds,
+      blockers: currentBlockers
+    });
+
+    setSummary("Saved another handover snapshot for the current delivery state.");
+  }
 
   return (
     <ShellPanel
@@ -64,22 +105,90 @@ export function AIInsightsPanel({
           </div>
         ))}
 
+        {latestHandover ? (
+          <div className="rounded-2xl border border-line bg-white p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+                Handover Status
+              </div>
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+                {handovers.length} records
+              </span>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{latestHandover.summary}</p>
+            <div className="mt-3 text-sm text-slate-500">
+              <p>Unavailable teammate: {unavailableMember?.name ?? "Unknown"}</p>
+              <p>Fallback owner: {fallbackOwner?.name ?? "Unknown"}</p>
+            </div>
+            <div className="mt-3 space-y-2">
+              {handoverTickets.map((ticket) => (
+                <div key={ticket.id} className="rounded-xl border border-line bg-slate-50 p-3">
+                  <p className="font-medium text-slate-700">{ticket.code}</p>
+                  <p className="mt-1 text-sm text-slate-500">{ticket.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         <div className="rounded-2xl border border-line bg-white p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
-            Handover Status
+            Save Handover
           </div>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{handover.summary}</p>
-          <div className="mt-3 text-sm text-slate-500">
-            <p>Unavailable teammate: {unavailableMember?.name ?? "Unknown"}</p>
-            <p>Fallback owner: {fallbackOwner?.name ?? "Unknown"}</p>
-          </div>
-          <div className="mt-3 space-y-2">
-            {handoverTickets.map((ticket) => (
-              <div key={ticket.id} className="rounded-xl border border-line bg-slate-50 p-3">
-                <p className="font-medium text-slate-700">{ticket.code}</p>
-                <p className="mt-1 text-sm text-slate-500">{ticket.title}</p>
-              </div>
-            ))}
+          <div className="mt-3 space-y-3">
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Unavailable Teammate
+              </span>
+              <select
+                value={unavailableMemberId}
+                onChange={(event) => setUnavailableMemberId(event.target.value)}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+              >
+                {teamMembers.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Fallback Owner
+              </span>
+              <select
+                value={fallbackOwnerId}
+                onChange={(event) => setFallbackOwnerId(event.target.value)}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+              >
+                {teamMembers.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Summary
+              </span>
+              <textarea
+                value={summary}
+                onChange={(event) => setSummary(event.target.value)}
+                rows={4}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={() => void handleSaveHandover()}
+              className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white"
+            >
+              Save Handover Record
+            </button>
           </div>
         </div>
 

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "project-loan-calc",
+    "name": "BridgeFlow Loan Calculator Extension",
+    "code": "BF-LOAN",
+    "objective": "Organize messy multilingual project notes into delivery-ready work for adding loan term calculation to the loan calculator.",
+    "managerBrief": "Please extend the loan calculator to support loan term calculation, keep the experience clear for business users, and align English and German notes before implementation starts.",
+    "businessSummary": "The manager needs one coordinated view of scope, progress, and risks while the team extends the loan calculator with loan term calculation.",
+    "technicalSummary": "Work will likely touch input validation, calculation rules, form copy, API handling, and regression coverage for both monthly payment and loan term scenarios.",
+    "managerSummary": "The current plan is split into business clarification, frontend updates, backend rule support, QA coverage, and a handover path for one unavailable teammate.",
+    "languages": ["English", "German"],
+    "primaryView": "kanban",
+    "secondaryView": "table"
+  }
+]

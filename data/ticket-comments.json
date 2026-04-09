@@ -1,0 +1,23 @@
+[
+  {
+    "id": "comment-201",
+    "ticketId": "ticket-102",
+    "authorId": "member-lukas",
+    "message": "German notes mention term calculation from monthly payment, so acceptance criteria now cover both direct and reverse calculation flows.",
+    "createdAt": "2026-04-09T10:15:00.000Z"
+  },
+  {
+    "id": "comment-202",
+    "ticketId": "ticket-103",
+    "authorId": "member-maya",
+    "message": "UI draft needs one more pass on labels so the new fields make sense for business demos without exposing too much technical detail.",
+    "createdAt": "2026-04-09T11:05:00.000Z"
+  },
+  {
+    "id": "comment-203",
+    "ticketId": "ticket-106",
+    "authorId": "member-zoe",
+    "message": "QA will focus on rounding, translation consistency, and edge values around minimum payment thresholds.",
+    "createdAt": "2026-04-09T11:42:00.000Z"
+  }
+]

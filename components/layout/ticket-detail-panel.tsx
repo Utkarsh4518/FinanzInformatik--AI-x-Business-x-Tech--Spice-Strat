@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import type { CreateTicketCommentRequest } from "@/lib/domain/api";
 import type {
   TeamMember,
   Ticket,
+  TicketComment,
   TicketStatus,
   TicketUpdateInput
 } from "@/lib/domain/models";
@@ -10,8 +14,13 @@ import type {
 type TicketDetailPanelProps = {
   ticket: Ticket | null;
   teamMembers: TeamMember[];
+  comments: TicketComment[];
   onClose: () => void;
-  onUpdate: (ticketId: string, updates: TicketUpdateInput) => void;
+  onUpdate: (ticketId: string, updates: TicketUpdateInput) => Promise<void>;
+  onCreateComment: (
+    ticketId: string,
+    input: CreateTicketCommentRequest
+  ) => Promise<void>;
 };
 
 const statusOptions: { value: TicketStatus; label: string }[] = [
@@ -24,9 +33,48 @@ const statusOptions: { value: TicketStatus; label: string }[] = [
 export function TicketDetailPanel({
   ticket,
   teamMembers,
+  comments,
   onClose,
-  onUpdate
+  onUpdate,
+  onCreateComment
 }: TicketDetailPanelProps) {
+  const [authorId, setAuthorId] = useState(teamMembers[0]?.id ?? "");
+  const [commentMessage, setCommentMessage] = useState("");
+  const [blockerDraft, setBlockerDraft] = useState(ticket?.blockerReason ?? "");
+
+  useEffect(() => {
+    setAuthorId((currentAuthorId) => currentAuthorId || teamMembers[0]?.id || "");
+  }, [teamMembers]);
+
+  useEffect(() => {
+    setBlockerDraft(ticket?.blockerReason ?? "");
+  }, [ticket?.blockerReason, ticket?.id]);
+
+  async function handleCommentSubmit() {
+    if (!ticket || !authorId || !commentMessage.trim()) {
+      return;
+    }
+
+    await onCreateComment(ticket.id, {
+      authorId,
+      message: commentMessage
+    });
+
+    setCommentMessage("");
+  }
+
+  async function handleBlockerCommit() {
+    if (!ticket || blockerDraft === ticket.blockerReason) {
+      return;
+    }
+
+    await onUpdate(ticket.id, {
+      status: ticket.status,
+      assigneeId: ticket.assigneeId,
+      blockerReason: blockerDraft
+    });
+  }
+
   if (!ticket) {
     return (
       <div className="rounded-xl2 border border-line bg-panel p-5 shadow-panel">
@@ -39,6 +87,8 @@ export function TicketDetailPanel({
       </div>
     );
   }
+
+  const authorNameById = new Map(teamMembers.map((member) => [member.id, member.name]));
 
   return (
     <div className="rounded-xl2 border border-line bg-panel p-5 shadow-panel">
@@ -105,7 +155,7 @@ export function TicketDetailPanel({
             <select
               value={ticket.status}
               onChange={(event) =>
-                onUpdate(ticket.id, {
+                void onUpdate(ticket.id, {
                   status: event.target.value as TicketStatus,
                   assigneeId: ticket.assigneeId,
                   blockerReason: ticket.blockerReason
@@ -129,7 +179,7 @@ export function TicketDetailPanel({
           <select
             value={ticket.assigneeId}
             onChange={(event) =>
-              onUpdate(ticket.id, {
+              void onUpdate(ticket.id, {
                 status: ticket.status,
                 assigneeId: event.target.value,
                 blockerReason: ticket.blockerReason
@@ -150,19 +200,79 @@ export function TicketDetailPanel({
             Blocker Reason
           </span>
           <textarea
-            value={ticket.blockerReason}
-            onChange={(event) =>
-              onUpdate(ticket.id, {
-                status: ticket.status,
-                assigneeId: ticket.assigneeId,
-                blockerReason: event.target.value
-              })
-            }
+            value={blockerDraft}
+            onChange={(event) => setBlockerDraft(event.target.value)}
+            onBlur={() => void handleBlockerCommit()}
             rows={4}
             placeholder="No blocker currently recorded."
             className="mt-3 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
           />
         </label>
+
+        <div className="rounded-2xl border border-line bg-white p-4">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            Ticket Comments
+          </div>
+
+          <div className="mt-3 space-y-2">
+            {comments.length ? (
+              comments.map((comment) => (
+                <div key={comment.id} className="rounded-xl border border-line bg-slate-50 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-medium text-slate-700">
+                      {authorNameById.get(comment.authorId) ?? "Unknown"}
+                    </p>
+                    <p className="text-xs text-slate-400">{comment.createdAt}</p>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {comment.message}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-slate-500">No comments yet.</p>
+            )}
+          </div>
+
+          <div className="mt-4 space-y-3 rounded-xl border border-dashed border-line bg-slate-50 p-3">
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Comment Author
+              </span>
+              <select
+                value={authorId}
+                onChange={(event) => setAuthorId(event.target.value)}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-teal-400"
+              >
+                {teamMembers.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                New Comment
+              </span>
+              <textarea
+                value={commentMessage}
+                onChange={(event) => setCommentMessage(event.target.value)}
+                rows={3}
+                className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-400"
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={() => void handleCommentSubmit()}
+              className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white"
+            >
+              Add Comment
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "handover-b98eedba-d380-4d24-8a96-2607f3c83fb3",
+    "projectId": "project-loan-calc",
+    "unavailableMemberId": "member-lukas",
+    "fallbackOwnerId": "member-ava",
+    "summary": "Save a fresh handover snapshot for the current blocked and open work.",
+    "openTicketIds": [
+      "ticket-101",
+      "ticket-102",
+      "ticket-103",
+      "ticket-104",
+      "ticket-105",
+      "ticket-106",
+      "ticket-107"
+    ],
+    "blockers": [
+      "Waiting for final confirmation on unsupported payment combinations.",
+      "Backend owner is unavailable and the endpoint shape is still undecided."
+    ]
+  },
+  {
+    "id": "handover-301",
+    "projectId": "project-loan-calc",
+    "unavailableMemberId": "member-noah",
+    "fallbackOwnerId": "member-ava",
+    "summary": "Backend rule support is partially scoped, but implementation is paused while Noah is unavailable. Ava owns demo continuity and will route urgent questions through the documented contract notes.",
+    "openTicketIds": [
+      "ticket-105",
+      "ticket-108"
+    ],
+    "blockers": [
+      "Need confirmation on whether loan term calculation lives in the existing endpoint or a new handler.",
+      "Validation edge cases for unsupported payment combinations are still open."
+    ]
+  }
+]
