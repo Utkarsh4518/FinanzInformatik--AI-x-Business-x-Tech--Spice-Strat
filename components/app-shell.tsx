@@ -304,13 +304,17 @@ export function AppShell() {
               <TicketDetailPanel
                 ticket={selectedTicket}
                 currentRole={currentRole}
+                projectId={project.id}
+                projectSummary={organizeResult?.projectSummary ?? project.managerSummary}
                 teamMembers={teamMembers}
                 comments={ticketComments.filter(
                   (comment) => comment.ticketId === selectedTicketId
                 )}
+                handovers={handovers}
                 onClose={handleCloseTicketDetail}
                 onUpdate={handleUpdateTicket}
                 onCreateComment={handleCreateComment}
+                onSaveHandover={handleCreateHandover}
               />
               <AIInsightsPanel
                 currentRole={currentRole}

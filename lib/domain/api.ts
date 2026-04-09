@@ -1,4 +1,5 @@
 import type {
+  AppRole,
   Handover,
   Project,
   RepoFileSummary,
@@ -54,6 +55,27 @@ export type TranslateResponse = {
   sourceLanguageDetected: string;
   translatedText: string;
   conciseExplanation: string;
+};
+
+export type GenerateHandoverRequest = {
+  ticket: Ticket;
+  currentAssignee: TeamMember | null;
+  nextAssignee?: TeamMember | null;
+  teamMembers: TeamMember[];
+  ticketComments: TicketComment[];
+  projectSummary: string;
+  currentRoleView?: AppRole;
+  relatedBlockerContext?: string;
+};
+
+export type GenerateHandoverResponse = {
+  summary: string;
+  completedWork: string[];
+  remainingWork: string[];
+  unresolvedQuestions: string[];
+  suggestedNextSteps: string[];
+  businessFacingSummary: string;
+  suggestedNextOwner: string;
 };
 
 export type SummarizeProgressRequest = {
@@ -258,6 +280,79 @@ export function isSummarizeProgressRequest(
   );
 }
 
+export function isGenerateHandoverRequest(
+  value: unknown
+): value is GenerateHandoverRequest {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (
+    !candidate.ticket ||
+    typeof candidate.ticket !== "object" ||
+    !Array.isArray(candidate.teamMembers) ||
+    !Array.isArray(candidate.ticketComments) ||
+    typeof candidate.projectSummary !== "string"
+  ) {
+    return false;
+  }
+
+  const candidateTicket = candidate.ticket as Record<string, unknown>;
+
+  return (
+    typeof candidateTicket.id === "string" &&
+    typeof candidateTicket.title === "string" &&
+    typeof candidateTicket.description === "string" &&
+    typeof candidateTicket.technicalSummary === "string" &&
+    typeof candidateTicket.businessSummary === "string" &&
+    typeof candidateTicket.assigneeId === "string" &&
+    candidate.teamMembers.every((member) => {
+      if (!member || typeof member !== "object") {
+        return false;
+      }
+
+      const candidateMember = member as Record<string, unknown>;
+
+      return (
+        typeof candidateMember.id === "string" &&
+        typeof candidateMember.name === "string" &&
+        typeof candidateMember.role === "string" &&
+        typeof candidateMember.availabilityStatus === "string" &&
+        typeof candidateMember.capacityPercent === "number"
+      );
+    }) &&
+    candidate.ticketComments.every((comment) => {
+      if (!comment || typeof comment !== "object") {
+        return false;
+      }
+
+      const candidateComment = comment as Record<string, unknown>;
+
+      return (
+        typeof candidateComment.id === "string" &&
+        typeof candidateComment.ticketId === "string" &&
+        typeof candidateComment.message === "string"
+      );
+    }) &&
+    (candidate.currentAssignee === null ||
+      candidate.currentAssignee === undefined ||
+      (typeof candidate.currentAssignee === "object" &&
+        typeof (candidate.currentAssignee as TeamMember).id === "string")) &&
+    (candidate.nextAssignee === null ||
+      candidate.nextAssignee === undefined ||
+      (typeof candidate.nextAssignee === "object" &&
+        typeof (candidate.nextAssignee as TeamMember).id === "string")) &&
+    (candidate.currentRoleView === undefined ||
+      candidate.currentRoleView === "manager" ||
+      candidate.currentRoleView === "analyst" ||
+      candidate.currentRoleView === "developer") &&
+    (candidate.relatedBlockerContext === undefined ||
+      typeof candidate.relatedBlockerContext === "string")
+  );
+}
+
 export function isTranslateRequest(value: unknown): value is TranslateRequest {
   if (!value || typeof value !== "object") {
     return false;
@@ -359,6 +454,30 @@ export function isSummarizeProgressResponse(
     candidate.nextSteps.every((entry) => typeof entry === "string") &&
     typeof candidate.businessFacingSummary === "string" &&
     typeof candidate.managerFacingSummary === "string"
+  );
+}
+
+export function isGenerateHandoverResponse(
+  value: unknown
+): value is GenerateHandoverResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.summary === "string" &&
+    Array.isArray(candidate.completedWork) &&
+    candidate.completedWork.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.remainingWork) &&
+    candidate.remainingWork.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.unresolvedQuestions) &&
+    candidate.unresolvedQuestions.every((entry) => typeof entry === "string") &&
+    Array.isArray(candidate.suggestedNextSteps) &&
+    candidate.suggestedNextSteps.every((entry) => typeof entry === "string") &&
+    typeof candidate.businessFacingSummary === "string" &&
+    typeof candidate.suggestedNextOwner === "string"
   );
 }
 

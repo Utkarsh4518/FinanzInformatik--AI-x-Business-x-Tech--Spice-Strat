@@ -2,9 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-import type { CreateTicketCommentRequest } from "@/lib/domain/api";
+import { TicketHandoverSection } from "@/components/layout/ticket-detail/ticket-handover-section";
+import type {
+  CreateHandoverRequest,
+  CreateTicketCommentRequest
+} from "@/lib/domain/api";
 import type {
   AppRole,
+  Handover,
   TeamMember,
   Ticket,
   TicketComment,
@@ -15,14 +20,18 @@ import type {
 type TicketDetailPanelProps = {
   ticket: Ticket | null;
   currentRole: AppRole;
+  projectId: string;
+  projectSummary: string;
   teamMembers: TeamMember[];
   comments: TicketComment[];
+  handovers: Handover[];
   onClose: () => void;
   onUpdate: (ticketId: string, updates: TicketUpdateInput) => Promise<void>;
   onCreateComment: (
     ticketId: string,
     input: CreateTicketCommentRequest
   ) => Promise<void>;
+  onSaveHandover: (input: CreateHandoverRequest) => Promise<void>;
 };
 
 const statusOptions: { value: TicketStatus; label: string }[] = [
@@ -35,11 +44,15 @@ const statusOptions: { value: TicketStatus; label: string }[] = [
 export function TicketDetailPanel({
   ticket,
   currentRole,
+  projectId,
+  projectSummary,
   teamMembers,
   comments,
+  handovers,
   onClose,
   onUpdate,
-  onCreateComment
+  onCreateComment,
+  onSaveHandover
 }: TicketDetailPanelProps) {
   const [authorId, setAuthorId] = useState(teamMembers[0]?.id ?? "");
   const [commentMessage, setCommentMessage] = useState("");
@@ -291,6 +304,17 @@ export function TicketDetailPanel({
             </div>
           </div>
         ) : null}
+
+        <TicketHandoverSection
+          currentRole={currentRole}
+          projectId={projectId}
+          projectSummary={projectSummary}
+          ticket={ticket}
+          teamMembers={teamMembers}
+          comments={comments}
+          handovers={handovers}
+          onSaveHandover={onSaveHandover}
+        />
 
         <div className="rounded-2xl border border-line bg-white p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
