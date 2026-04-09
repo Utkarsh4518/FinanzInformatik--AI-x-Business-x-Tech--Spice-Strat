@@ -14,10 +14,10 @@ function formatComments(input: GenerateHandoverRequest) {
 }
 
 function formatTeam(input: GenerateHandoverRequest) {
-  return input.teamMembers
+  return input.availableTeamMembers
     .map(
       (member) =>
-        `- ${member.name} | role: ${member.role} | availability: ${member.availabilityStatus} | capacity: ${member.capacityPercent}% | focus: ${member.focus}`
+        `- ${member.name} | role: ${member.role} | availability: ${member.availabilityStatus} | capacity: ${member.capacityPercent}% | languages: ${member.languages.join(", ")} | focus: ${member.focus}`
     )
     .join("\n");
 }
@@ -32,7 +32,7 @@ You must return strict JSON matching the provided schema.
 Rules:
 - Keep the output concise, factual, and immediately usable.
 - Summarize what is already done, what remains, and what is still uncertain.
-- Suggest a practical next owner based on availability, role fit, and visible capacity.
+- Suggest a practical next owner based on availability, role fit, visible capacity, and language fit when relevant.
 - The businessFacingSummary must be non-technical and continuity-focused.
 - Avoid inventing work that is not supported by the provided ticket, comments, and project context.
 `.trim();
@@ -47,7 +47,7 @@ Project summary:
 ${input.projectSummary}
 
 Current role view:
-${input.currentRoleView ?? "manager"}
+${input.currentRoleView}
 
 Ticket:
 - Code: ${input.ticket.code}
@@ -58,7 +58,7 @@ Ticket:
 - Status: ${input.ticket.status}
 - Priority: ${input.ticket.priority}
 - Dependencies: ${input.ticket.dependencies.join(", ") || "none"}
-- Blocker: ${input.relatedBlockerContext || input.ticket.blockerReason || "none"}
+- Blocker: ${input.blockerContext || input.ticket.blockerReason || "none"}
 
 Current assignee:
 ${input.currentAssignee ? `${input.currentAssignee.name} (${input.currentAssignee.role})` : "unknown"}
@@ -66,7 +66,7 @@ ${input.currentAssignee ? `${input.currentAssignee.name} (${input.currentAssigne
 Requested next assignee:
 ${input.nextAssignee ? `${input.nextAssignee.name} (${input.nextAssignee.role})` : "not specified"}
 
-Team context:
+Available team members context:
 ${formatTeam(input)}
 
 Ticket comments:

@@ -61,11 +61,11 @@ export type GenerateHandoverRequest = {
   ticket: Ticket;
   currentAssignee: TeamMember | null;
   nextAssignee?: TeamMember | null;
-  teamMembers: TeamMember[];
+  availableTeamMembers: TeamMember[];
   ticketComments: TicketComment[];
   projectSummary: string;
-  currentRoleView?: AppRole;
-  relatedBlockerContext?: string;
+  currentRoleView: AppRole;
+  blockerContext?: string;
 };
 
 export type GenerateHandoverResponse = {
@@ -292,9 +292,12 @@ export function isGenerateHandoverRequest(
   if (
     !candidate.ticket ||
     typeof candidate.ticket !== "object" ||
-    !Array.isArray(candidate.teamMembers) ||
+    !Array.isArray(candidate.availableTeamMembers) ||
     !Array.isArray(candidate.ticketComments) ||
-    typeof candidate.projectSummary !== "string"
+    typeof candidate.projectSummary !== "string" ||
+    (candidate.currentRoleView !== "manager" &&
+      candidate.currentRoleView !== "analyst" &&
+      candidate.currentRoleView !== "developer")
   ) {
     return false;
   }
@@ -308,7 +311,7 @@ export function isGenerateHandoverRequest(
     typeof candidateTicket.technicalSummary === "string" &&
     typeof candidateTicket.businessSummary === "string" &&
     typeof candidateTicket.assigneeId === "string" &&
-    candidate.teamMembers.every((member) => {
+    candidate.availableTeamMembers.every((member) => {
       if (!member || typeof member !== "object") {
         return false;
       }
@@ -344,12 +347,8 @@ export function isGenerateHandoverRequest(
       candidate.nextAssignee === undefined ||
       (typeof candidate.nextAssignee === "object" &&
         typeof (candidate.nextAssignee as TeamMember).id === "string")) &&
-    (candidate.currentRoleView === undefined ||
-      candidate.currentRoleView === "manager" ||
-      candidate.currentRoleView === "analyst" ||
-      candidate.currentRoleView === "developer") &&
-    (candidate.relatedBlockerContext === undefined ||
-      typeof candidate.relatedBlockerContext === "string")
+    (candidate.blockerContext === undefined ||
+      typeof candidate.blockerContext === "string")
   );
 }
 

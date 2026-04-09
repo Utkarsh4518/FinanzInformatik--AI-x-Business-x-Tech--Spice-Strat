@@ -8,10 +8,23 @@ function uniqueItems(items: string[]) {
   return Array.from(new Set(items.filter((item) => item.trim())));
 }
 
+function detectLanguageNeeds(input: GenerateHandoverRequest) {
+  const text = `${input.projectSummary} ${input.ticket.title} ${input.ticket.description} ${input.ticket.businessSummary} ${input.ticket.technicalSummary} ${input.blockerContext ?? ""}`.toLowerCase();
+  const needsGerman =
+    text.includes("multilingual") ||
+    text.includes("german") ||
+    text.includes("deutsch") ||
+    ["laufzeit", "kredit", "berechnung", "anforderung"].some((word) =>
+      text.includes(word)
+    );
+  const needsEnglish = text.includes("english") || text.includes("bilingual") || true;
+
+  return { needsGerman, needsEnglish };
+}
+
 function scoreMember(
   member: TeamMember,
-  ticket: Ticket,
-  currentAssigneeId: string,
+  input: GenerateHandoverRequest,
   requestedNextAssigneeId?: string
 ) {
   if (member.id === requestedNextAssigneeId) {
@@ -23,6 +36,8 @@ function scoreMember(
   }
 
   let score = member.capacityPercent;
+  const languageNeeds = detectLanguageNeeds(input);
+  const currentAssigneeId = input.currentAssignee?.id ?? input.ticket.assigneeId;
 
   if (member.id === currentAssigneeId) {
     score -= 250;
@@ -36,7 +51,7 @@ function scoreMember(
     score -= 40;
   }
 
-  const searchableText = `${ticket.title} ${ticket.description} ${ticket.technicalSummary} ${ticket.businessSummary}`.toLowerCase();
+  const searchableText = `${input.ticket.title} ${input.ticket.description} ${input.ticket.technicalSummary} ${input.ticket.businessSummary}`.toLowerCase();
   const roleMatch =
     (searchableText.includes("backend") && member.role === "backend_engineer") ||
     (searchableText.includes("ui") && member.role === "frontend_engineer") ||
@@ -55,6 +70,25 @@ function scoreMember(
     score += 25;
   }
 
+  if (languageNeeds.needsGerman && member.languages.includes("German")) {
+    score += 45;
+  }
+
+  if (languageNeeds.needsEnglish && member.languages.includes("English")) {
+    score += 20;
+  }
+
+  if (languageNeeds.needsGerman && languageNeeds.needsEnglish && member.languages.length > 1) {
+    score += 20;
+  }
+
+  if (
+    input.currentAssignee &&
+    member.languages.some((language) => input.currentAssignee?.languages.includes(language))
+  ) {
+    score += 15;
+  }
+
   return score;
 }
 
@@ -64,21 +98,11 @@ function chooseNextOwner(input: GenerateHandoverRequest) {
   }
 
   return (
-    [...input.teamMembers]
+    [...input.availableTeamMembers]
       .sort(
         (left, right) =>
-          scoreMember(
-            right,
-            input.ticket,
-            input.currentAssignee?.id ?? input.ticket.assigneeId,
-            input.nextAssignee?.id
-          ) -
-          scoreMember(
-            left,
-            input.ticket,
-            input.currentAssignee?.id ?? input.ticket.assigneeId,
-            input.nextAssignee?.id
-          )
+          scoreMember(right, input, input.nextAssignee?.id) -
+          scoreMember(left, input, input.nextAssignee?.id)
       )
       .find((member) => member.availabilityStatus !== "unavailable") ?? null
   );
@@ -93,8 +117,11 @@ export function buildMockGenerateHandoverResponse(
 ): GenerateHandoverResponse {
   const nextOwner = chooseNextOwner(input);
   const blockerContext =
-    input.relatedBlockerContext || input.ticket.blockerReason || "No explicit blocker is recorded.";
+    input.blockerContext || input.ticket.blockerReason || "No explicit blocker is recorded.";
   const recentThemes = summarizeCommentThemes(input.ticketComments);
+  const reassignmentImpact = nextOwner
+    ? `${nextOwner.name} is the strongest fallback owner based on current availability, capacity, and context fit.`
+    : "No clear fallback owner is visible from the current available team context.";
 
   return {
     summary: `${input.ticket.title} is partially advanced and needs a clean ownership handoff so progress does not stall while ${input.currentAssignee?.name ?? "the current owner"} is unavailable or switching focus.`,
@@ -120,7 +147,7 @@ export function buildMockGenerateHandoverResponse(
       "Confirm the next owner and update ticket ownership visibly in the board.",
       "Keep the manager summary aligned with any reassignment or blocker change."
     ]),
-    businessFacingSummary: `${input.ticket.title} already has useful context and partial progress recorded, but the remaining work and blocker decisions need a clear owner so the broader loan calculator delivery plan stays on track.`,
+    businessFacingSummary: `${input.ticket.title} already has useful context and partial progress recorded, but the remaining work and blocker decisions need a clear owner so the broader loan calculator delivery plan stays on track. ${reassignmentImpact}`,
     suggestedNextOwner: nextOwner?.name ?? "No clear available owner found"
   };
 }

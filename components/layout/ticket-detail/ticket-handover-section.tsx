@@ -49,6 +49,9 @@ export function TicketHandoverSection({
 
   const currentAssignee =
     teamMembers.find((member) => member.id === ticket.assigneeId) ?? null;
+  const availableTeamMembers = teamMembers.filter(
+    (member) => member.availabilityStatus !== "unavailable"
+  );
   const selectedNextAssignee =
     teamMembers.find((member) => member.id === nextAssigneeId) ?? null;
   const ticketHandovers = useMemo(
@@ -81,11 +84,11 @@ export function TicketHandoverSection({
           ticket,
           currentAssignee,
           nextAssignee: selectedNextAssignee,
-          teamMembers,
+          availableTeamMembers,
           ticketComments: comments,
           projectSummary,
           currentRoleView: currentRole,
-          relatedBlockerContext: ticket.blockerReason
+          blockerContext: ticket.blockerReason
         } satisfies GenerateHandoverRequest)
       });
 
@@ -122,8 +125,8 @@ export function TicketHandoverSection({
 
     const fallbackOwner =
       selectedNextAssignee ??
-      teamMembers.find((member) => member.name === generated.suggestedNextOwner) ??
-      teamMembers.find(
+      availableTeamMembers.find((member) => member.name === generated.suggestedNextOwner) ??
+      availableTeamMembers.find(
         (member) =>
           member.id !== (currentAssignee?.id ?? ticket.assigneeId) &&
           member.availabilityStatus !== "unavailable"
@@ -170,12 +173,12 @@ export function TicketHandoverSection({
         </div>
         <div className="rounded-xl border border-line bg-slate-50/90 p-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Business Impact
+            Reassignment Impact
           </div>
           <p className="mt-2 text-sm leading-6 text-slate-700">
             {generated?.businessFacingSummary}
           </p>
-          <p className="mt-3 text-sm text-slate-500">
+          <p className="mt-3 text-sm font-medium text-slate-700">
             Suggested next owner: {generated?.suggestedNextOwner}
           </p>
         </div>
@@ -282,11 +285,11 @@ export function TicketHandoverSection({
             className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400"
           >
             <option value="">Auto-suggest next owner</option>
-            {teamMembers
+            {availableTeamMembers
               .filter((member) => member.id !== (currentAssignee?.id ?? ticket.assigneeId))
               .map((member) => (
                 <option key={member.id} value={member.id}>
-                  {member.name} - {member.availabilityStatus} - {member.capacityPercent}%
+                  {member.name} - {member.availabilityStatus} - {member.capacityPercent}% - {member.languages.join("/")}
                 </option>
               ))}
           </select>
