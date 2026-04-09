@@ -72,7 +72,7 @@ export function ProjectBriefPanel({
             </button>
           </div>
           {jiraImportMessage ? (
-            <p className="mt-3 text-sm text-slate-500">{jiraImportMessage}</p>
+            <p className="mt-3 text-sm text-emerald-700">{jiraImportMessage}</p>
           ) : null}
           {jiraImportError ? (
             <p className="mt-3 text-sm text-rose-700">{jiraImportError}</p>
@@ -100,7 +100,7 @@ export function ProjectBriefPanel({
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               In Flight
             </div>
-            <div className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-ink">
+            <div className="mt-2 text-xl font-semibold tracking-[-0.02em] text-ink">
               {inFlightCount}
             </div>
             <p className="mt-1 text-xs text-slate-500">Active delivery items</p>
@@ -109,7 +109,7 @@ export function ProjectBriefPanel({
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               Blocked
             </div>
-            <div className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-rose-700">
+            <div className="mt-2 text-xl font-semibold tracking-[-0.02em] text-rose-700">
               {blockedCount}
             </div>
             <p className="mt-1 text-xs text-slate-500">Items needing intervention</p>
@@ -118,7 +118,7 @@ export function ProjectBriefPanel({
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               Unavailable
             </div>
-            <div className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-amber-700">
+            <div className="mt-2 text-xl font-semibold tracking-[-0.02em] text-amber-700">
               {unavailableCount}
             </div>
             <p className="mt-1 text-xs text-slate-500">Team continuity risk</p>

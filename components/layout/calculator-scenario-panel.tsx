@@ -35,7 +35,7 @@ export function CalculatorScenarioPanel({
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                 Demo Story
               </div>
-              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-ink">
+              <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-ink">
                 Extend the loan calculator with loan term calculation
               </h3>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">

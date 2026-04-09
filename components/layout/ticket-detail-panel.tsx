@@ -163,18 +163,13 @@ export function TicketDetailPanel({
       />
 
       <aside className="flex h-full w-full max-w-[840px] flex-col border-l border-line bg-panel shadow-[0_0_42px_rgba(17,24,39,0.09)]">
-        <div className="border-b border-line bg-white px-6 py-6">
+        <div className="border-b border-line bg-white px-6 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accentMuted">
-                  Ticket Workspace
-                </div>
-                <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                  {currentRole === "manager" ? "Manager View" : currentRole === "analyst" ? "Analyst View" : "Developer View"}
-                </span>
-              </div>
-              <h3 className="mt-2 truncate text-xl font-semibold text-ink">
+              <span className="rounded-full border border-line bg-panelSoft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                {currentRole === "manager" ? "Manager View" : currentRole === "analyst" ? "Analyst View" : "Developer View"}
+              </span>
+              <h3 className="mt-2 truncate text-xl font-medium text-ink">
                 {currentTicket.title}
               </h3>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">

@@ -145,7 +145,7 @@ export function ManagerInputPanel({
                   type="text"
                   value={projectName}
                   onChange={(event) => setProjectName(event.target.value)}
-                  className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
+                  className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                 />
               </label>
 
@@ -241,7 +241,7 @@ export function ManagerInputPanel({
             type="button"
             onClick={() => void handleBuildPayload()}
             disabled={isOrganizing}
-            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#203f5f]"
+            className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-300 hover:bg-slate-800"
           >
             {isOrganizing ? "Organizing intake..." : "Organize with AI"}
           </button>

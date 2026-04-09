@@ -27,7 +27,7 @@ export function Header({
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-line bg-panelSoft px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">
+            <span className="rounded-full border border-line bg-panelSoft px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-accent">
               BridgeFlow
             </span>
             <span className="rounded-full border border-line bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-accentMuted">
@@ -36,17 +36,17 @@ export function Header({
           </div>
 
           <div className="mt-4">
-            <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-ink">
+            <h1 className="text-[28px] font-medium tracking-[-0.02em] text-ink">
               {project.name}
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
               {project.objective}
             </p>
           </div>
         </div>
 
         <div className="grid gap-3 xl:min-w-[480px]">
-          <div className="rounded-xl2 border border-line bg-panelSoft p-4 shadow-panelSoft">
+          <div className="rounded-xl2 border border-line bg-panelSoft p-3.5 shadow-panelSoft">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-accentMuted">

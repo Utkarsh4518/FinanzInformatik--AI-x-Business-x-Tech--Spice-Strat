@@ -18,9 +18,7 @@ body {
   min-height: 100vh;
   margin: 0;
   color: #182434;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.75), transparent 34%),
-    linear-gradient(180deg, #f8fafc 0%, #f3f6f9 100%);
+  background: #f0f2f6;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

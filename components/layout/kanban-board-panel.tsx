@@ -49,10 +49,10 @@ export function KanbanBoardPanel({
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-800">
+                  <h3 className="text-sm font-semibold text-slate-700">
                     {statusLabels[status]}
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     {status === "backlog"
                       ? "Planned work"
                       : status === "in_progress"
@@ -85,7 +85,7 @@ export function KanbanBoardPanel({
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="font-semibold leading-6 text-slate-800">
+                            <p className="font-medium leading-6 text-ink">
                               {ticket.title}
                             </p>
                             <div className="mt-2 flex flex-wrap gap-2">
@@ -115,25 +115,19 @@ export function KanbanBoardPanel({
                           </div>
                         ) : null}
 
-                        <div className="mt-4 grid gap-2 text-xs text-slate-500">
+                        <div className="mt-4 grid gap-2">
                           <div className="flex items-center justify-between gap-3">
-                            <span>Owner</span>
-                            <span className="font-medium text-slate-700">
+                            <span className="text-[11px] uppercase tracking-wide text-slate-400">Owner</span>
+                            <span className="text-xs font-medium text-slate-600">
                               {assignee?.name ?? "Unassigned"}
                             </span>
                           </div>
                           <div className="flex items-center justify-between gap-3">
-                            <span>Source</span>
-                            <span className="font-medium text-slate-700">
+                            <span className="text-[11px] uppercase tracking-wide text-slate-400">Source</span>
+                            <span className="text-xs font-medium text-slate-600">
                               {ticket.sourceType === "jira"
-                                ? ticket.externalKey ?? "Jira import"
-                                : "BridgeFlow local"}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between gap-3">
-                            <span>Current state</span>
-                            <span className="font-medium text-slate-700">
-                              {statusLabels[ticket.status]}
+                                ? ticket.externalKey ?? "Jira"
+                                : "BridgeFlow"}
                             </span>
                           </div>
                         </div>

@@ -37,17 +37,8 @@ export function TicketTableToggle({
       description="Compact review view for the same tickets shown on the board."
     >
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600">
-            Synced with kanban board
-          </span>
-          <span className="rounded-full border border-line bg-white px-3 py-2 text-xs font-medium text-slate-600">
-            Click a row to open detail
-          </span>
-        </div>
-
         <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-panelSoft">
-          <div className="grid grid-cols-[0.9fr_1.8fr_1.05fr_0.95fr_0.95fr_1fr] bg-panelSoft px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <div className="grid grid-cols-[0.9fr_1.8fr_1.05fr_0.95fr_0.95fr_1fr] bg-[#f1f3f6] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
             <span>Ticket</span>
             <span>Summary</span>
             <span>Owner</span>

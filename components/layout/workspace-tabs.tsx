@@ -24,17 +24,17 @@ export type { WorkspaceTab };
 
 export function WorkspaceTabs({ activeTab, onChange }: WorkspaceTabsProps) {
   return (
-    <div className="rounded-xl2 border border-line bg-panel px-3 py-3 shadow-panelSoft">
-      <div className="flex flex-wrap gap-2">
+    <div className="rounded-xl2 border border-line bg-panelSoft px-3 py-3 shadow-panelSoft">
+      <div className="flex flex-wrap gap-1.5">
         {tabLabels.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
+            className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
               activeTab === tab.id
-                ? "border-accent bg-accentSoft text-accent shadow-panelSoft"
-                : "border-transparent bg-panel text-slate-600 hover:border-line hover:bg-panelSoft"
+                ? "border-line/80 bg-white text-ink shadow-[0_1px_4px_rgba(0,0,0,0.07)]"
+                : "border-transparent bg-transparent text-slate-500 hover:bg-white/60 hover:text-slate-700"
             }`}
           >
             {tab.label}

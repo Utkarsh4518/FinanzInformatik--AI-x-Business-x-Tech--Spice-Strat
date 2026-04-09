@@ -182,7 +182,7 @@ export function JiraSyncOverviewPanel({
         )}
 
         <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-panelSoft">
-          <div className="grid grid-cols-[0.85fr_1.8fr_0.95fr_0.95fr_1fr_0.9fr_1.1fr] bg-panelSoft px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <div className="grid grid-cols-[0.85fr_1.8fr_0.95fr_0.95fr_1fr_0.9fr_1.1fr] bg-[#f1f3f6] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
             <span>Jira Key</span>
             <span>Ticket Title</span>
             <span>Status</span>
