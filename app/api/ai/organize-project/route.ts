@@ -40,7 +40,19 @@ export async function POST(request: Request) {
     organizeResponse
   );
 
-  await replaceTickets(nextTickets);
+  try {
+    await replaceTickets(nextTickets);
+  } catch (persistError) {
+    return NextResponse.json<ApiErrorResponse>(
+      {
+        error:
+          persistError instanceof Error
+            ? persistError.message
+            : "Tickets could not be saved. Check the database connection."
+      },
+      { status: 503 }
+    );
+  }
 
   return NextResponse.json<ApiItemResponse<OrganizeProjectResponse>>({
     data: organizeResponse

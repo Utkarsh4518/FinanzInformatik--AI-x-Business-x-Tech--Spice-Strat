@@ -381,6 +381,7 @@ export function AppShell() {
       );
     } finally {
       setIsImportingJira(false);
+      setIsLoading(false);
     }
   }
 
