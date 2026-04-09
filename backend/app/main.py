@@ -18,10 +18,15 @@ from app.schemas import (
     JiraCreateResponse,
     JiraIssue,
     JiraProject,
+    JiraUser,
     LanguageTranslateRequest,
     LanguageTranslateResponse,
     RepoDetail,
     RepoSummary,
+    SpecBridgeInboxItem,
+    SpecBridgeMessageRequest,
+    SpecBridgeNotificationResponse,
+    SpecBridgeWorkspace,
     TranslateRequest,
     TranslateResponse,
 )
@@ -29,9 +34,16 @@ from app.services.ai_service import chat_response, generate_ticket_content, tran
 from app.services.github_service import fetch_repo_detail, fetch_repos
 from app.services.jira_service import (
     create_issue as jira_create_issue,
+    fetch_current_user as jira_fetch_current_user,
     fetch_issue_detail as jira_fetch_issue,
     fetch_issues as jira_fetch_issues,
     fetch_projects as jira_fetch_projects,
+)
+from app.services.specbridge_service import (
+    create_bridge_message as specbridge_create_bridge_message,
+    get_specbridge_workspace,
+    list_specbridge_inbox,
+    list_specbridge_notifications,
 )
 
 app = FastAPI(
@@ -172,6 +184,14 @@ async def list_jira_projects():
         raise HTTPException(status_code=502, detail=f"Jira API error: {exc}") from exc
 
 
+@app.get("/jira/me", response_model=JiraUser)
+async def get_jira_me():
+    try:
+        return await jira_fetch_current_user()
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Jira API error: {exc}") from exc
+
+
 @app.get("/jira/issues", response_model=list[JiraIssue])
 async def list_jira_issues(
     project_key: str | None = Query(None),
@@ -220,6 +240,48 @@ async def ai_generate_ticket(payload: AiGenerateTicketRequest):
         )
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Error: {exc}") from exc
+
+
+@app.get("/specbridge/inbox", response_model=list[SpecBridgeInboxItem])
+async def get_specbridge_inbox(
+    project_key: str | None = Query(None),
+    jql: str | None = Query(None),
+    max_results: int = Query(10, ge=1, le=20),
+):
+    try:
+        return await list_specbridge_inbox(project_key=project_key, jql=jql, max_results=max_results)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"SpecBridge error: {exc}") from exc
+
+
+@app.get("/specbridge/notifications", response_model=SpecBridgeNotificationResponse)
+async def get_specbridge_notifications(max_results: int = Query(8, ge=1, le=20)):
+    try:
+        return await list_specbridge_notifications(max_results=max_results)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"SpecBridge error: {exc}") from exc
+
+
+@app.get("/specbridge/issues/{issue_key}", response_model=SpecBridgeWorkspace)
+async def get_specbridge_issue(issue_key: str):
+    try:
+        return await get_specbridge_workspace(issue_key)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"SpecBridge error: {exc}") from exc
+
+
+@app.post("/specbridge/issues/{issue_key}/messages", response_model=SpecBridgeWorkspace)
+async def post_specbridge_message(issue_key: str, payload: SpecBridgeMessageRequest):
+    try:
+        return await specbridge_create_bridge_message(
+            issue_key,
+            text=payload.text,
+            directed_to=payload.directedTo,
+            message_type=payload.messageType,
+            question_id=payload.questionId,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"SpecBridge error: {exc}") from exc
 
 
 # ── Text-to-Speech (ElevenLabs) ─────────────────────────────────────

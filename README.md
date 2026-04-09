@@ -1,3 +1,18 @@
+# Bridge Repo
+
+This repository now contains two parallel tracks:
+
+- `specbridge-copilot/`
+  A Jira Cloud Forge app called **SpecBridge Copilot** with Assignment Copilot, Clarification Bridge, and Ticket Watcher modules.
+- `frontend/` and `backend/`
+  The standalone Next.js + FastAPI app, now with an integrated `/specbridge` tab that reads live Jira tickets, users, comments, and assignee signals from Jira Cloud instead of local demo data.
+
+If you want the Jira-native implementation, start in [specbridge-copilot/README.md](/C:/Users/SAURABH%20SUMAN/FinanzInformatik--AI-x-Business-x-Tech--Spice-Strat/specbridge-copilot/README.md).
+
+## Legacy Prototype
+
+The original Bridge prototype is preserved below.
+
 # Bridge -- AI-Powered Business & Tech Collaboration
 
 Bridge is a collaboration platform that helps business and technical teams understand each other. It connects GitHub, Jira, and AI translation in one place, with a dual-mode interface that adapts to your role.
@@ -9,6 +24,7 @@ Built for the **"Making AI a Teamwork Booster between Business & Tech"** hackath
 - **Dual-Mode UI** -- Toggle between Business and Developer views. Colors, language, and content adapt to each perspective.
 - **GitHub Integration** -- Browse all your repositories with stats, tech stacks, and README previews. Forked repos are clearly labeled.
 - **Jira Board** -- View projects and issues in a Kanban layout. Create tickets manually or let AI generate them from plain-language requirements.
+- **SpecBridge Tab** -- Open `/specbridge` to monitor live Jira issues in a separate tab, get Jira-backed assignee recommendations, watch lifecycle events, see developer notification badges, and run an analyst-developer clarification bridge that posts back into the real Jira issue comments.
 - **AI Chat** -- Ask questions in natural language. The AI responds in business-friendly or technical language depending on your mode.
 - **AI Translation** -- Translate READMEs and Jira tickets between business and developer language with one click.
 - **Voice Input** -- Speak your Jira ticket requirements or chat messages using the built-in microphone (Web Speech API).
@@ -79,6 +95,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+To use the live SpecBridge workflow, also open [http://localhost:3000/specbridge](http://localhost:3000/specbridge). Ticket creation and assignment still happen in Jira; SpecBridge mirrors and analyzes the real Jira state on a polling loop, and the notification bell in the main app shows real Jira assignment and clarification alerts for the connected Jira user.
 
 ## Key Features in Detail
 

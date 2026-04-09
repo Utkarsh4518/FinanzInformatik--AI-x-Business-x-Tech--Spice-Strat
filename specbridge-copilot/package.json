@@ -1,0 +1,15 @@
+{
+  "name": "specbridge-copilot",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "npm --prefix static/specbridge-ui run build",
+    "check": "npm --prefix static/specbridge-ui run build"
+  },
+  "dependencies": {
+    "@forge/api": "latest",
+    "@forge/events": "latest",
+    "@forge/kvs": "latest",
+    "@forge/resolver": "latest"
+  }
+}

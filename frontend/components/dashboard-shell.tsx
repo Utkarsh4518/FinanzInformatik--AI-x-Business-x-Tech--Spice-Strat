@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Code2, Menu, MessageSquare, X } from "lucide-react";
+import { Briefcase, Code2, Menu, MessageSquare, Sparkles, X } from "lucide-react";
 
 import { useMode } from "@/lib/mode-context";
 import { defaultOwner } from "@/lib/mock-data";
@@ -12,6 +13,7 @@ import { ProjectDashboard } from "@/components/project-dashboard";
 import { ScenarioLibrary } from "@/components/scenario-library";
 import { AiChatPanel } from "@/components/ai-chat-panel";
 import { JiraBoard } from "@/components/jira-board";
+import { SpecBridgeNotifications } from "@/components/specbridge-notifications";
 
 export function DashboardShell() {
   const { mode, toggle, isBusiness } = useMode();
@@ -92,6 +94,14 @@ export function DashboardShell() {
 
         {/* Right: Chat toggle + avatar */}
         <div className="flex items-center gap-2">
+          <SpecBridgeNotifications />
+          <Link
+            href="/specbridge"
+            className="hidden items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-fi-text/70 transition hover:text-fi-text md:flex"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            SpecBridge
+          </Link>
           <button
             onClick={() => setMainView(mainView === "chat" ? "dashboard" : "chat")}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${

@@ -5,15 +5,19 @@ import type {
   JiraCreateResponse,
   JiraIssue,
   JiraProject,
+  JiraUser,
   LanguageTranslateResponse,
   Mode,
   RepoDetail,
   RepoSummary,
+  SpecBridgeInboxItem,
+  SpecBridgeNotificationResponse,
+  SpecBridgeWorkspace,
   TranslateResponse,
 } from "@/lib/types";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8001",
   headers: { "Content-Type": "application/json" },
 });
 
@@ -79,6 +83,11 @@ export async function fetchJiraProjects(): Promise<JiraProject[]> {
   return data;
 }
 
+export async function fetchJiraMe(): Promise<JiraUser> {
+  const { data } = await api.get<JiraUser>("/jira/me");
+  return data;
+}
+
 export async function fetchJiraIssues(
   projectKey?: string,
   jql?: string,
@@ -122,5 +131,49 @@ export async function aiGenerateTicket(
     mode,
     context,
   });
+  return data;
+}
+
+export async function fetchSpecBridgeInbox(
+  projectKey?: string,
+  jql?: string,
+  maxResults = 10,
+): Promise<SpecBridgeInboxItem[]> {
+  const { data } = await api.get<SpecBridgeInboxItem[]>("/specbridge/inbox", {
+    params: { project_key: projectKey, jql, max_results: maxResults },
+  });
+  return data;
+}
+
+export async function fetchSpecBridgeWorkspace(issueKey: string): Promise<SpecBridgeWorkspace> {
+  const { data } = await api.get<SpecBridgeWorkspace>(`/specbridge/issues/${issueKey}`);
+  return data;
+}
+
+export async function fetchSpecBridgeNotifications(
+  maxResults = 8,
+): Promise<SpecBridgeNotificationResponse> {
+  const { data } = await api.get<SpecBridgeNotificationResponse>("/specbridge/notifications", {
+    params: { max_results: maxResults },
+  });
+  return data;
+}
+
+export async function postSpecBridgeMessage(input: {
+  issueKey: string;
+  text: string;
+  directedTo: "developer" | "requester";
+  messageType?: "question" | "note" | "resolution";
+  questionId?: string;
+}): Promise<SpecBridgeWorkspace> {
+  const { data } = await api.post<SpecBridgeWorkspace>(
+    `/specbridge/issues/${input.issueKey}/messages`,
+    {
+      text: input.text,
+      directedTo: input.directedTo,
+      messageType: input.messageType ?? "question",
+      questionId: input.questionId,
+    },
+  );
   return data;
 }

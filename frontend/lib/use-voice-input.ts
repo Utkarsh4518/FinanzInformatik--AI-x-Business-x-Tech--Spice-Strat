@@ -31,7 +31,7 @@ export function useVoiceInput() {
   const [transcript, setTranscript] = useState("");
   const [supported, setSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  const silenceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -39,7 +39,9 @@ export function useVoiceInput() {
   }, []);
 
   const stop = useCallback(() => {
-    clearTimeout(silenceTimer.current);
+    if (silenceTimer.current) {
+      clearTimeout(silenceTimer.current);
+    }
     recognitionRef.current?.stop();
     setIsListening(false);
   }, []);
@@ -68,7 +70,9 @@ export function useVoiceInput() {
       }
       setTranscript(finalTranscript + interim);
 
-      clearTimeout(silenceTimer.current);
+      if (silenceTimer.current) {
+        clearTimeout(silenceTimer.current);
+      }
       silenceTimer.current = setTimeout(() => {
         stop();
       }, 3000);

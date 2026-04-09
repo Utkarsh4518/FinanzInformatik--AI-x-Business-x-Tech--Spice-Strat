@@ -4,6 +4,10 @@ frontend/.env.local
 frontend/.frontend.pid
 frontend/frontend.dev.log
 frontend/frontend.dev.err.log
+specbridge-copilot/node_modules/
+specbridge-copilot/.forge/
+specbridge-copilot/static/specbridge-ui/node_modules/
+specbridge-copilot/static/specbridge-ui/dist/
 
 backend/.venv/
 backend/__pycache__/

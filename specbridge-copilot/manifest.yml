@@ -1,0 +1,80 @@
+app:
+  id: ari:cloud:ecosystem::app/00000000-0000-0000-0000-000000000000
+  runtime:
+    name: nodejs24.x
+
+modules:
+  jira:issuePanel:
+    - key: specbridge-issue-panel
+      resource: main
+      resolver:
+        function: resolver
+      title: SpecBridge Copilot
+      icon: icon.svg
+      viewportSize: large
+
+  jira:issueGlance:
+    - key: specbridge-issue-glance
+      resource: main
+      resolver:
+        function: resolver
+      title: SpecBridge Copilot
+      description: Assignment and clarification intelligence for the current issue.
+      label: SpecBridge
+      icon: icon.svg
+      dynamicProperties:
+        function: glance-status
+
+  jira:issueActivity:
+    - key: specbridge-issue-activity
+      resource: main
+      resolver:
+        function: resolver
+      title: SpecBridge Timeline
+
+  jira:issueViewBackgroundScript:
+    - key: specbridge-issue-background
+      resource: main
+      resolver:
+        function: resolver
+
+  trigger:
+    - key: specbridge-jira-issue-events
+      function: issue-event-trigger
+      events:
+        - avi:jira:created:issue
+        - avi:jira:updated:issue
+        - avi:jira:commented:issue
+        - avi:jira:assigned:issue
+      filter:
+        ignoreSelf: true
+
+  consumer:
+    - key: specbridge-analysis-consumer
+      queue: specbridge-analysis-queue
+      function: analysis-consumer
+
+  function:
+    - key: resolver
+      handler: index.resolverHandler
+    - key: glance-status
+      handler: index.glanceStatus
+    - key: issue-event-trigger
+      handler: index.issueEventTrigger
+    - key: analysis-consumer
+      handler: index.analysisConsumer
+      timeoutSeconds: 90
+
+resources:
+  - key: main
+    path: static/specbridge-ui/dist
+
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+  external:
+    fetch:
+      backend:
+        - https://api.openai.com
