@@ -191,7 +191,13 @@ export function TranslateTab({
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Recommended Mode
             </div>
-            <p className="mt-2 text-sm text-slate-700">{rolePreset.recommendedMode}</p>
+            <p className="mt-2 text-sm text-slate-700">
+              {rolePreset.recommendedMode === "normalize"
+                ? "Normalize"
+                : rolePreset.recommendedMode === "business-to-technical"
+                  ? "Business → Technical"
+                  : "Technical → Business"}
+            </p>
           </div>
         </div>
       </div>
@@ -240,9 +246,9 @@ export function TranslateTab({
                 }
                 className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-accent"
               >
-                <option value="normalize">normalize</option>
-                <option value="business-to-technical">business-to-technical</option>
-                <option value="technical-to-business">technical-to-business</option>
+                <option value="normalize">Normalize</option>
+                <option value="business-to-technical">Business → Technical</option>
+                <option value="technical-to-business">Technical → Business</option>
               </select>
             </label>
 

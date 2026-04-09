@@ -194,7 +194,7 @@ export async function getJiraSyncRuns() {
     return await getJiraSyncRunsFromPostgres();
   } catch (error) {
     if (canUseFileFallback()) {
-      console.warn("[BridgeFlow] Jira sync runs unavailable.", error);
+      console.warn("[BridgeFlow] Falling back for getJiraSyncRuns.", error);
       return [] as JiraSyncRun[];
     }
 
@@ -211,7 +211,7 @@ export async function getJiraSyncRunById(syncRunId: string) {
     return await getJiraSyncRunByIdFromPostgres(syncRunId);
   } catch (error) {
     if (canUseFileFallback()) {
-      console.warn("[BridgeFlow] Jira sync run detail unavailable.", error);
+      console.warn("[BridgeFlow] Falling back for getJiraSyncRunById.", error);
       return null;
     }
 
@@ -228,7 +228,7 @@ export async function getJiraSyncItems(syncRunId: string) {
     return await getJiraSyncItemsFromPostgres(syncRunId);
   } catch (error) {
     if (canUseFileFallback()) {
-      console.warn("[BridgeFlow] Jira sync items unavailable.", error);
+      console.warn("[BridgeFlow] Falling back for getJiraSyncItems.", error);
       return [] as JiraSyncItem[];
     }
 
@@ -245,7 +245,7 @@ export async function createJiraSyncRun(input: { projectKey: string | null }) {
     return await createJiraSyncRunInPostgres(input);
   } catch (error) {
     if (canUseFileFallback()) {
-      console.warn("[BridgeFlow] Jira sync run create unavailable.", error);
+      console.warn("[BridgeFlow] Falling back for createJiraSyncRun.", error);
       return null;
     }
 
@@ -265,7 +265,7 @@ export async function finalizeJiraSyncRun(
     return await finalizeJiraSyncRunInPostgres(syncRunId, input);
   } catch (error) {
     if (canUseFileFallback()) {
-      console.warn("[BridgeFlow] Jira sync run finalize unavailable.", error);
+      console.warn("[BridgeFlow] Falling back for finalizeJiraSyncRun.", error);
       return null;
     }
 
@@ -284,7 +284,7 @@ export async function createJiraSyncItems(
     return await createJiraSyncItemsInPostgres(items);
   } catch (error) {
     if (canUseFileFallback()) {
-      console.warn("[BridgeFlow] Jira sync item logging unavailable.", error);
+      console.warn("[BridgeFlow] Falling back for createJiraSyncItems.", error);
       return [] as JiraSyncItem[];
     }
 

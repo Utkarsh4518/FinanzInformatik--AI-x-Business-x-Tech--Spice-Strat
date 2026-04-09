@@ -65,7 +65,7 @@ export function JiraSyncOverviewPanel({
             disabled={isImportingJira}
             className="rounded-xl border border-line bg-panelSoft px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-white"
           >
-            {isImportingJira ? "Syncing Jira..." : "Import / Sync Jira"}
+            {isImportingJira ? "Syncing..." : "Sync Jira Issues"}
           </button>
         </div>
 

@@ -650,7 +650,7 @@ export function AppShell() {
                               </div>
                             </div>
                             <div className="rounded-xl border border-line bg-panelSoft p-3 text-sm text-slate-600">
-                              Local tickets stored
+                              BridgeFlow tickets
                               <div className="mt-2 font-medium text-slate-800">
                                 {localTickets.length}
                               </div>
@@ -764,8 +764,8 @@ export function AppShell() {
                       onClick={() => setTaskView("board")}
                       className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
                         taskView === "board"
-                          ? "bg-white text-accent shadow-panelSoft"
-                          : "text-slate-600 hover:bg-white"
+                          ? "bg-white text-ink shadow-panelSoft"
+                          : "text-slate-500 hover:bg-white"
                       }`}
                     >
                       Board
@@ -775,8 +775,8 @@ export function AppShell() {
                       onClick={() => setTaskView("table")}
                       className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
                         taskView === "table"
-                          ? "bg-white text-accent shadow-panelSoft"
-                          : "text-slate-600 hover:bg-white"
+                          ? "bg-white text-ink shadow-panelSoft"
+                          : "text-slate-500 hover:bg-white"
                       }`}
                     >
                       Table

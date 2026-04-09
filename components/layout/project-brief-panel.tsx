@@ -68,7 +68,7 @@ export function ProjectBriefPanel({
               disabled={isImportingJira}
               className="rounded-full border border-line bg-panelSoft px-3.5 py-2 text-xs font-medium text-slate-600 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-white"
             >
-              {isImportingJira ? "Importing..." : "Import Jira Issues"}
+              {isImportingJira ? "Syncing..." : "Sync Jira Issues"}
             </button>
           </div>
           {jiraImportMessage ? (
