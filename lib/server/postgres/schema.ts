@@ -93,6 +93,32 @@ export const postgresSchemaStatements = [
     )
   `,
   `
+    CREATE TABLE IF NOT EXISTS jira_sync_runs (
+      id TEXT PRIMARY KEY,
+      started_at TEXT NOT NULL,
+      finished_at TEXT,
+      project_key TEXT,
+      fetched_count INTEGER NOT NULL DEFAULT 0,
+      imported_count INTEGER NOT NULL DEFAULT 0,
+      updated_count INTEGER NOT NULL DEFAULT 0,
+      skipped_count INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL,
+      error_message TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS jira_sync_items (
+      id TEXT PRIMARY KEY,
+      sync_run_id TEXT NOT NULL REFERENCES jira_sync_runs(id) ON DELETE CASCADE,
+      external_key TEXT NOT NULL,
+      action_taken TEXT NOT NULL,
+      mapped_ticket_id TEXT,
+      message TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `,
+  `
     CREATE INDEX IF NOT EXISTS idx_tickets_project_id
     ON tickets (project_id)
   `,
@@ -107,5 +133,13 @@ export const postgresSchemaStatements = [
   `
     CREATE INDEX IF NOT EXISTS idx_handovers_project_id
     ON handovers (project_id)
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_jira_sync_runs_started_at
+    ON jira_sync_runs (started_at DESC)
+  `,
+  `
+    CREATE INDEX IF NOT EXISTS idx_jira_sync_items_sync_run_id
+    ON jira_sync_items (sync_run_id)
   `
 ] as const;

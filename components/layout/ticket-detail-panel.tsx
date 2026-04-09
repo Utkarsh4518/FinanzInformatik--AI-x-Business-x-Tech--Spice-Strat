@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { TranslateTab } from "@/components/layout/ai-insights/translate-tab";
 import { TicketHandoverSection } from "@/components/layout/ticket-detail/ticket-handover-section";
 import { TicketRepoImpactSection } from "@/components/layout/ticket-detail/ticket-repo-impact-section";
+import { TicketSourceBadge } from "@/components/ui/ticket-source-badge";
 import type {
   CreateHandoverRequest,
   CreateTicketCommentRequest
@@ -144,6 +145,14 @@ export function TicketDetailPanel({
     });
   }
 
+  function formatTimestamp(value: string | null) {
+    if (!value) {
+      return "Not synced yet";
+    }
+
+    return new Date(value).toLocaleString();
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/18 backdrop-blur-[1px]">
       <button
@@ -167,11 +176,7 @@ export function TicketDetailPanel({
                 <span className="rounded-full border border-line bg-panelSoft px-2 py-1">
                   {currentTicket.code}
                 </span>
-                {currentTicket.sourceType === "jira" ? (
-                  <span className="rounded-full border border-accent/15 bg-accentSoft px-2.5 py-1 font-semibold uppercase tracking-wide text-accent">
-                    Jira
-                  </span>
-                ) : null}
+                <TicketSourceBadge ticket={currentTicket} />
                 <span
                   className={`rounded-full px-2.5 py-1 font-semibold capitalize ${priorityStyles[currentTicket.priority]}`}
                 >
@@ -261,8 +266,21 @@ export function TicketDetailPanel({
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                     Source
                   </div>
-                  <p className="mt-2 text-sm font-medium uppercase text-slate-700">
-                    {currentTicket.sourceType}
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <TicketSourceBadge ticket={currentTicket} showTimestamp />
+                  </div>
+                  <p className="mt-3 text-sm text-slate-600">
+                    {currentTicket.sourceType === "jira"
+                      ? "Imported from Jira and stored inside BridgeFlow for shared delivery tracking, AI workflows, and handovers."
+                      : "Created and maintained directly in the BridgeFlow workspace."}
+                  </p>
+                  {currentTicket.externalKey ? (
+                    <p className="mt-2 text-xs uppercase tracking-wide text-slate-400">
+                      External key: {currentTicket.externalKey}
+                    </p>
+                  ) : null}
+                  <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+                    Last synced: {formatTimestamp(currentTicket.lastSyncedAt)}
                   </p>
                   {currentTicket.externalUrl ? (
                     <a

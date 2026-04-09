@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
 import { AIInsightsPanel } from "@/components/layout/ai-insights-panel";
 import { CalculatorScenarioPanel } from "@/components/layout/calculator-scenario-panel";
+import { JiraSyncOverviewPanel } from "@/components/layout/jira-sync-overview-panel";
 import { KanbanBoardPanel } from "@/components/layout/kanban-board-panel";
 import { ManagerInputPanel } from "@/components/layout/manager-input-panel";
 import { ProjectBriefPanel } from "@/components/layout/project-brief-panel";
@@ -18,18 +19,21 @@ import { ProgressSummarySection } from "@/components/layout/ai-insights/progress
 import { TicketHandoverSection } from "@/components/layout/ticket-detail/ticket-handover-section";
 import { TicketRepoImpactSection } from "@/components/layout/ticket-detail/ticket-repo-impact-section";
 import { ShellPanel } from "@/components/ui/shell-panel";
+import { TicketSourceBadge } from "@/components/ui/ticket-source-badge";
 import type {
   ApiItemResponse,
   ApiListResponse,
   CreateHandoverRequest,
   CreateTicketCommentRequest,
   JiraImportResponse,
+  JiraSyncRunDetail,
   OrganizeProjectRequest,
   OrganizeProjectResponse
 } from "@/lib/domain/api";
 import type {
   AppRole,
   Handover,
+  JiraSyncRun,
   Project,
   RepoFileSummary,
   TeamMember,
@@ -49,6 +53,17 @@ async function fetchList<T>(url: string): Promise<T[]> {
   return payload.data;
 }
 
+async function fetchItem<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to load ${url}`);
+  }
+
+  const payload = (await response.json()) as ApiItemResponse<T>;
+  return payload.data;
+}
+
 export function AppShell() {
   const [project, setProject] = useState<Project | null>(null);
   const [currentRole, setCurrentRole] = useState<AppRole>("manager");
@@ -58,6 +73,9 @@ export function AppShell() {
   const [ticketComments, setTicketComments] = useState<TicketComment[]>([]);
   const [handovers, setHandovers] = useState<Handover[]>([]);
   const [repoFileSummaries, setRepoFileSummaries] = useState<RepoFileSummary[]>([]);
+  const [jiraSyncRuns, setJiraSyncRuns] = useState<JiraSyncRun[]>([]);
+  const [latestJiraSyncRunDetail, setLatestJiraSyncRunDetail] =
+    useState<JiraSyncRunDetail | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [detailTicketId, setDetailTicketId] = useState<string | null>(null);
   const [activeWorkspaceTab, setActiveWorkspaceTab] =
@@ -85,14 +103,16 @@ export function AppShell() {
       nextTickets,
       nextComments,
       nextHandovers,
-      nextRepoSummaries
+      nextRepoSummaries,
+      nextJiraSyncRuns
     ] = await Promise.all([
       fetchList<Project>("/api/projects"),
       fetchList<TeamMember>("/api/team-members"),
       fetchList<Ticket>("/api/tickets"),
       fetchList<TicketComment>("/api/ticket-comments"),
       fetchList<Handover>("/api/handovers"),
-      fetchList<RepoFileSummary>("/api/repo-file-summaries")
+      fetchList<RepoFileSummary>("/api/repo-file-summaries"),
+      fetchList<JiraSyncRun>("/api/jira/sync-runs").catch(() => [])
     ]);
 
     setProject(projects[0] ?? null);
@@ -102,6 +122,14 @@ export function AppShell() {
     setTicketComments(nextComments);
     setHandovers(nextHandovers);
     setRepoFileSummaries(nextRepoSummaries);
+    setJiraSyncRuns(nextJiraSyncRuns);
+    setLatestJiraSyncRunDetail(
+      nextJiraSyncRuns[0]
+        ? await fetchItem<JiraSyncRunDetail>(`/api/jira/sync-runs/${nextJiraSyncRuns[0].id}`).catch(
+            () => null
+          )
+        : null
+    );
     setSelectedTicketId((currentSelectedId) => {
       if (
         options?.preserveSelection &&
@@ -341,8 +369,8 @@ export function AppShell() {
       await loadWorkspace({ preserveSelection: true });
       setActiveWorkspaceTab("tasks");
       setJiraImportMessage(
-        payload.data.importedCount
-          ? `Imported ${payload.data.importedCount} Jira issue${payload.data.importedCount === 1 ? "" : "s"} into the shared task workspace.`
+        payload.data.fetchedCount
+          ? `Fetched ${payload.data.fetchedCount} Jira issue${payload.data.fetchedCount === 1 ? "" : "s"}: ${payload.data.importedCount} imported, ${payload.data.updatedCount} updated, ${payload.data.skippedCount} skipped.`
           : "No Jira issues matched the current import query."
       );
     } catch (error) {
@@ -376,6 +404,20 @@ export function AppShell() {
   const detailTicketComments = ticketComments.filter(
     (comment) => comment.ticketId === detailTicketId
   );
+  const jiraBackedTickets = tickets.filter((ticket) => ticket.sourceType === "jira");
+  const localTickets = tickets.filter((ticket) => ticket.sourceType !== "jira");
+  const blockedTickets = tickets.filter((ticket) => ticket.blockerReason.trim());
+  const unavailableMembers = teamMembers.filter(
+    (member) => member.availabilityStatus === "unavailable"
+  );
+  const latestSyncRun = jiraSyncRuns[0] ?? null;
+  const completedCount = tickets.filter((ticket) => ticket.status === "done").length;
+  const healthLabel =
+    blockedTickets.length > 1 || unavailableMembers.length > 0
+      ? "Needs attention"
+      : completedCount >= Math.max(1, Math.floor(tickets.length / 3))
+        ? "On track"
+        : "Stabilizing";
 
   if (isLoading && !project) {
     return (
@@ -430,7 +472,7 @@ export function AppShell() {
           <aside className="xl:sticky xl:top-4 xl:self-start">
             {isIntakeExpanded ? (
               <div className="space-y-3">
-              <div className="flex items-center justify-between rounded-xl2 border border-line bg-panel px-4 py-3 shadow-panelSoft">
+                <div className="flex items-center justify-between rounded-xl2 border border-line bg-panel px-4 py-3 shadow-panelSoft">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
                       Intake Workspace
@@ -487,36 +529,159 @@ export function AppShell() {
                 <div className="space-y-4">
                   <ShellPanel
                     title="Program Overview"
-                    description="One-page view of the current collaboration state for the seeded loan calculator scenario."
+                    description="One-page proof of value for the persisted BridgeFlow workspace, current Jira sync state, and delivery health."
                   >
-                    <div className="grid gap-4 lg:grid-cols-3">
-                      <div className="rounded-2xl border border-line bg-panelSoft p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-                          Project Objective
+                    <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+                      <div className="space-y-4">
+                        <div className="rounded-2xl border border-line bg-panelSoft p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                                Project Health
+                              </div>
+                              <p className="mt-2 text-lg font-semibold text-slate-800">
+                                {healthLabel}
+                              </p>
+                            </div>
+                            <span className="rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-slate-600">
+                              {tickets.length} persisted tickets
+                            </span>
+                          </div>
+                          <p className="mt-3 text-sm leading-6 text-slate-700">
+                            {organizeResult?.projectSummary ?? project.managerSummary}
+                          </p>
+                          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                            <div className="rounded-xl border border-line bg-white p-3">
+                              <div className="text-xs uppercase tracking-wide text-slate-400">
+                                Completed
+                              </div>
+                              <div className="mt-2 text-xl font-semibold text-slate-800">
+                                {completedCount}
+                              </div>
+                            </div>
+                            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3">
+                              <div className="text-xs uppercase tracking-wide text-rose-400">
+                                Blocked
+                              </div>
+                              <div className="mt-2 text-xl font-semibold text-rose-700">
+                                {blockedTickets.length}
+                              </div>
+                            </div>
+                            <div className="rounded-xl border border-line bg-white p-3">
+                              <div className="text-xs uppercase tracking-wide text-slate-400">
+                                Jira-backed
+                              </div>
+                              <div className="mt-2 text-xl font-semibold text-slate-800">
+                                {jiraBackedTickets.length}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-slate-700">
-                          {project.objective}
-                        </p>
+
+                        <div className="grid gap-4 lg:grid-cols-2">
+                          <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                              Top Blockers And Risks
+                            </div>
+                            <div className="mt-3 space-y-3">
+                              {[...blockedTickets.map((ticket) => `${ticket.code}: ${ticket.blockerReason}`), ...(organizeResult?.risks ?? [])]
+                                .filter(Boolean)
+                                .slice(0, 4)
+                                .map((item) => (
+                                  <div
+                                    key={item}
+                                    className="rounded-xl border border-line bg-panelSoft p-3 text-sm leading-6 text-slate-600"
+                                  >
+                                    {item}
+                                  </div>
+                                ))}
+                              {!blockedTickets.length && !(organizeResult?.risks?.length ?? 0) ? (
+                                <div className="rounded-xl border border-dashed border-line bg-panelSoft p-3 text-sm text-slate-500">
+                                  No major blockers are currently recorded in the persisted workspace.
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+
+                          <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                              Team Availability Highlights
+                            </div>
+                            <div className="mt-3 space-y-3">
+                              {teamMembers.slice(0, 4).map((member) => (
+                                <div
+                                  key={member.id}
+                                  className="flex items-center justify-between gap-3 rounded-xl border border-line bg-panelSoft p-3"
+                                >
+                                  <div>
+                                    <p className="text-sm font-medium text-slate-800">
+                                      {member.name}
+                                    </p>
+                                    <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+                                      {member.role}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-sm font-medium text-slate-700">
+                                      {member.capacityPercent}%
+                                    </p>
+                                    <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+                                      {member.availabilityStatus}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="rounded-2xl border border-line bg-panelSoft p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-                          Current Focus
+
+                      <div className="space-y-4">
+                        <div className="rounded-2xl border border-line bg-white p-4 shadow-panelSoft">
+                          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                            Data Trust Indicators
+                          </div>
+                          <div className="mt-3 grid gap-3">
+                            <div className="rounded-xl border border-line bg-panelSoft p-3 text-sm text-slate-600">
+                              Primary project brief
+                              <div className="mt-2 font-medium text-slate-800">
+                                {project.name}
+                              </div>
+                            </div>
+                            <div className="rounded-xl border border-line bg-panelSoft p-3 text-sm text-slate-600">
+                              Local tickets stored
+                              <div className="mt-2 font-medium text-slate-800">
+                                {localTickets.length}
+                              </div>
+                            </div>
+                            <div className="rounded-xl border border-line bg-panelSoft p-3 text-sm text-slate-600">
+                              Jira sync status
+                              <div className="mt-2 font-medium text-slate-800">
+                                {latestSyncRun
+                                  ? `${latestSyncRun.status} - ${latestSyncRun.projectKey ?? "No project key"}`
+                                  : "No Jira sync recorded yet"}
+                              </div>
+                              <div className="mt-1 text-xs text-slate-500">
+                                {latestSyncRun?.finishedAt
+                                  ? `Last synced ${new Date(latestSyncRun.finishedAt).toLocaleString()}`
+                                  : "Use the Jira sync card below to import external issues."}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-slate-700">
-                          {organizeResult?.projectSummary ?? project.managerSummary}
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-line bg-panelSoft p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-                          Role Guidance
+
+                        <div className="rounded-2xl border border-line bg-panelSoft p-4">
+                          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+                            Role Guidance
+                          </div>
+                          <p className="mt-3 text-sm leading-6 text-slate-700">
+                            {currentRole === "manager"
+                              ? "This view emphasizes real ticket counts, blockers, team continuity, and Jira sync proof for executive demo use."
+                              : currentRole === "analyst"
+                                ? "This view keeps the business context readable while still grounding decisions in the same persisted ticket set."
+                                : "This view keeps task execution and source-aware technical detail closest to hand."}
+                          </p>
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-slate-700">
-                          {currentRole === "manager"
-                            ? "Focus on progress, blockers, and continuity risk."
-                            : currentRole === "analyst"
-                              ? "Focus on business framing, scope, and open questions."
-                              : "Focus on delivery detail, ownership, and likely implementation impact."}
-                        </p>
                       </div>
                     </div>
                   </ShellPanel>
@@ -527,6 +692,18 @@ export function AppShell() {
                     tickets={tickets}
                     teamMembers={teamMembers}
                     comments={ticketComments}
+                  />
+
+                  <JiraSyncOverviewPanel
+                    syncRuns={jiraSyncRuns}
+                    latestSyncRunDetail={latestJiraSyncRunDetail}
+                    importedTickets={jiraBackedTickets}
+                    teamMembers={teamMembers}
+                    onSelectTicket={handleSelectTicket}
+                    onImportJira={handleImportJira}
+                    isImportingJira={isImportingJira}
+                    jiraImportMessage={jiraImportMessage}
+                    jiraImportError={jiraImportError}
                   />
                 </div>
 
@@ -545,11 +722,7 @@ export function AppShell() {
                             <p className="text-xs uppercase tracking-wide text-slate-400">
                               {selectedTicket.code}
                             </p>
-                            {selectedTicket.sourceType === "jira" ? (
-                              <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                                Jira
-                              </span>
-                            ) : null}
+                            <TicketSourceBadge ticket={selectedTicket} />
                           </div>
                         </div>
                         <button
@@ -688,7 +861,11 @@ export function AppShell() {
             ) : null}
 
             {activeWorkspaceTab === "calculator-scenario" ? (
-              <CalculatorScenarioPanel project={project} tickets={tickets} />
+              <CalculatorScenarioPanel
+                project={project}
+                tickets={tickets}
+                repoFileSummaries={repoFileSummaries}
+              />
             ) : null}
           </section>
         </div>

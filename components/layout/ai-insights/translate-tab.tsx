@@ -197,8 +197,13 @@ export function TranslateTab({
       </div>
 
       <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-          Translate Source
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            Translate Source
+          </div>
+          <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+            {isTranslating ? "Translating" : result ? "Ready" : "Awaiting input"}
+          </span>
         </div>
 
         <div className="mt-4 grid gap-3">
@@ -311,7 +316,7 @@ export function TranslateTab({
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Translation Result
             </div>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+            <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
               Source: {result.sourceLanguageDetected}
             </span>
           </div>
@@ -336,7 +341,7 @@ export function TranslateTab({
         </div>
       ) : !error ? (
         <div className="rounded-2xl border border-dashed border-line bg-panelSoft px-4 py-4 text-sm text-slate-500">
-          Translation results will appear here. The app will keep working even if the AI route falls back or the request needs to be retried.
+          Translation results will appear here. If the AI route falls back, the translated output will still render safely and the rest of the workspace remains usable.
         </div>
       ) : null}
     </div>

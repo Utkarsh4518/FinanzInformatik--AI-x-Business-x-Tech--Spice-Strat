@@ -1,4 +1,5 @@
 import { ShellPanel } from "@/components/ui/shell-panel";
+import { TicketSourceBadge } from "@/components/ui/ticket-source-badge";
 import type { TeamMember, Ticket, TicketStatus } from "@/lib/domain/models";
 
 type TicketTableToggleProps = {
@@ -46,10 +47,11 @@ export function TicketTableToggle({
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-panelSoft">
-          <div className="grid grid-cols-[0.85fr_1.9fr_1.05fr_0.95fr_1fr] bg-panelSoft px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <div className="grid grid-cols-[0.9fr_1.8fr_1.05fr_0.95fr_0.95fr_1fr] bg-panelSoft px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
             <span>Ticket</span>
             <span>Summary</span>
             <span>Owner</span>
+            <span>Source</span>
             <span>Priority</span>
             <span>Status</span>
           </div>
@@ -59,7 +61,7 @@ export function TicketTableToggle({
                 key={ticket.id}
                 type="button"
                 onClick={() => onSelectTicket(ticket.id)}
-                className={`grid w-full grid-cols-[0.85fr_1.9fr_1.05fr_0.95fr_1fr] border-t px-5 py-4 text-left text-sm text-slate-600 transition ${
+                className={`grid w-full grid-cols-[0.9fr_1.8fr_1.05fr_0.95fr_0.95fr_1fr] border-t px-5 py-4 text-left text-sm text-slate-600 transition ${
                   selectedTicketId === ticket.id
                     ? "border-accent/20 bg-accentSoft/55"
                     : "border-line bg-white hover:bg-panelSoft/70"
@@ -71,11 +73,6 @@ export function TicketTableToggle({
                     <p className="text-xs uppercase tracking-wide text-slate-400">
                       {ticket.type}
                     </p>
-                    {ticket.sourceType === "jira" ? (
-                      <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                        Jira
-                      </span>
-                    ) : null}
                   </div>
                 </div>
                 <div className="pr-4">
@@ -88,6 +85,9 @@ export function TicketTableToggle({
                   <span className="font-medium text-slate-700">
                     {memberById.get(ticket.assigneeId)?.name ?? "Unassigned"}
                   </span>
+                </div>
+                <div className="pr-2">
+                  <TicketSourceBadge ticket={ticket} />
                 </div>
                 <div>
                   <span

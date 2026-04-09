@@ -252,7 +252,7 @@ export function AIInsightsPanel({
 
   return (
     <ShellPanel
-      title={`AI Insights · ${roleLabels[currentRole]} View`}
+      title={`AI Insights - ${roleLabels[currentRole]} View`}
       description="The same project data, reordered and emphasized for the selected role."
     >
       <div className="space-y-4">

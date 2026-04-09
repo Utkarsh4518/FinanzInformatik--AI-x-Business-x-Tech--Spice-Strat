@@ -1,5 +1,7 @@
 import type {
   Handover,
+  JiraSyncItem,
+  JiraSyncRun,
   Project,
   TeamMember,
   Ticket,
@@ -70,6 +72,28 @@ type HandoverRow = {
   summary: string;
   open_ticket_ids: JsonValue;
   blockers: JsonValue;
+};
+
+type JiraSyncRunRow = {
+  id: string;
+  started_at: string;
+  finished_at: string | null;
+  project_key: string | null;
+  fetched_count: number;
+  imported_count: number;
+  updated_count: number;
+  skipped_count: number;
+  status: JiraSyncRun["status"];
+  error_message: string | null;
+};
+
+type JiraSyncItemRow = {
+  id: string;
+  sync_run_id: string;
+  external_key: string;
+  action_taken: JiraSyncItem["actionTaken"];
+  mapped_ticket_id: string | null;
+  message: string | null;
 };
 
 function toStringArray(value: JsonValue): string[] {
@@ -154,5 +178,31 @@ export function mapHandoverRow(row: HandoverRow): Handover {
     summary: row.summary,
     openTicketIds: toStringArray(row.open_ticket_ids),
     blockers: toStringArray(row.blockers)
+  };
+}
+
+export function mapJiraSyncRunRow(row: JiraSyncRunRow): JiraSyncRun {
+  return {
+    id: row.id,
+    startedAt: row.started_at,
+    finishedAt: row.finished_at,
+    projectKey: row.project_key,
+    fetchedCount: Number(row.fetched_count),
+    importedCount: Number(row.imported_count),
+    updatedCount: Number(row.updated_count),
+    skippedCount: Number(row.skipped_count),
+    status: row.status,
+    errorMessage: row.error_message
+  };
+}
+
+export function mapJiraSyncItemRow(row: JiraSyncItemRow): JiraSyncItem {
+  return {
+    id: row.id,
+    syncRunId: row.sync_run_id,
+    externalKey: row.external_key,
+    actionTaken: row.action_taken,
+    mappedTicketId: row.mapped_ticket_id,
+    message: row.message
   };
 }

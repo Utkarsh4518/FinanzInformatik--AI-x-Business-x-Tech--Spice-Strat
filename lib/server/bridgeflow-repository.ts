@@ -4,6 +4,8 @@ import type {
 } from "@/lib/domain/api";
 import type {
   Handover,
+  JiraSyncItem,
+  JiraSyncRun,
   Project,
   RepoFileSummary,
   TeamMember,
@@ -13,13 +15,19 @@ import type {
 } from "@/lib/domain/models";
 import { hasPostgresConfig } from "@/lib/server/postgres/client";
 import {
+  createJiraSyncItemsInPostgres,
+  createJiraSyncRunInPostgres,
   createHandoverInPostgres,
   createTicketCommentInPostgres,
   getHandoversFromPostgres,
+  getJiraSyncItemsFromPostgres,
+  getJiraSyncRunByIdFromPostgres,
+  getJiraSyncRunsFromPostgres,
   getProjectsFromPostgres,
   getTeamMembersFromPostgres,
   getTicketCommentsFromPostgres,
   getTicketsFromPostgres,
+  finalizeJiraSyncRunInPostgres,
   replaceTicketsInPostgres,
   resetDemoWorkspaceInPostgres,
   upsertTicketsInPostgres,
@@ -175,4 +183,111 @@ export async function resetDemoWorkspace() {
     resetDemoWorkspaceInPostgres,
     resetDemoWorkspaceInFiles
   );
+}
+
+export async function getJiraSyncRuns() {
+  if (!hasPostgresConfig()) {
+    return [] as JiraSyncRun[];
+  }
+
+  try {
+    return await getJiraSyncRunsFromPostgres();
+  } catch (error) {
+    if (canUseFileFallback()) {
+      console.warn("[BridgeFlow] Jira sync runs unavailable.", error);
+      return [] as JiraSyncRun[];
+    }
+
+    throw error;
+  }
+}
+
+export async function getJiraSyncRunById(syncRunId: string) {
+  if (!hasPostgresConfig()) {
+    return null;
+  }
+
+  try {
+    return await getJiraSyncRunByIdFromPostgres(syncRunId);
+  } catch (error) {
+    if (canUseFileFallback()) {
+      console.warn("[BridgeFlow] Jira sync run detail unavailable.", error);
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export async function getJiraSyncItems(syncRunId: string) {
+  if (!hasPostgresConfig()) {
+    return [] as JiraSyncItem[];
+  }
+
+  try {
+    return await getJiraSyncItemsFromPostgres(syncRunId);
+  } catch (error) {
+    if (canUseFileFallback()) {
+      console.warn("[BridgeFlow] Jira sync items unavailable.", error);
+      return [] as JiraSyncItem[];
+    }
+
+    throw error;
+  }
+}
+
+export async function createJiraSyncRun(input: { projectKey: string | null }) {
+  if (!hasPostgresConfig()) {
+    return null;
+  }
+
+  try {
+    return await createJiraSyncRunInPostgres(input);
+  } catch (error) {
+    if (canUseFileFallback()) {
+      console.warn("[BridgeFlow] Jira sync run create unavailable.", error);
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export async function finalizeJiraSyncRun(
+  syncRunId: string,
+  input: Parameters<typeof finalizeJiraSyncRunInPostgres>[1]
+) {
+  if (!hasPostgresConfig()) {
+    return null;
+  }
+
+  try {
+    return await finalizeJiraSyncRunInPostgres(syncRunId, input);
+  } catch (error) {
+    if (canUseFileFallback()) {
+      console.warn("[BridgeFlow] Jira sync run finalize unavailable.", error);
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export async function createJiraSyncItems(
+  items: Parameters<typeof createJiraSyncItemsInPostgres>[0]
+) {
+  if (!hasPostgresConfig()) {
+    return [] as JiraSyncItem[];
+  }
+
+  try {
+    return await createJiraSyncItemsInPostgres(items);
+  } catch (error) {
+    if (canUseFileFallback()) {
+      console.warn("[BridgeFlow] Jira sync item logging unavailable.", error);
+      return [] as JiraSyncItem[];
+    }
+
+    throw error;
+  }
 }

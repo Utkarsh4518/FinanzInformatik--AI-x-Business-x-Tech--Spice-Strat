@@ -1,6 +1,10 @@
 import type {
   AppRole,
   Handover,
+  JiraSyncAction,
+  JiraSyncItem,
+  JiraSyncRun,
+  JiraSyncRunStatus,
   Project,
   RepoFileSummary,
   TargetOutputLanguage,
@@ -174,8 +178,18 @@ export type JiraImportRequest = {
 export type JiraImportResponse = {
   projectId: string;
   importedCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  fetchedCount: number;
+  projectKey: string | null;
+  syncRunId: string | null;
   tickets: Ticket[];
   sourceType: TicketSourceType;
+};
+
+export type JiraSyncRunDetail = {
+  run: JiraSyncRun;
+  items: JiraSyncItem[];
 };
 
 export const ticketStatusValues: TicketStatus[] = [

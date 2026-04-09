@@ -18,6 +18,8 @@ export type TargetOutputLanguage = "English" | "German" | "Bilingual";
 export type AppRole = "manager" | "analyst" | "developer";
 
 export type TicketSourceType = "local" | "jira";
+export type JiraSyncRunStatus = "running" | "completed" | "failed";
+export type JiraSyncAction = "imported" | "updated" | "skipped" | "failed";
 
 export type Project = {
   id: string;
@@ -96,6 +98,28 @@ export type RepoFileSummary = {
   importanceScore: number;
   excerpt?: string;
   tags?: string[];
+};
+
+export type JiraSyncRun = {
+  id: string;
+  startedAt: string;
+  finishedAt: string | null;
+  projectKey: string | null;
+  fetchedCount: number;
+  importedCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  status: JiraSyncRunStatus;
+  errorMessage: string | null;
+};
+
+export type JiraSyncItem = {
+  id: string;
+  syncRunId: string;
+  externalKey: string;
+  actionTaken: JiraSyncAction;
+  mappedTicketId: string | null;
+  message: string | null;
 };
 
 export type TeamAvailabilityInput = {

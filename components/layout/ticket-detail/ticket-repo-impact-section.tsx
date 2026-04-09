@@ -73,14 +73,19 @@ export function TicketRepoImpactSection({
             Estimate which curated local files are most likely affected by this ticket.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void handleAnalyze()}
-          disabled={isAnalyzing}
-          className="rounded-xl border border-line bg-panelSoft px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-white"
-        >
-          {isAnalyzing ? "Analyzing..." : "Run Repo Impact"}
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+            {isAnalyzing ? "Analyzing" : result ? "Ready" : "Awaiting input"}
+          </span>
+          <button
+            type="button"
+            onClick={() => void handleAnalyze()}
+            disabled={isAnalyzing}
+            className="rounded-xl border border-line bg-panelSoft px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:text-slate-400 hover:bg-white"
+          >
+            {isAnalyzing ? "Analyzing..." : "Run Repo Impact"}
+          </button>
+        </div>
       </div>
 
       {error ? (
@@ -157,7 +162,7 @@ export function TicketRepoImpactSection({
         </div>
       ) : !error ? (
         <div className="mt-4 rounded-xl border border-dashed border-line bg-panelSoft p-4 text-sm text-slate-500">
-          Run repo impact to estimate which curated loan-calculator files are most likely affected by this ticket.
+          Run repo impact to estimate which curated loan-calculator files are most likely affected by this ticket. If analysis falls back, the curated repo context still supports a reliable live demo.
         </div>
       ) : null}
     </div>

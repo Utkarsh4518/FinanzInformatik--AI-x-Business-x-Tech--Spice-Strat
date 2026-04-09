@@ -115,11 +115,16 @@ export function ProgressSummarySection({
   if (!summary && isLoading) {
     return (
       <div className="rounded-2xl border border-line bg-white p-5 shadow-panelSoft">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
-          Progress Summary
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-accentMuted">
+            Progress Summary
+          </div>
+          <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+            Loading
+          </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-500">
-          Generating the latest delivery summary for the current role view.
+          Generating the latest delivery summary from the current persisted project, ticket, team, and comment state.
         </p>
       </div>
     );
@@ -129,6 +134,9 @@ export function ProgressSummarySection({
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50/90 p-5 text-sm text-rose-700">
         <p>{error ?? "Progress summary is not available."}</p>
+        <p className="mt-2 text-rose-600">
+          Existing tickets and comments remain available while the summary is retried.
+        </p>
         <button
           type="button"
           onClick={() => void loadSummary()}
@@ -150,13 +158,18 @@ export function ProgressSummarySection({
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-700">{summary.overallStatus}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => void loadSummary()}
-            className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
-          >
-            {isLoading ? "Refreshing..." : "Refresh"}
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+              {isLoading ? "Refreshing" : "Live"}
+            </span>
+            <button
+              type="button"
+              onClick={() => void loadSummary()}
+              className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
+            >
+              {isLoading ? "Refreshing..." : "Refresh"}
+            </button>
+          </div>
         </div>
 
         <div className="mt-4 rounded-xl border border-line bg-panelSoft p-4">
@@ -220,13 +233,18 @@ export function ProgressSummarySection({
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Business Progress Summary
           </div>
-          <button
-            type="button"
-            onClick={() => void loadSummary()}
-            className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
-          >
-            {isLoading ? "Refreshing..." : "Refresh"}
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+              {isLoading ? "Refreshing" : "Live"}
+            </span>
+            <button
+              type="button"
+              onClick={() => void loadSummary()}
+              className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
+            >
+              {isLoading ? "Refreshing..." : "Refresh"}
+            </button>
+          </div>
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-700">
           {summary.businessFacingSummary}
@@ -254,13 +272,18 @@ export function ProgressSummarySection({
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           Delivery Snapshot
         </div>
-        <button
-          type="button"
-          onClick={() => void loadSummary()}
-          className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
-        >
-          {isLoading ? "Refreshing..." : "Refresh"}
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+            {isLoading ? "Refreshing" : "Live"}
+          </span>
+          <button
+            type="button"
+            onClick={() => void loadSummary()}
+            className="rounded-full border border-line bg-panelSoft px-3 py-2 text-xs font-medium text-slate-600"
+          >
+            {isLoading ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
       </div>
       <p className="mt-3 text-sm leading-6 text-slate-700">{summary.overallStatus}</p>
       <div className="mt-4 grid gap-3">

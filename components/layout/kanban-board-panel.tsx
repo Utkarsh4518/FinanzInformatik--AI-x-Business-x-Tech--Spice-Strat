@@ -1,4 +1,5 @@
 import { ShellPanel } from "@/components/ui/shell-panel";
+import { TicketSourceBadge } from "@/components/ui/ticket-source-badge";
 import type { TeamMember, Ticket, TicketStatus } from "@/lib/domain/models";
 
 type KanbanBoardPanelProps = {
@@ -91,11 +92,7 @@ export function KanbanBoardPanel({
                               <span className="rounded-full border border-line bg-panelSoft px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-slate-500">
                                 {ticket.code}
                               </span>
-                              {ticket.sourceType === "jira" && ticket.externalKey ? (
-                                <span className="rounded-full border border-accent/15 bg-accentSoft px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-accent">
-                                  Jira
-                                </span>
-                              ) : null}
+                              <TicketSourceBadge ticket={ticket} />
                               <span className="rounded-full border border-line bg-panelSoft px-2 py-1 text-[11px] font-medium capitalize text-slate-500">
                                 {ticket.type}
                               </span>
@@ -123,6 +120,14 @@ export function KanbanBoardPanel({
                             <span>Owner</span>
                             <span className="font-medium text-slate-700">
                               {assignee?.name ?? "Unassigned"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-3">
+                            <span>Source</span>
+                            <span className="font-medium text-slate-700">
+                              {ticket.sourceType === "jira"
+                                ? ticket.externalKey ?? "Jira import"
+                                : "BridgeFlow local"}
                             </span>
                           </div>
                           <div className="flex items-center justify-between gap-3">

@@ -253,14 +253,19 @@ export function TicketHandoverSection({
             the existing handover record flow.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void handleGenerate()}
-          disabled={isGenerating}
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#244362]"
-        >
-          {isGenerating ? "Generating..." : "Generate Handover"}
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-line bg-panelSoft px-3 py-1 text-xs font-medium text-slate-600">
+            {isGenerating ? "Generating" : generated ? "Ready" : "Awaiting input"}
+          </span>
+          <button
+            type="button"
+            onClick={() => void handleGenerate()}
+            disabled={isGenerating}
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:bg-slate-400 hover:bg-[#244362]"
+          >
+            {isGenerating ? "Generating..." : "Generate Handover"}
+          </button>
+        </div>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -330,7 +335,7 @@ export function TicketHandoverSection({
         </div>
       ) : !error ? (
         <div className="mt-4 rounded-xl border border-dashed border-line bg-panelSoft p-4 text-sm text-slate-500">
-          Generate a handover to prepare a safe reassignment summary for this ticket. Saved records for the same ticket will remain visible below.
+          Generate a handover to prepare a safe reassignment summary for this ticket. If AI output falls back, saved records and current ticket context still remain available below.
         </div>
       ) : null}
 

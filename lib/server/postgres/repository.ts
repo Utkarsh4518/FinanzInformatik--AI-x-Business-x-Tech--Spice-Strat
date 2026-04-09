@@ -6,6 +6,10 @@ import type {
 } from "@/lib/domain/api";
 import type {
   Handover,
+  JiraSyncAction,
+  JiraSyncItem,
+  JiraSyncRun,
+  JiraSyncRunStatus,
   Project,
   TeamMember,
   Ticket,
@@ -19,6 +23,8 @@ import {
 import { queryPostgres, withPostgresClient } from "@/lib/server/postgres/client";
 import {
   mapHandoverRow,
+  mapJiraSyncItemRow,
+  mapJiraSyncRunRow,
   mapProjectRow,
   mapTeamMemberRow,
   mapTicketCommentRow,
@@ -182,6 +188,281 @@ export async function getHandoversFromPostgres(): Promise<Handover[]> {
   `);
 
   return result.rows.map(mapHandoverRow);
+}
+
+export async function getJiraSyncRunsFromPostgres(): Promise<JiraSyncRun[]> {
+  await ensurePostgresReady();
+  const result = await queryPostgres<{
+    id: string;
+    started_at: string;
+    finished_at: string | null;
+    project_key: string | null;
+    fetched_count: number;
+    imported_count: number;
+    updated_count: number;
+    skipped_count: number;
+    status: JiraSyncRunStatus;
+    error_message: string | null;
+  }>(`
+    SELECT
+      id,
+      started_at,
+      finished_at,
+      project_key,
+      fetched_count,
+      imported_count,
+      updated_count,
+      skipped_count,
+      status,
+      error_message
+    FROM jira_sync_runs
+    ORDER BY started_at DESC
+  `);
+
+  return result.rows.map(mapJiraSyncRunRow);
+}
+
+export async function getJiraSyncRunByIdFromPostgres(
+  syncRunId: string
+): Promise<JiraSyncRun | null> {
+  await ensurePostgresReady();
+  const result = await queryPostgres<{
+    id: string;
+    started_at: string;
+    finished_at: string | null;
+    project_key: string | null;
+    fetched_count: number;
+    imported_count: number;
+    updated_count: number;
+    skipped_count: number;
+    status: JiraSyncRunStatus;
+    error_message: string | null;
+  }>(
+    `
+      SELECT
+        id,
+        started_at,
+        finished_at,
+        project_key,
+        fetched_count,
+        imported_count,
+        updated_count,
+        skipped_count,
+        status,
+        error_message
+      FROM jira_sync_runs
+      WHERE id = $1
+    `,
+    [syncRunId]
+  );
+
+  return result.rows[0] ? mapJiraSyncRunRow(result.rows[0]) : null;
+}
+
+export async function getJiraSyncItemsFromPostgres(
+  syncRunId: string
+): Promise<JiraSyncItem[]> {
+  await ensurePostgresReady();
+  const result = await queryPostgres<{
+    id: string;
+    sync_run_id: string;
+    external_key: string;
+    action_taken: JiraSyncAction;
+    mapped_ticket_id: string | null;
+    message: string | null;
+  }>(
+    `
+      SELECT
+        id,
+        sync_run_id,
+        external_key,
+        action_taken,
+        mapped_ticket_id,
+        message
+      FROM jira_sync_items
+      WHERE sync_run_id = $1
+      ORDER BY created_at ASC
+    `,
+    [syncRunId]
+  );
+
+  return result.rows.map(mapJiraSyncItemRow);
+}
+
+export async function createJiraSyncRunInPostgres(input: {
+  projectKey: string | null;
+}): Promise<JiraSyncRun> {
+  await ensurePostgresReady();
+  const startedAt = new Date().toISOString();
+  const result = await queryPostgres<{
+    id: string;
+    started_at: string;
+    finished_at: string | null;
+    project_key: string | null;
+    fetched_count: number;
+    imported_count: number;
+    updated_count: number;
+    skipped_count: number;
+    status: JiraSyncRunStatus;
+    error_message: string | null;
+  }>(
+    `
+      INSERT INTO jira_sync_runs (
+        id,
+        started_at,
+        project_key,
+        status
+      )
+      VALUES ($1, $2, $3, 'running')
+      RETURNING
+        id,
+        started_at,
+        finished_at,
+        project_key,
+        fetched_count,
+        imported_count,
+        updated_count,
+        skipped_count,
+        status,
+        error_message
+    `,
+    [`jira-sync-${randomUUID()}`, startedAt, input.projectKey]
+  );
+
+  return mapJiraSyncRunRow(result.rows[0]);
+}
+
+export async function finalizeJiraSyncRunInPostgres(
+  syncRunId: string,
+  input: {
+    fetchedCount: number;
+    importedCount: number;
+    updatedCount: number;
+    skippedCount: number;
+    status: JiraSyncRunStatus;
+    errorMessage?: string | null;
+  }
+): Promise<JiraSyncRun | null> {
+  await ensurePostgresReady();
+  const finishedAt = new Date().toISOString();
+  const result = await queryPostgres<{
+    id: string;
+    started_at: string;
+    finished_at: string | null;
+    project_key: string | null;
+    fetched_count: number;
+    imported_count: number;
+    updated_count: number;
+    skipped_count: number;
+    status: JiraSyncRunStatus;
+    error_message: string | null;
+  }>(
+    `
+      UPDATE jira_sync_runs
+      SET
+        finished_at = $2,
+        fetched_count = $3,
+        imported_count = $4,
+        updated_count = $5,
+        skipped_count = $6,
+        status = $7,
+        error_message = $8
+      WHERE id = $1
+      RETURNING
+        id,
+        started_at,
+        finished_at,
+        project_key,
+        fetched_count,
+        imported_count,
+        updated_count,
+        skipped_count,
+        status,
+        error_message
+    `,
+    [
+      syncRunId,
+      finishedAt,
+      input.fetchedCount,
+      input.importedCount,
+      input.updatedCount,
+      input.skippedCount,
+      input.status,
+      input.errorMessage ?? null
+    ]
+  );
+
+  return result.rows[0] ? mapJiraSyncRunRow(result.rows[0]) : null;
+}
+
+export async function createJiraSyncItemsInPostgres(
+  items: Array<{
+    syncRunId: string;
+    externalKey: string;
+    actionTaken: JiraSyncAction;
+    mappedTicketId: string | null;
+    message?: string | null;
+  }>
+) {
+  if (!items.length) {
+    return [];
+  }
+
+  await ensurePostgresReady();
+  const createdItems: JiraSyncItem[] = [];
+
+  await withPostgresClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      for (const item of items) {
+        const result = await client.query<{
+          id: string;
+          sync_run_id: string;
+          external_key: string;
+          action_taken: JiraSyncAction;
+          mapped_ticket_id: string | null;
+          message: string | null;
+        }>(
+          `
+            INSERT INTO jira_sync_items (
+              id,
+              sync_run_id,
+              external_key,
+              action_taken,
+              mapped_ticket_id,
+              message
+            )
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING
+              id,
+              sync_run_id,
+              external_key,
+              action_taken,
+              mapped_ticket_id,
+              message
+          `,
+          [
+            `jira-sync-item-${randomUUID()}`,
+            item.syncRunId,
+            item.externalKey,
+            item.actionTaken,
+            item.mappedTicketId,
+            item.message ?? null
+          ]
+        );
+
+        createdItems.push(mapJiraSyncItemRow(result.rows[0]));
+      }
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+
+  return createdItems;
 }
 
 export async function replaceTicketsInPostgres(tickets: Ticket[]) {
