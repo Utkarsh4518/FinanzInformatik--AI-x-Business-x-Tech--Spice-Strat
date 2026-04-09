@@ -2,15 +2,25 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import type { ApiItemResponse, TranslateRequest, TranslateResponse } from "@/lib/domain/api";
-import type { Ticket } from "@/lib/domain/models";
+import type {
+  ApiItemResponse,
+  TranslateRequest,
+  TranslateResponse
+} from "@/lib/domain/api";
+import type { AppRole, Ticket } from "@/lib/domain/models";
 
 type TranslateTabProps = {
+  currentRole: AppRole;
   managerRawInput: string;
   selectedTicket: Ticket | null;
 };
 
 type TranslationSource = "manager-input" | "ticket-business" | "ticket-technical";
+
+type SourceOption = {
+  id: TranslationSource;
+  text: string;
+};
 
 const sourceLabels: Record<TranslationSource, string> = {
   "manager-input": "Manager Raw Input",
@@ -18,34 +28,74 @@ const sourceLabels: Record<TranslationSource, string> = {
   "ticket-technical": "Selected Ticket Technical Summary"
 };
 
-const modeOptions: TranslateRequest["mode"][] = [
-  "normalize",
-  "business-to-technical",
-  "technical-to-business"
-];
-
 const targetLanguageOptions: TranslateRequest["targetLanguage"][] = [
   "English",
   "German"
 ];
 
+const roleCopy: Record<
+  AppRole,
+  {
+    label: string;
+    recommendedMode: TranslateRequest["mode"];
+    recommendedSource: TranslationSource;
+    summary: string;
+  }
+> = {
+  manager: {
+    label: "Manager",
+    recommendedMode: "normalize",
+    recommendedSource: "manager-input",
+    summary:
+      "Normalize messy multilingual notes into a cleaner manager-ready project brief."
+  },
+  analyst: {
+    label: "Analyst",
+    recommendedMode: "technical-to-business",
+    recommendedSource: "ticket-technical",
+    summary:
+      "Turn implementation-heavy details into business-friendly scope and stakeholder language."
+  },
+  developer: {
+    label: "Developer",
+    recommendedMode: "business-to-technical",
+    recommendedSource: "ticket-business",
+    summary:
+      "Translate business intent into implementation wording, dependencies, and delivery-ready detail."
+  }
+};
+
+function resolvePreferredSource(
+  preferredSource: TranslationSource,
+  availableSources: SourceOption[]
+) {
+  if (availableSources.some((entry) => entry.id === preferredSource)) {
+    return preferredSource;
+  }
+
+  return availableSources[0]?.id ?? "manager-input";
+}
+
 export function TranslateTab({
+  currentRole,
   managerRawInput,
   selectedTicket
 }: TranslateTabProps) {
   const availableSources = useMemo(() => {
-    const sources: { id: TranslationSource; text: string }[] = [
-      { id: "manager-input", text: managerRawInput }
-    ];
+    const sources: SourceOption[] = [];
 
-    if (selectedTicket?.businessSummary) {
+    if (managerRawInput.trim()) {
+      sources.push({ id: "manager-input", text: managerRawInput });
+    }
+
+    if (selectedTicket?.businessSummary.trim()) {
       sources.push({
         id: "ticket-business",
         text: selectedTicket.businessSummary
       });
     }
 
-    if (selectedTicket?.technicalSummary) {
+    if (selectedTicket?.technicalSummary.trim()) {
       sources.push({
         id: "ticket-technical",
         text: selectedTicket.technicalSummary
@@ -55,6 +105,7 @@ export function TranslateTab({
     return sources;
   }, [managerRawInput, selectedTicket]);
 
+  const rolePreset = roleCopy[currentRole];
   const [source, setSource] = useState<TranslationSource>("manager-input");
   const [mode, setMode] = useState<TranslateRequest["mode"]>("normalize");
   const [targetLanguage, setTargetLanguage] =
@@ -64,10 +115,11 @@ export function TranslateTab({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!availableSources.some((entry) => entry.id === source)) {
-      setSource(availableSources[0]?.id ?? "manager-input");
-    }
-  }, [availableSources, source]);
+    setSource(resolvePreferredSource(rolePreset.recommendedSource, availableSources));
+    setMode(rolePreset.recommendedMode);
+    setResult(null);
+    setError(null);
+  }, [availableSources, rolePreset.recommendedMode, rolePreset.recommendedSource]);
 
   const selectedSourceText =
     availableSources.find((entry) => entry.id === source)?.text ?? "";
@@ -114,6 +166,37 @@ export function TranslateTab({
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-line bg-white/95 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Role Translation Focus
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-700">{rolePreset.summary}</p>
+          </div>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+            {rolePreset.label} View
+          </span>
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Recommended Source
+            </div>
+            <p className="mt-2 text-sm text-slate-700">
+              {sourceLabels[resolvePreferredSource(rolePreset.recommendedSource, availableSources)]}
+            </p>
+          </div>
+          <div className="rounded-xl border border-line bg-slate-50/90 p-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Recommended Mode
+            </div>
+            <p className="mt-2 text-sm text-slate-700">{rolePreset.recommendedMode}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-line bg-white/95 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           Translate Source
         </div>
@@ -128,11 +211,15 @@ export function TranslateTab({
               onChange={(event) => setSource(event.target.value as TranslationSource)}
               className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
             >
-              {availableSources.map((entry) => (
-                <option key={entry.id} value={entry.id}>
-                  {sourceLabels[entry.id]}
-                </option>
-              ))}
+              {availableSources.length ? (
+                availableSources.map((entry) => (
+                  <option key={entry.id} value={entry.id}>
+                    {sourceLabels[entry.id]}
+                  </option>
+                ))
+              ) : (
+                <option value="manager-input">No source text available</option>
+              )}
             </select>
           </label>
 
@@ -148,11 +235,9 @@ export function TranslateTab({
                 }
                 className="mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400"
               >
-                {modeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
+                <option value="normalize">normalize</option>
+                <option value="business-to-technical">business-to-technical</option>
+                <option value="technical-to-business">technical-to-business</option>
               </select>
             </label>
 
@@ -179,8 +264,24 @@ export function TranslateTab({
           </div>
 
           <div className="rounded-xl border border-line bg-slate-50/90 p-4">
-            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Selected Text Preview
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Selected Text Preview
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSource(
+                    resolvePreferredSource(rolePreset.recommendedSource, availableSources)
+                  );
+                  setMode(rolePreset.recommendedMode);
+                  setResult(null);
+                  setError(null);
+                }}
+                className="text-xs font-medium text-slate-600 transition hover:text-slate-900"
+              >
+                Use role defaults
+              </button>
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               {selectedSourceText || "No source text available."}

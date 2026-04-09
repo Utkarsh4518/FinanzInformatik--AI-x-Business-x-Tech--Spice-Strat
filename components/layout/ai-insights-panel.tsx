@@ -291,6 +291,7 @@ export function AIInsightsPanel({
 
         {activeTab === "translate" ? (
           <TranslateTab
+            currentRole={currentRole}
             managerRawInput={managerRawInput}
             selectedTicket={selectedTicket}
           />
