@@ -16,10 +16,11 @@ BridgeFlow is an AI project coordinator that turns messy multilingual project in
 ## Local Setup
 
 1. Clone the repo.
-2. Install project dependencies.
-3. Add any required AI/API environment variables.
-4. Start the frontend and backend locally.
-5. Use sample project notes to test intake, ticket generation, summaries, and handovers.
+2. Install project dependencies with `npm install`.
+3. Copy `.env.example` to `.env.local` and set `DATABASE_URL` for PostgreSQL.
+4. Start the app with `npm run dev`. BridgeFlow will bootstrap the schema and seed the demo scenario automatically when PostgreSQL is available.
+5. During local development, `BRIDGEFLOW_ALLOW_FILE_FALLBACK=true` keeps the app runnable if PostgreSQL is unavailable.
+6. Use sample project notes to test intake, ticket generation, summaries, and handovers.
 
 ## Hackathon Goal
 
