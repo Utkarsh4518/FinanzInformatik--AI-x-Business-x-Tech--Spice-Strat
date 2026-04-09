@@ -124,13 +124,26 @@ async def _call_openai(prompt: str) -> str:
 
 
 async def _call_llm(prompt: str) -> str:
+    # 1) Manus (primary -- highest capability)
+    try:
+        from app.services.manus_service import _has_manus, call_manus
+        if _has_manus():
+            logger.info("Trying Manus (manus-1.6-max) as primary LLM")
+            result = await call_manus(prompt, max_wait=90)
+            if result:
+                return result
+            logger.warning("Manus returned empty/None, falling back to Gemini")
+    except Exception as exc:
+        logger.error("Manus call failed: %s; falling back to Gemini", str(exc)[:200])
+
+    # 2) Gemini (fallback)
     try:
         if _has_gemini():
             return await _call_gemini(prompt)
         if _has_openai():
             return await _call_openai(prompt)
     except Exception as exc:
-        logger.error("LLM call failed, falling back to mock: %s", str(exc)[:200])
+        logger.error("LLM fallback also failed: %s", str(exc)[:200])
     return _mock_response(prompt)
 
 
@@ -377,17 +390,26 @@ async def translate_text(text: str, target_audience: str, context: str | None = 
         prompt += f"\n\nAdditional context:\n{context}"
 
     try:
+        from app.services.manus_service import _has_manus, call_manus
+        if _has_manus():
+            result = await call_manus(prompt, max_wait=90)
+            if result and result.strip():
+                return result.strip()
+            logger.warning("translate_text: Manus returned empty, trying Gemini")
+    except Exception as exc:
+        logger.error("translate_text Manus error: %s", str(exc)[:200])
+
+    try:
         if _has_gemini():
             result = (await _call_gemini(prompt)).strip()
             if result:
                 return result
-            logger.warning("translate_text: Gemini returned empty string")
         if _has_openai():
             result = (await _call_openai(prompt)).strip()
             if result:
                 return result
     except Exception as exc:
-        logger.error("translate_text LLM error: %s", str(exc)[:200])
+        logger.error("translate_text LLM fallback error: %s", str(exc)[:200])
 
     return _translate_llm_unavailable_fallback(text, target_audience)
 
@@ -498,6 +520,16 @@ async def explain_commit(
         )
 
     try:
+        from app.services.manus_service import _has_manus, call_manus
+        if _has_manus():
+            result = await call_manus(prompt, max_wait=120)
+            if result and result.strip():
+                return result.strip()
+            logger.warning("explain_commit: Manus returned empty, trying Gemini")
+    except Exception as exc:
+        logger.error("explain_commit Manus error: %s", str(exc)[:200])
+
+    try:
         if _has_gemini():
             result = (await _call_gemini(prompt)).strip()
             if result:
@@ -507,7 +539,7 @@ async def explain_commit(
             if result:
                 return result
     except Exception as exc:
-        logger.error("explain_commit LLM error: %s", str(exc)[:200])
+        logger.error("explain_commit LLM fallback error: %s", str(exc)[:200])
 
     return (
         "AI explanation is currently unavailable. "
