@@ -31,7 +31,7 @@ export function useVoiceInput() {
   const [transcript, setTranscript] = useState("");
   const [supported, setSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  const silenceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const silenceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
