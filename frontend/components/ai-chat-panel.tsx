@@ -107,7 +107,7 @@ export function AiChatPanel({ prefillPrompt, clearPrefill }: AiChatPanelProps) {
     <div className="flex h-full flex-col p-5">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-fi-text">Bridge AI Chat</h2>
+          <h2 className="text-lg font-semibold text-fi-text">Biz x Tech AI Chat</h2>
           <p className="text-xs text-fi-text/40">
             Ask anything -- I&apos;ll respond in {isBusiness ? "business" : "technical"} language.
           </p>

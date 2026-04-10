@@ -97,20 +97,7 @@ async def _is_authenticated() -> bool:
         return False
 
 
-# ── Demo data (shown alongside real data) ────────────────────────────
-
-_DEMO_ISSUES: list[dict] = [
-    {"key": "BRIDGE-1", "summary": "Implement AI-powered code explanation for business users", "description": "As a product manager, I want to paste a code snippet and get a plain-language explanation of what it does, so I can understand feature implementations without reading code.\n\nAcceptance Criteria:\n- User can paste code in the chat\n- AI responds with business-friendly explanation\n- Supports Python, JavaScript, TypeScript", "status": "Done", "status_category": "done", "priority": "High", "issue_type": "Story", "assignee": "Utkarsh Maurya", "reporter": "Utkarsh Maurya", "project_key": "BRIDGE", "project_name": "Bridge Collaboration Tool", "created": "2026-04-07T10:00:00.000+0000", "updated": "2026-04-09T10:00:00.000+0000", "labels": ["ai", "mvp"], "url": ""},
-    {"key": "BRIDGE-2", "summary": "Build Business/Developer mode toggle with color theming", "description": "Implement a global mode toggle that switches the entire UI between business (warm amber) and developer (cool cyan) color palettes.\n\nAcceptance Criteria:\n- Toggle in navbar switches mode globally\n- All components respect the current mode\n- Smooth color transitions between modes", "status": "Done", "status_category": "done", "priority": "High", "issue_type": "Story", "assignee": "Utkarsh Maurya", "reporter": "Utkarsh Maurya", "project_key": "BRIDGE", "project_name": "Bridge Collaboration Tool", "created": "2026-04-07T11:00:00.000+0000", "updated": "2026-04-09T09:00:00.000+0000", "labels": ["ui", "mvp"], "url": ""},
-    {"key": "BRIDGE-3", "summary": "Integrate GitHub API to browse repositories", "description": "Connect to GitHub REST API to fetch and display user repositories in the sidebar.\n\nAcceptance Criteria:\n- Sidebar shows list of repos from authenticated user\n- Business mode shows descriptions, developer mode shows tech stats\n- Click to view repo details with README", "status": "Done", "status_category": "done", "priority": "Medium", "issue_type": "Story", "assignee": "Utkarsh Maurya", "reporter": "Utkarsh Maurya", "project_key": "BRIDGE", "project_name": "Bridge Collaboration Tool", "created": "2026-04-08T09:00:00.000+0000", "updated": "2026-04-09T08:00:00.000+0000", "labels": ["github", "integration"], "url": ""},
-    {"key": "BRIDGE-4", "summary": "Add Jira integration for ticket management", "description": "Integrate with Jira Cloud API to browse projects, view issues, and create tickets directly from Bridge.\n\nAcceptance Criteria:\n- Jira tab in sidebar shows projects and issues\n- Board view with To Do / In Progress / Done columns\n- AI-powered ticket generation from natural language", "status": "In Progress", "status_category": "indeterminate", "priority": "High", "issue_type": "Story", "assignee": "Utkarsh Maurya", "reporter": "Utkarsh Maurya", "project_key": "BRIDGE", "project_name": "Bridge Collaboration Tool", "created": "2026-04-09T08:00:00.000+0000", "updated": "2026-04-09T12:00:00.000+0000", "labels": ["jira", "integration"], "url": ""},
-    {"key": "BRIDGE-5", "summary": "Translate Jira tickets between business and technical language", "description": "Use AI to translate Jira ticket descriptions between business-friendly and developer-friendly formats.\n\nAcceptance Criteria:\n- Each issue detail view has a translate button\n- Business mode translates to outcomes and impact\n- Developer mode translates to technical specs", "status": "In Progress", "status_category": "indeterminate", "priority": "Medium", "issue_type": "Task", "assignee": "Utkarsh Maurya", "reporter": "Utkarsh Maurya", "project_key": "BRIDGE", "project_name": "Bridge Collaboration Tool", "created": "2026-04-09T09:00:00.000+0000", "updated": "2026-04-09T11:00:00.000+0000", "labels": ["ai", "jira"], "url": ""},
-    {"key": "BRIDGE-6", "summary": "Create scenario library for common collaboration workflows", "description": "Build a library of pre-defined collaboration scenarios that demonstrate Bridge's capabilities.\n\nAcceptance Criteria:\n- At least 5 scenarios covering common use cases\n- Each scenario has business and developer prompts\n- 'Try in chat' button pre-fills the AI chat", "status": "Done", "status_category": "done", "priority": "Low", "issue_type": "Task", "assignee": "Utkarsh Maurya", "reporter": "Utkarsh Maurya", "project_key": "BRIDGE", "project_name": "Bridge Collaboration Tool", "created": "2026-04-08T14:00:00.000+0000", "updated": "2026-04-09T07:00:00.000+0000", "labels": ["content"], "url": ""},
-]
-
 _created_issues: list[dict] = []
-
-_DEMO_PROJECT = {"key": "BRIDGE", "name": "Bridge Collaboration Tool", "project_type": "software", "style": "next-gen", "url": ""}
 
 
 async def fetch_projects() -> list[dict]:
@@ -132,10 +119,6 @@ async def fetch_projects() -> list[dict]:
                 })
     except Exception as exc:
         logger.warning("Jira project fetch failed: %s", exc)
-
-    real_keys = {p["key"] for p in results}
-    if _DEMO_PROJECT["key"] not in real_keys:
-        results.insert(0, _DEMO_PROJECT)
 
     return results
 
@@ -162,7 +145,7 @@ async def fetch_issues(project_key: str | None = None, jql: str | None = None, m
         except Exception as exc:
             logger.warning("Jira search failed: %s", exc)
 
-    demo_pool = _DEMO_ISSUES + _created_issues
+    demo_pool = _created_issues
     if project_key:
         demo_pool = [i for i in demo_pool if i["project_key"] == project_key]
 
@@ -184,7 +167,7 @@ async def fetch_issue_detail(issue_key: str) -> dict:
     except Exception:
         pass
 
-    all_demo = _DEMO_ISSUES + _created_issues
+    all_demo = _created_issues
     for i in all_demo:
         if i["key"] == issue_key:
             return i

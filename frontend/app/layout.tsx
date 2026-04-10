@@ -20,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bridge -- Business & Tech Collaboration",
+  title: "Biz x Tech -- Business & Tech Collaboration",
   description: "AI-powered collaboration tool that bridges the gap between business and technical teams.",
 };
 

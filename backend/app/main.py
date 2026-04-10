@@ -40,9 +40,9 @@ from app.services.jira_service import (
 )
 
 app = FastAPI(
-    title="Bridge API",
+    title="Biz x Tech API",
     version="0.2.0",
-    summary="Backend for the Bridge Business-Tech collaboration tool.",
+    summary="Backend for the Biz x Tech Business-Tech collaboration tool.",
 )
 
 app.add_middleware(

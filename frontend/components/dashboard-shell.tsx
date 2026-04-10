@@ -83,7 +83,7 @@ export function DashboardShell() {
               <span className={`text-sm font-bold ${isBusiness ? "text-white" : "text-black"}`}>B</span>
             </div>
             <span className="font-display text-base font-semibold text-fi-text">
-              Bridge
+              Biz x Tech
             </span>
           </motion.div>
         </div>

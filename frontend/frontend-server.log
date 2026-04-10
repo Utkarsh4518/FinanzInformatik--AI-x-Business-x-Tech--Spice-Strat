@@ -116,3 +116,6 @@ Import trace for requested module:
 ./components/dashboard-shell.tsx
 ./app/page.tsx
  ✓ Compiled in 1403ms (2105 modules)
+ ✓ Compiled in 5s (2105 modules)
+ ✓ Compiled in 1002ms (2105 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Utkarsh\Desktop\spice_strat\frontend\.next\cache\webpack\server-development\7.pack.gz_' -> 'C:\Users\Utkarsh\Desktop\spice_strat\frontend\.next\cache\webpack\server-development\7.pack.gz'
