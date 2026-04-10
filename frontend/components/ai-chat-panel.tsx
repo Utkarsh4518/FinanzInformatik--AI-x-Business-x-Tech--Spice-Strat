@@ -213,9 +213,9 @@ export function AiChatPanel({ prefillPrompt, clearPrefill }: AiChatPanelProps) {
                   </div>
                 )}
                 {langTranslations[m.id] && isAi && (
-                  <div className="rounded-lg border border-fi-magenta/20 bg-fi-dark/40 px-3 py-2 text-[12px] leading-relaxed text-fi-text/70">
+                  <div className="prose-chat rounded-lg border border-fi-magenta/20 bg-fi-dark/40 px-3 py-2 text-[12px] leading-relaxed text-fi-text/70">
                     <span className="mb-1 block text-[9px] font-medium uppercase tracking-wider text-fi-magenta/60">German</span>
-                    {langTranslations[m.id]}
+                    <ReactMarkdown>{langTranslations[m.id]}</ReactMarkdown>
                   </div>
                 )}
               </div>

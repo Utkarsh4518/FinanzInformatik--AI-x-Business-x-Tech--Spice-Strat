@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 
 import { useMode } from "@/lib/mode-context";
 import {
@@ -262,9 +263,9 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
               </div>
               {translated && (
                 <div className="mt-3 space-y-2">
-                  <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
-                    {translated}
-                  </p>
+                  <div className="prose-markdown text-sm leading-relaxed text-fi-text/70 rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                    <ReactMarkdown>{translated}</ReactMarkdown>
+                  </div>
                   <button
                     onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translated)}
                     className="flex items-center gap-1 text-[10px] text-fi-text/50 hover:text-fi-text transition-colors"
@@ -313,9 +314,9 @@ export function JiraBoard({ selectedIssue, onBack }: JiraBoardProps) {
               </div>
               {langTranslated && (
                 <div className="mt-3 space-y-2">
-                  <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
-                    {langTranslated}
-                  </p>
+                  <div className="prose-markdown text-sm leading-relaxed text-fi-text/70 rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                    <ReactMarkdown>{langTranslated}</ReactMarkdown>
+                  </div>
                   <button
                     onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(langTranslated)}
                     className="flex items-center gap-1 text-[10px] text-fi-text/50 hover:text-fi-text transition-colors"

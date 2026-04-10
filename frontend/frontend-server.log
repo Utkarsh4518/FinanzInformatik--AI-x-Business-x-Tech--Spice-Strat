@@ -119,3 +119,13 @@ Import trace for requested module:
  ✓ Compiled in 5s (2105 modules)
  ✓ Compiled in 1002ms (2105 modules)
 <w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Utkarsh\Desktop\spice_strat\frontend\.next\cache\webpack\server-development\7.pack.gz_' -> 'C:\Users\Utkarsh\Desktop\spice_strat\frontend\.next\cache\webpack\server-development\7.pack.gz'
+ ✓ Compiled in 1726ms (2105 modules)
+ ✓ Compiled in 1939ms (2105 modules)
+ ✓ Compiled in 1374ms (2105 modules)
+ ✓ Compiled in 1198ms (2105 modules)
+ ✓ Compiled in 785ms (2105 modules)
+ ✓ Compiled in 889ms (2105 modules)
+ ✓ Compiled in 738ms (2105 modules)
+ ✓ Compiled in 2.7s (2105 modules)
+ ✓ Compiled in 2.5s (2105 modules)
+ ✓ Compiled in 1348ms (2105 modules)

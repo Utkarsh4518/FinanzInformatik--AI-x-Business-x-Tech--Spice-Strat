@@ -18,6 +18,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
@@ -210,8 +211,8 @@ export function CommitDetail({ commit, repo, onBack }: CommitDetailProps) {
 
           {explanation && (
             <div className="space-y-3">
-              <div className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
-                {explanation}
+              <div className="prose-markdown text-sm leading-relaxed text-fi-text/70 rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                <ReactMarkdown>{explanation}</ReactMarkdown>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -237,9 +238,9 @@ export function CommitDetail({ commit, repo, onBack }: CommitDetailProps) {
                 </button>
               </div>
               {langTranslated && (
-                <div className="text-sm leading-relaxed text-fi-text/60 whitespace-pre-wrap rounded-lg border border-fi-magenta/20 bg-fi-dark/40 p-3">
+                <div className="prose-markdown text-sm leading-relaxed text-fi-text/60 rounded-lg border border-fi-magenta/20 bg-fi-dark/40 p-3">
                   <span className="mb-1 block text-[9px] font-medium uppercase tracking-wider text-fi-magenta/60">German</span>
-                  {langTranslated}
+                  <ReactMarkdown>{langTranslated}</ReactMarkdown>
                 </div>
               )}
             </div>

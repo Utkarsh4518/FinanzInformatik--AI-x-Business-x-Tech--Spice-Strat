@@ -13,6 +13,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
@@ -236,9 +237,9 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
           </div>
           {langTranslated && (
             <div className="space-y-2">
-              <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
-                {langTranslated}
-              </p>
+              <div className="prose-markdown text-sm leading-relaxed text-fi-text/70 rounded-lg border border-white/[0.08] bg-fi-dark/40 p-3">
+                <ReactMarkdown>{langTranslated}</ReactMarkdown>
+              </div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(langTranslated)}
@@ -269,7 +270,9 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
               <h3 className="mb-3 text-sm font-semibold text-fi-text">Project Overview</h3>
               {translatedReadme ? (
                 <div className="space-y-2">
-                  <p className="text-sm leading-relaxed text-fi-text/70 whitespace-pre-wrap">{translatedReadme}</p>
+                  <div className="prose-markdown text-sm leading-relaxed text-fi-text/70">
+                    <ReactMarkdown>{translatedReadme}</ReactMarkdown>
+                  </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
@@ -369,7 +372,9 @@ export function ProjectDashboard({ selectedRepo, onBack }: ProjectDashboardProps
               <h3 className="mb-3 text-sm font-semibold text-fi-text">README</h3>
               {translatedReadme ? (
                 <div className="space-y-2">
-                  <pre className="max-h-[400px] overflow-y-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-fi-text/70">{translatedReadme}</pre>
+                  <div className="prose-markdown max-h-[400px] overflow-y-auto text-xs leading-relaxed text-fi-text/70">
+                    <ReactMarkdown>{translatedReadme}</ReactMarkdown>
+                  </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => tts.isSpeaking ? tts.stop() : tts.speak(translatedReadme)}
