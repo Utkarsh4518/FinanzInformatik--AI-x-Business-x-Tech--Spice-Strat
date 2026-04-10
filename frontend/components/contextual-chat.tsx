@@ -17,6 +17,7 @@ import {
   ExternalLink,
   CheckCircle2,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
@@ -178,8 +179,8 @@ export function ContextualChat({ context, contextLabel, quickPrompts }: Contextu
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 100, scale: 0.95 }}
       transition={{ type: "spring", damping: 25, stiffness: 300 }}
-      className="fixed bottom-5 right-5 z-50 flex w-[440px] max-w-[calc(100vw-2.5rem)] flex-col rounded-2xl border border-white/[0.1] shadow-2xl shadow-black/40 overflow-hidden"
-      style={{ background: isBusiness ? "linear-gradient(160deg, rgba(47,23,58,0.97), rgba(26,14,34,0.99))" : "rgba(14,14,16,0.98)", maxHeight: "min(600px, calc(100vh - 6rem))" }}
+      className="fixed bottom-5 right-5 z-50 flex w-[440px] max-w-[calc(100vw-2.5rem)] flex-col rounded-2xl border border-white/[0.1] shadow-2xl shadow-black/40"
+      style={{ background: isBusiness ? "linear-gradient(160deg, rgba(47,23,58,0.97), rgba(26,14,34,0.99))" : "rgba(14,14,16,0.98)", maxHeight: "min(700px, calc(100vh - 4rem))" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3">
@@ -213,6 +214,9 @@ export function ContextualChat({ context, contextLabel, quickPrompts }: Contextu
         </div>
       </div>
 
+      {/* Scrollable body */}
+      <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden min-h-0">
+
       {/* Jira Ticket Creator */}
       <AnimatePresence>
         {showTicketForm && (
@@ -221,7 +225,7 @@ export function ContextualChat({ context, contextLabel, quickPrompts }: Contextu
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+            className="overflow-hidden shrink-0"
           >
             <div className="border-b border-white/[0.08] bg-gradient-to-r from-amber-500/[0.04] to-orange-500/[0.04] p-4 space-y-3">
               <div className="flex items-center gap-2">
@@ -380,7 +384,13 @@ export function ContextualChat({ context, contextLabel, quickPrompts }: Contextu
                       : "rounded-tr-sm accent-bg accent-border border text-fi-text"
                   }`}
                 >
-                  {m.content}
+                  {isAi ? (
+                    <div className="prose-chat">
+                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    m.content
+                  )}
                 </div>
               </motion.div>
             );
@@ -403,8 +413,10 @@ export function ContextualChat({ context, contextLabel, quickPrompts }: Contextu
         )}
       </div>
 
+      </div>{/* end scrollable body */}
+
       {/* Input */}
-      <div className="border-t border-white/[0.08] p-3">
+      <div className="shrink-0 border-t border-white/[0.08] p-3">
         <form
           onSubmit={(e) => {
             e.preventDefault();

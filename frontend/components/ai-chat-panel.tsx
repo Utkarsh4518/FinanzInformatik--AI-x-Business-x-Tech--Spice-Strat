@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeftRight, Bot, Loader2, Mic, MicOff, SendHorizonal, User2, Volume2, VolumeX } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useMode } from "@/lib/mode-context";
@@ -180,7 +181,13 @@ export function AiChatPanel({ prefillPrompt, clearPrefill }: AiChatPanelProps) {
                       : "rounded-tr-sm accent-bg accent-border border text-fi-text"
                   }`}
                 >
-                  {m.content}
+                  {isAi ? (
+                    <div className="prose-chat">
+                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    m.content
+                  )}
                 </div>
                 {isAi && (
                   <div className="flex items-center gap-2 opacity-0 transition-all group-hover:opacity-100">

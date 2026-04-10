@@ -376,6 +376,10 @@ async def translate_text(text: str, target_audience: str, context: str | None = 
             "Translate the following technical text into clear, non-technical business language. "
             "Focus on impact, value, and outcomes rather than implementation details. "
             "Keep it concise and professional.\n\n"
+            "IMPORTANT: Provide the FULL translated text directly in your response. "
+            "Do NOT say 'see attached' or 'the document is attached below'. "
+            "Do NOT add meta-commentary about the translation process. "
+            "Just provide the translated content itself.\n\n"
             f"Technical text:\n{text}"
         )
     else:
@@ -383,6 +387,10 @@ async def translate_text(text: str, target_audience: str, context: str | None = 
             "You are a bridge between business and technical teams. "
             "Translate the following business description into precise technical language. "
             "Include relevant technical terms, architecture patterns, and implementation details.\n\n"
+            "IMPORTANT: Provide the FULL translated text directly in your response. "
+            "Do NOT say 'see attached' or 'the document is attached below'. "
+            "Do NOT add meta-commentary about the translation process. "
+            "Just provide the translated content itself.\n\n"
             f"Business text:\n{text}"
         )
 
@@ -424,6 +432,17 @@ async def chat_response(message: str, mode: str, context: str | None = None, his
     prompt = (
         f"You are {persona}. You are part of 'Bridge', a collaboration tool that helps "
         f"business and tech teams understand each other.\n\n"
+        f"CRITICAL RULES:\n"
+        f"- ALWAYS provide your full answer INLINE in your response. Never say 'see attached', "
+        f"'the document is attached below', or reference any external documents.\n"
+        f"- When asked to translate, summarize, or explain something, provide the ACTUAL "
+        f"translated/summarized/explained content directly in your response.\n"
+        f"- When asked about a project overview or what a project does, give a specific, "
+        f"substantive answer based on the context provided. If context is available, use it. "
+        f"If no context is available, ask the user to select a project first or give a "
+        f"helpful general answer about Bridge itself.\n"
+        f"- Use markdown formatting (headers, bullet points, bold) to structure your response clearly.\n"
+        f"- Be specific and actionable, never vague or meta.\n\n"
     )
 
     if context:
@@ -436,7 +455,7 @@ async def chat_response(message: str, mode: str, context: str | None = None, his
             prompt += f"{role}: {msg.get('content', '')}\n"
         prompt += "\n"
 
-    prompt += f"User message: {message}\n\nRespond helpfully and concisely."
+    prompt += f"User message: {message}\n\nRespond helpfully, concisely, and with substance. Use markdown formatting."
     return await _call_llm(prompt)
 
 

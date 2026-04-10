@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bot, Loader2, SendHorizonal, Sparkles, User2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 import { chatWithAI } from "@/lib/api";
 import { useMode } from "@/lib/mode-context";
@@ -133,7 +134,13 @@ export function ContextualAiAssistant({
                     : "rounded-tr-sm accent-bg accent-border border text-fi-text"
                 }`}
               >
-                {message.content}
+                {isAssistant ? (
+                  <div className="prose-chat">
+                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  message.content
+                )}
               </div>
             </div>
           );

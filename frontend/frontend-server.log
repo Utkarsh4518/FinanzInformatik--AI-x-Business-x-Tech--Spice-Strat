@@ -78,3 +78,41 @@ Import trace for requested module:
  ✓ Compiled in 459ms (806 modules)
  ✓ Compiled in 3.2s (1772 modules)
  ✓ Compiled in 1211ms (1772 modules)
+ ✓ Compiled in 2.6s (1772 modules)
+ ✓ Compiled in 1926ms (1772 modules)
+ ✓ Compiled in 2.9s (2105 modules)
+ ✓ Compiled in 865ms (2105 modules)
+ ✓ Compiled in 380ms (976 modules)
+ ✓ Compiled in 1567ms (2105 modules)
+ ✓ Compiled in 1135ms (2105 modules)
+ ⨯ ./components/contextual-chat.tsx
+Error:   [31mx[0m Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[[36;1;4mC:\Users\Utkarsh\Desktop\spice_strat\frontend\components\contextual-chat.tsx[0m:459:1]
+ [2m456[0m |       </div>
+ [2m457[0m |     </motion.div>
+ [2m458[0m |   );
+ [2m459[0m | }
+     : [35;1m^[0m
+     `----
+  [31mx[0m Expected '</', got 'jsx text (
+  [31m|[0m   );
+  [31m|[0m }
+  [31m|[0m )'
+     ,-[[36;1;4mC:\Users\Utkarsh\Desktop\spice_strat\frontend\components\contextual-chat.tsx[0m:457:1]
+ [2m454[0m |               </Button>
+ [2m455[0m |             </form>
+ [2m456[0m |           </div>
+ [2m457[0m | [35;1m,[0m[35;1m-[0m[35;1m>[0m     </motion.div>
+ [2m458[0m | [35;1m|[0m     );
+ [2m459[0m | [35;1m`[0m[35;1m-[0m[35;1m>[0m }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/contextual-chat.tsx
+./components/project-dashboard.tsx
+./components/dashboard-shell.tsx
+./app/page.tsx
+ ✓ Compiled in 1403ms (2105 modules)
