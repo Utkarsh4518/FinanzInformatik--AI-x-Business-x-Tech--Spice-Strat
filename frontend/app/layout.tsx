@@ -20,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Biz x Tech -- Business & Tech Collaboration",
+  title: "synapse -- Business & Tech Collaboration",
   description: "AI-powered collaboration tool that bridges the gap between business and technical teams.",
 };
 

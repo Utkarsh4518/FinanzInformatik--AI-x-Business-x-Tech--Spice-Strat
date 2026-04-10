@@ -48,6 +48,6 @@ export const seedMessages: ChatMessage[] = [
     id: "assistant-intro",
     role: "assistant",
     content:
-      "Hi! I'm Biz x Tech AI. I help business and tech teams understand each other. Ask me anything about your projects -- I'll explain it in a way that makes sense for your role.",
+      "Hi! I'm synapse AI. I help business and tech teams understand each other. Ask me anything about your projects -- I'll explain it in a way that makes sense for your role.",
   },
 ];

@@ -74,16 +74,13 @@ export function DashboardShell() {
           </button>
 
           <motion.div
-            className="flex items-center gap-2.5"
+            className="flex items-center"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.4, type: "spring", stiffness: 200 }}
           >
-            <div className={`flex h-8 w-8 items-center justify-center rounded-lg shadow-md transition-all duration-500 ${isBusiness ? "bg-fi-gradient shadow-fi-red/20" : "bg-white shadow-white/10"}`}>
-              <span className={`text-sm font-bold ${isBusiness ? "text-white" : "text-black"}`}>B</span>
-            </div>
-            <span className="font-display text-base font-semibold text-fi-text">
-              Biz x Tech
+            <span className="font-display text-base font-medium tracking-wide text-fi-text">
+              synapse
             </span>
           </motion.div>
         </div>

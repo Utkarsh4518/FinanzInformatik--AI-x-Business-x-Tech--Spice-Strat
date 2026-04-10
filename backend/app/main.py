@@ -40,9 +40,9 @@ from app.services.jira_service import (
 )
 
 app = FastAPI(
-    title="Biz x Tech API",
+    title="synapse API",
     version="0.2.0",
-    summary="Backend for the Biz x Tech Business-Tech collaboration tool.",
+    summary="Backend for the synapse Business-Tech collaboration tool.",
 )
 
 app.add_middleware(

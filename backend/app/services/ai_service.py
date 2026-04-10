@@ -430,7 +430,7 @@ async def chat_response(message: str, mode: str, context: str | None = None, his
     )
 
     prompt = (
-        f"You are {persona}. You are part of 'Biz x Tech', a collaboration tool that helps "
+        f"You are {persona}. You are part of 'synapse', a collaboration tool that helps "
         f"business and tech teams understand each other.\n\n"
         f"CRITICAL RULES:\n"
         f"- ALWAYS provide your full answer INLINE in your response. Never say 'see attached', "
@@ -440,7 +440,7 @@ async def chat_response(message: str, mode: str, context: str | None = None, his
         f"- When asked about a project overview or what a project does, give a specific, "
         f"substantive answer based on the context provided. If context is available, use it. "
         f"If no context is available, ask the user to select a project first or give a "
-        f"helpful general answer about Biz x Tech itself.\n"
+        f"helpful general answer about synapse itself.\n"
         f"- Use markdown formatting (headers, bullet points, bold) to structure your response clearly.\n"
         f"- Be specific and actionable, never vague or meta.\n\n"
     )
@@ -466,7 +466,7 @@ async def generate_ticket_content(requirement: str, mode: str, context: str | No
     a technically accurate and detailed ticket -- even from vague business language.
     """
     prompt = (
-        "You are a senior project management assistant for 'Biz x Tech', a collaboration tool "
+        "You are a senior project management assistant for 'synapse', a collaboration tool "
         "that helps business and tech teams work together.\n\n"
         "Your task: Convert a user's requirement into a professional Jira ticket.\n"
         "Generate:\n"
