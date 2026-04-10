@@ -75,6 +75,130 @@ def _extract_adf_text(adf: dict) -> str:
     return " ".join(parts).strip()
 
 
+import re
+
+def _inline_marks(text: str) -> list[dict]:
+    """Convert inline markdown (bold, italic, code) to ADF text nodes with marks."""
+    nodes: list[dict] = []
+    pattern = re.compile(
+        r"(\*\*\*(.+?)\*\*\*)"    # bold+italic
+        r"|(\*\*(.+?)\*\*)"       # bold
+        r"|(__(.+?)__)"           # bold (underscores)
+        r"|(\*(.+?)\*)"           # italic
+        r"|(_(.+?)_)"             # italic (underscores)
+        r"|(`(.+?)`)"             # inline code
+    )
+    pos = 0
+    for m in pattern.finditer(text):
+        if m.start() > pos:
+            nodes.append({"type": "text", "text": text[pos:m.start()]})
+
+        if m.group(2):  # bold+italic
+            nodes.append({"type": "text", "text": m.group(2), "marks": [{"type": "strong"}, {"type": "em"}]})
+        elif m.group(4):  # bold **
+            nodes.append({"type": "text", "text": m.group(4), "marks": [{"type": "strong"}]})
+        elif m.group(6):  # bold __
+            nodes.append({"type": "text", "text": m.group(6), "marks": [{"type": "strong"}]})
+        elif m.group(8):  # italic *
+            nodes.append({"type": "text", "text": m.group(8), "marks": [{"type": "em"}]})
+        elif m.group(10):  # italic _
+            nodes.append({"type": "text", "text": m.group(10), "marks": [{"type": "em"}]})
+        elif m.group(12):  # code
+            nodes.append({"type": "text", "text": m.group(12), "marks": [{"type": "code"}]})
+        pos = m.end()
+
+    if pos < len(text):
+        nodes.append({"type": "text", "text": text[pos:]})
+
+    return nodes if nodes else [{"type": "text", "text": text}]
+
+
+def _markdown_to_adf(md: str) -> dict:
+    """Convert common markdown to Atlassian Document Format (ADF).
+
+    Handles: headings (#-###), bullet lists (- / *), numbered lists (1.),
+    horizontal rules (---), bold, italic, inline code, and paragraphs.
+    """
+    doc: dict = {"type": "doc", "version": 1, "content": []}
+    lines = md.split("\n")
+    i = 0
+
+    def _flush_list(items: list[list[dict]], ordered: bool) -> dict:
+        list_type = "orderedList" if ordered else "bulletList"
+        return {
+            "type": list_type,
+            "content": [
+                {
+                    "type": "listItem",
+                    "content": [{"type": "paragraph", "content": inline}],
+                }
+                for inline in items
+            ],
+        }
+
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+
+        if not stripped:
+            i += 1
+            continue
+
+        if stripped.startswith("---") and all(c in "-" for c in stripped):
+            doc["content"].append({"type": "rule"})
+            i += 1
+            continue
+
+        heading_match = re.match(r"^(#{1,6})\s+(.+)$", stripped)
+        if heading_match:
+            level = min(len(heading_match.group(1)), 6)
+            doc["content"].append({
+                "type": "heading",
+                "attrs": {"level": level},
+                "content": _inline_marks(heading_match.group(2).strip()),
+            })
+            i += 1
+            continue
+
+        bullet_match = re.match(r"^[-*]\s+(.+)$", stripped)
+        if bullet_match:
+            items: list[list[dict]] = []
+            while i < len(lines):
+                bm = re.match(r"^[-*]\s+(.+)$", lines[i].strip())
+                if not bm:
+                    break
+                items.append(_inline_marks(bm.group(1)))
+                i += 1
+            doc["content"].append(_flush_list(items, ordered=False))
+            continue
+
+        ol_match = re.match(r"^\d+[.)]\s+(.+)$", stripped)
+        if ol_match:
+            items = []
+            while i < len(lines):
+                om = re.match(r"^\d+[.)]\s+(.+)$", lines[i].strip())
+                if not om:
+                    break
+                items.append(_inline_marks(om.group(1)))
+                i += 1
+            doc["content"].append(_flush_list(items, ordered=True))
+            continue
+
+        doc["content"].append({
+            "type": "paragraph",
+            "content": _inline_marks(stripped),
+        })
+        i += 1
+
+    if not doc["content"]:
+        doc["content"].append({
+            "type": "paragraph",
+            "content": [{"type": "text", "text": md or "(empty)"}],
+        })
+
+    return doc
+
+
 _auth_cache: bool | None = None
 
 
@@ -186,16 +310,7 @@ async def create_issue(project_key: str, summary: str, description: str, issue_t
                 "fields": {
                     "project": {"key": project_key},
                     "summary": summary,
-                    "description": {
-                        "type": "doc",
-                        "version": 1,
-                        "content": [
-                            {
-                                "type": "paragraph",
-                                "content": [{"type": "text", "text": description}],
-                            }
-                        ],
-                    },
+                    "description": _markdown_to_adf(description),
                     "issuetype": {"name": issue_type},
                 }
             }
