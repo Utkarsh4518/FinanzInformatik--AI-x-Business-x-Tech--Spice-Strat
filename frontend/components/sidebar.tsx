@@ -6,11 +6,9 @@ import {
   Circle,
   Clock,
   Code2,
-  ExternalLink,
   Folder,
   GitCommitHorizontal,
   GitFork,
-  Globe,
   Loader2,
   Search,
   Star,
@@ -22,7 +20,6 @@ import { motion } from "framer-motion";
 import { useMode } from "@/lib/mode-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchRepos, fetchJiraProjects, fetchJiraIssues, fetchCommits } from "@/lib/api";
-import { websites } from "@/lib/mock-data";
 import type { CommitSummary, JiraIssue, JiraProject, MainView, RepoSummary, SidebarTab } from "@/lib/types";
 
 
@@ -42,7 +39,6 @@ const tabs: { id: SidebarTab; label: string; icon: React.ComponentType<{ classNa
   { id: "projects", label: "Projects", icon: Folder },
   { id: "commits", label: "Commits", icon: GitCommitHorizontal },
   { id: "jira", label: "Jira", icon: TicketCheck },
-  { id: "websites", label: "Websites", icon: Globe },
 ];
 
 const statusIcon: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -277,41 +273,6 @@ export function Sidebar({
               </motion.div>
             )}
           </div>
-        )}
-
-        {activeTab === "websites" && (
-          <motion.div
-            className="space-y-1 p-3"
-            initial="hidden"
-            animate="show"
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
-          >
-            {websites.map((site) => (
-              <motion.a
-                key={site.url}
-                variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-                transition={{ duration: 0.25 }}
-                href={site.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-2.5 rounded-lg px-3 py-2.5 transition-colors hover:bg-fi-magenta/10"
-              >
-                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/[0.05]">
-                  <Globe className="h-3 w-3 text-fi-text/50" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium text-fi-text">{site.name}</span>
-                    <ExternalLink className="h-2.5 w-2.5 text-fi-text/40" />
-                  </div>
-                  <p className="mt-0.5 text-[11px] text-fi-text/40">{site.description}</p>
-                </div>
-                <span className="mt-0.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-fi-text/40">
-                  {site.category}
-                </span>
-              </motion.a>
-            ))}
-          </motion.div>
         )}
 
         {activeTab === "jira" && (

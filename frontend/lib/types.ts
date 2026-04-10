@@ -115,5 +115,5 @@ export type ExplainCommitResponse = {
   mode: string;
 };
 
-export type SidebarTab = "projects" | "websites" | "jira" | "commits";
+export type SidebarTab = "projects" | "jira" | "commits";
 export type MainView = "dashboard" | "project-detail" | "chat" | "jira" | "commit-detail";

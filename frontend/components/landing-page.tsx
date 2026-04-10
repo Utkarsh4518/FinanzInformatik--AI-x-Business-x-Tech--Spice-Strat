@@ -157,17 +157,6 @@ export function LandingPage({ onSelect }: LandingPageProps) {
             }}
           />
 
-          {/* Title */}
-          <motion.div
-            className="landing-title-block"
-            initial={{ y: -40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            <h1 className="landing-title">CHOOSE YOUR PATH</h1>
-            <p className="landing-subtitle">Select your role to get started</p>
-          </motion.div>
-
           {/* Figures */}
           <div className="landing-figures">
             {/* Business */}
@@ -216,6 +205,16 @@ export function LandingPage({ onSelect }: LandingPageProps) {
               </motion.button>
             </motion.div>
           </div>
+
+          {/* Credit */}
+          <motion.span
+            className="absolute bottom-4 right-5 text-[10px] tracking-wider text-white/25 font-mono"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.8 }}
+          >
+            by SPICE-STRAT
+          </motion.span>
 
         </motion.div>
       ) : (
