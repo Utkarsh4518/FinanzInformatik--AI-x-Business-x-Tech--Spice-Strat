@@ -38,6 +38,10 @@ class TestRootEndpoint:
         resp = await getattr(client, method)("/")
         assert resp.status_code == 405
 
+    async def test_root_head_returns_200(self, client: AsyncClient):
+        resp = await client.head("/")
+        assert resp.status_code == 200
+
     async def test_root_and_health_both_return_200(self, client: AsyncClient):
         root = await client.get("/")
         health = await client.get("/health")
@@ -62,3 +66,7 @@ class TestHealthEndpoint:
     async def test_health_has_no_service_key(self, client: AsyncClient):
         resp = await client.get("/health")
         assert "service" not in resp.json()
+
+    async def test_health_head_returns_200(self, client: AsyncClient):
+        resp = await client.head("/health")
+        assert resp.status_code == 200
