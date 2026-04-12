@@ -6,7 +6,7 @@ synapse is a collaboration tool that lets business stakeholders and developers v
 
 Built for the **"Making AI a Teamwork Booster between Business & Tech"** hackathon.
 
-> **Live demo:** Frontend on [Vercel]([https://vercel.com](https://spicestrat.vercel.app/)) · Backend on [Render](https://render.com) (free tier — first request after idle may take ~50s)
+> **Live demo:** Frontend on [Vercel]((https://spicestrat.vercel.app/)) · Backend on [Render](https://render.com) (free tier — first request after idle may take ~50s)
 
 ---
 
