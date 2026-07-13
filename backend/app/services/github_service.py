@@ -18,12 +18,34 @@ def _readme_plain_to_minimal_html(text: str) -> str:
     return f'<article class="readme-fallback"><pre style="white-space:pre-wrap;">{escaped}</pre></article>'
 
 
+_token_invalid = False
+
+
 def _headers() -> dict[str, str]:
     h: dict[str, str] = {"Accept": "application/vnd.github+json"}
-    token = _token or os.getenv("GITHUB_TOKEN", "")
-    if token:
-        h["Authorization"] = f"Bearer {token}"
+    if not _token_invalid:
+        token = _token or os.getenv("GITHUB_TOKEN", "")
+        if token:
+            h["Authorization"] = f"Bearer {token}"
     return h
+
+
+async def _github_request(client: httpx.AsyncClient, method: str, url: str, **kwargs) -> httpx.Response:
+    global _token_invalid
+    if "headers" not in kwargs:
+        kwargs["headers"] = _headers()
+
+    resp = await client.request(method, url, **kwargs)
+
+    if resp.status_code == 401 and kwargs["headers"].get("Authorization"):
+        logger.warning(
+            "GitHub API returned 401 Unauthorized. Marking GITHUB_TOKEN as invalid and retrying request without auth."
+        )
+        _token_invalid = True
+        kwargs["headers"] = {k: v for k, v in kwargs["headers"].items() if k.lower() != "authorization"}
+        resp = await client.request(method, url, **kwargs)
+
+    return resp
 
 
 async def _get_authenticated_user(client: httpx.AsyncClient) -> str | None:
@@ -32,7 +54,7 @@ async def _get_authenticated_user(client: httpx.AsyncClient) -> str | None:
     if not token:
         return None
     try:
-        resp = await client.get(f"{GITHUB_API}/user", headers=_headers())
+        resp = await _github_request(client, "GET", f"{GITHUB_API}/user")
         if resp.status_code == 200:
             return resp.json().get("login")
     except Exception:
@@ -45,23 +67,26 @@ async def fetch_repos(owner: str) -> list[dict]:
         auth_user = await _get_authenticated_user(client)
 
         if auth_user and auth_user.lower() == owner.lower():
-            resp = await client.get(
+            resp = await _github_request(
+                client,
+                "GET",
                 f"{GITHUB_API}/user/repos",
-                headers=_headers(),
                 params={"sort": "updated", "per_page": 100, "affiliation": "owner"},
             )
             resp.raise_for_status()
             return resp.json()
 
-        resp = await client.get(
+        resp = await _github_request(
+            client,
+            "GET",
             f"{GITHUB_API}/users/{owner}/repos",
-            headers=_headers(),
             params={"sort": "updated", "per_page": 30},
         )
         if resp.status_code == 404:
-            resp = await client.get(
+            resp = await _github_request(
+                client,
+                "GET",
                 f"{GITHUB_API}/orgs/{owner}/repos",
-                headers=_headers(),
                 params={"sort": "updated", "per_page": 30},
             )
         resp.raise_for_status()
@@ -70,9 +95,10 @@ async def fetch_repos(owner: str) -> list[dict]:
 
 async def fetch_repo_detail(owner: str, repo: str) -> dict:
     async with httpx.AsyncClient(timeout=15) as client:
-        repo_resp = await client.get(
+        repo_resp = await _github_request(
+            client,
+            "GET",
             f"{GITHUB_API}/repos/{owner}/{repo}",
-            headers=_headers(),
         )
         repo_resp.raise_for_status()
         data = repo_resp.json()
@@ -80,9 +106,10 @@ async def fetch_repo_detail(owner: str, repo: str) -> dict:
         readme_text: str | None = None
 
         async def _fetch_readme_raw() -> str | None:
-            raw_resp = await client.get(
+            raw_resp = await _github_request(
+                client,
+                "GET",
                 f"{GITHUB_API}/repos/{owner}/{repo}/readme",
-                headers=_headers(),
             )
             if raw_resp.status_code != 200:
                 return None
@@ -92,7 +119,9 @@ async def fetch_repo_detail(owner: str, repo: str) -> dict:
 
         try:
             html_headers = {**_headers(), "Accept": "application/vnd.github.html+json"}
-            readme_resp = await client.get(
+            readme_resp = await _github_request(
+                client,
+                "GET",
                 f"{GITHUB_API}/repos/{owner}/{repo}/readme",
                 headers=html_headers,
             )
@@ -117,9 +146,10 @@ async def fetch_repo_detail(owner: str, repo: str) -> dict:
 
         languages: dict[str, int] = {}
         try:
-            lang_resp = await client.get(
+            lang_resp = await _github_request(
+                client,
+                "GET",
                 f"{GITHUB_API}/repos/{owner}/{repo}/languages",
-                headers=_headers(),
             )
             if lang_resp.status_code == 200:
                 languages = lang_resp.json()
@@ -133,9 +163,10 @@ async def fetch_repo_detail(owner: str, repo: str) -> dict:
 
 async def fetch_commits(owner: str, repo: str, count: int = 7) -> list[dict]:
     async with httpx.AsyncClient(timeout=15) as client:
-        resp = await client.get(
+        resp = await _github_request(
+            client,
+            "GET",
             f"{GITHUB_API}/repos/{owner}/{repo}/commits",
-            headers=_headers(),
             params={"per_page": count},
         )
         resp.raise_for_status()
@@ -157,9 +188,10 @@ async def fetch_commits(owner: str, repo: str, count: int = 7) -> list[dict]:
 
 async def fetch_commit_detail(owner: str, repo: str, sha: str) -> dict:
     async with httpx.AsyncClient(timeout=20) as client:
-        resp = await client.get(
+        resp = await _github_request(
+            client,
+            "GET",
             f"{GITHUB_API}/repos/{owner}/{repo}/commits/{sha}",
-            headers=_headers(),
         )
         resp.raise_for_status()
         data = resp.json()
